@@ -163,9 +163,6 @@ export function Leaderboard() {
         </View>
 
 
-   
-
-
 
     );
 }
