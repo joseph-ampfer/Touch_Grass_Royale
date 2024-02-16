@@ -2,6 +2,8 @@ import React from "react";
 import tw from 'twrnc';
 import { Image, ScrollView, Text, View } from "react-native";
 import MyText from "../components/MyText";
+import { StatusBar } from "expo-status-bar";
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 
 const data = [
@@ -99,9 +101,10 @@ const data = [
 
 export function Leaderboard() {
     return (
- 
+        <SafeAreaView style={tw`bg-blue-500`}>
         <View style={tw`flex h-full bg-black`}>
-          <View style={tw`flex-row pt-8 bg-blue-500`}>
+        <StatusBar style="light" />
+          <View style={tw`flex-row bg-blue-600`}>
               <View style={tw`flex-1 mx-auto bg-gray-200 bg-opacity-30 pt-4`}>
                     <Image 
                       source={{ uri: data[1].pic }} 
@@ -141,7 +144,7 @@ export function Leaderboard() {
                   <View style={tw`flex-row relative py-0.5 w-full`}>
                     <View style={tw`h-full w-[${
                             (value.time / data[0].time) * 100
-                        }%] bg-blue-500 bg-opacity-10 shadow-sm absolute`} 
+                        }%] bg-blue-500 bg-opacity-30 shadow-sm absolute`} 
                     />
                     <View 
                       style={tw`flex-row relative shadow-sm gap-4 py-4 px-4 items-center w-full`} 
@@ -161,6 +164,7 @@ export function Leaderboard() {
               ))}
           </ScrollView>
         </View>
+        </SafeAreaView>
 
 
 
