@@ -21,10 +21,19 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.PACKAGE_USAGE_STATS"
+      ],
+      "package": "com.jampfer.touch_grass"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "742c1b23-0c80-4edd-9f8c-6451ac3a3420"
+      }
     }
   }
 }
