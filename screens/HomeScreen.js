@@ -16,6 +16,7 @@ import { GestureHandlerRootView, Gesture, GestureDetector } from 'react-native-g
 import { Ionicons, FontAwesome5, Foundation } from '@expo/vector-icons';
 import Animated, { BounceIn, useSharedValue, useAnimatedStyle, withSpring, withTiming, FadeInLeft } from 'react-native-reanimated'
 import MessagesContainer from '../components/MessagesContainer';
+import BottomNavBar from '../components/BottomNavBar';
 
 const data = [
   {
@@ -110,7 +111,7 @@ const data = [
   },
 ]
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }) {
   const modalizeRef = useRef(null);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -285,7 +286,10 @@ useEffect(() => {
         </View>
 
 {/* =========leaderboard preview========= */}
-        <View style={[tw`mx-5 h-72 flex rounded-3xl mt-5 overflow-hidden`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
+        <TouchableOpacity 
+          style={[tw`mx-5 h-72 flex rounded-3xl mt-5 overflow-hidden`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}
+          onPress={() => navigation.navigate('Leaderboard')}
+        >
 
             <View style={tw`flex-1    `}>
               {data.slice(0,5).map((value, i) => (
@@ -312,13 +316,13 @@ useEffect(() => {
               ))}
             </View>
 
-          </View>
+          </TouchableOpacity>
 
 {/* ==============users stats=============== */}
           <View style={tw`mt-5 flex-row mx-5 justify-between`}>
             <View style={[tw`h-29 w-45 flex rounded-3xl justify-center `, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
               <View style={tw``}>
-                <Text style={tw`text-center font-bold text-white text-3xl mb-2`}>7th Place</Text>
+                <Animated.Text entering={BounceIn.duration(1000).delay(100)} style={tw`text-center font-bold text-white text-3xl mb-2`}>7th Place</Animated.Text>
                 <Text style={tw`text-center font-semibold text-white/50 `}>200 points</Text>
               </View>
             </View>
@@ -350,29 +354,29 @@ useEffect(() => {
               }}
             >
             <View style={tw`h-15 w-15`}>
-                <LottieView 
+                {/* <LottieView 
                     source={require('../assets/animations/arrows.json')} 
                     style={{width:'100%', height:'100%', transform: [{rotate: '-90deg'}]}}
                     autoPlay 
                     loop 
                     speed={1}
-                />
+                /> */}
               </View>
               <View style={tw`justify-center`}>
                 <Text style={tw`text-center  text-white/90 text-sm font-semibold`}>Tell last place they need to touch grass.</Text>
               </View>
               <View style={tw`h-15 w-15 `}>
-                <LottieView 
+                {/* <LottieView 
                     source={require('../assets/animations/arrows.json')} 
                     style={{width:'100%', height:'100%', transform: [{rotate: '90deg'}]}}
                     autoPlay 
                     loop 
                     speed={1}
-                />
+                /> */}
               </View>
             </TouchableOpacity>
           </View>
-          <View style={[tw`mx-5 mt-5 h-19 flex rounded-3xl justify-center`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
+          <View style={[tw`mx-5 mt-5 h-12 flex rounded-3xl justify-center`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
 {/* ==============TODO=============== */}
             <TouchableOpacity style={tw`flex-1`}>
               <Text>press me</Text>
@@ -412,20 +416,7 @@ useEffect(() => {
       </SafeAreaView>
 
 {/* ============BOTTOM NAV-BAR========== */}
-      <View style={tw`bg-black pt-2 flex-row justify-around`}>
-        <TouchableOpacity>
-          <Foundation name="home" size={32} color="white" />
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Ionicons name="search-outline" size={31} color="white" />
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Ionicons name="podium-outline" size={31} color="white" />
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Ionicons style={tw``} name="person-circle-outline" size={32} color="white" />
-        </TouchableOpacity> 
-      </View>
+    <BottomNavBar/>
   
     </View>
     </GestureHandlerRootView>
