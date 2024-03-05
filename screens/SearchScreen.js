@@ -3,15 +3,31 @@ import React, { useState, useEffect } from 'react';
 import tw from 'twrnc';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons, Foundation } from '@expo/vector-icons';
+import { Ionicons, Feather } from '@expo/vector-icons';
 import BottomNavBar from '../components/BottomNavBar';
 import { useIsFocused } from '@react-navigation/native';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import * as Contacts from 'expo-contacts';
+import * as SMS from 'expo-sms';
+import debounce from '../debounce/debounce';
 
 
+//INSTALLED BUT NOT USED 
+//expo notifications
+//expo linking
+//expo local authentication
+//expo intent launcher
+//expo haptics
+//backgroundfetch
+
+
+
+const TAB_WIDTH = 150;
 
 export default function SearchScreen({ navigation }) {
   const [showSearch, toggleSearch] = useState(false);
   const [addedUsers, setAddedUsers] = useState({});
+  const [addedInvites, setAddedInvites] = useState({});
   const [users, setUsers] = useState([
     {
       id: 1,
@@ -32,35 +48,141 @@ export default function SearchScreen({ navigation }) {
       pic: 'https://i.pravatar.cc/60/68'
     }
 ]);
+  const [contactsData, setConstactsData] = useState([])
+  const [tab, setTab] = useState('Find');
 
 //CLEANUP
   const isFocused = useIsFocused();
-
   useEffect(() => {
     if (!isFocused) {
         toggleSearch(false);
         setAddedUsers({});
+        setConstactsData([]);
     }
   }, [isFocused]);
 
+  // ===========TODO==================
   const handleAddedFriend = (userID) => {
     console.log(userID)
   }
+
+  //===========TODO==============
+  const handleInviteFriendSMS = async (number) => {
+    const isAvailable = await SMS.isAvailableAsync();
+    if (isAvailable) {
+      // do your SMS stuff here
+      console.log(isAvailable);
+      const { result } = await SMS.sendSMSAsync(
+        [number],
+        '(testing, ignore) https://play.google.com/store/apps/details?id=com.instagram.android',
+        {}
+      );
+    } else {
+      // misfortune... there's no SMS available on this device
+      console.log(isAvailable);
+    }
+  }
+
+  // SLIDER
+  const offset = useSharedValue(67);
+
+  const animatedStyles = useAnimatedStyle(() => ({
+    transform: [{translateX: offset.value}]
+  }))
+
+  const handlePress = (tab) => {
+    const newOffset = (() => {
+      switch (tab) {
+        case 'Find':
+          return 67;
+        case 'Invite':
+          return 238;
+        default:
+          return 0
+      }
+    })();
+    offset.value = withTiming(newOffset)
+  }
+//////
+
+
+
+const handleInviteSearch = async value => {
+  console.log('value: ', value);
+  if (value == '') {
+    return
+  } else {
+    const { status } = await Contacts.requestPermissionsAsync();
+    console.log(status)
+    if (status === 'granted') {
+      const { data } = await Contacts.getContactsAsync({
+        name: value,
+        pageSize: 10,
+        fields: ["phoneNumbers", "rawImage", "name"]
+      });
+      console.log(data);
+      if (data.length > 0) {
+        setConstactsData(data);
+        //const contact = data;
+        //for (let key in contact) {
+        //  console.log(key, contact[key])
+        //}
+        //console.log(contact);
+      }
+    }
+  }
+}
+
+const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
+
 
   return (
     <View style={tw`flex-1 bg-gray-900`}>
       <StatusBar style='light'/>
       <Image blurRadius={10} source={require('../assets/images/panda3.png')} style={tw`absolute w-full h-full`} />
       <SafeAreaView style={tw`flex-1`}>
+{/* =========TOP TABS============== */}
+        <View style={tw` pb-5 rounded-b-2xl`}>
+        <View style={tw`flex-row justify-evenly pt-10 pb-1`}>
+          <TouchableOpacity  onPress={() => {
+              handlePress('Find');
+              setTab('Find');
+            }}>
+            <Text style={tw`text-white text-lg`}>Find Friends</Text>
+          </TouchableOpacity>
+          <TouchableOpacity  onPress={() => {
+              handlePress('Invite');
+              setTab('Invite');
+            }}>
+            <Text style={tw`text-white text-lg`}>Invite Friends</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={tw`pb-5`}>
+          <Animated.View style={[tw`bg-white w-26 h-1 rounded-full`, animatedStyles]} />
+        </View>
+        </View>
+        
+
+{/* =============FIND FRIENDS SEARCH INPUT============== */}
         <View style={[tw`bg-slate-200 mx-5 rounded-full  flex-row justify-end`, {backgroundColor: showSearch? 'rgba(255,255,255,0.2)': 'transparent'}]}>
-{/* =============SEARCH INPUT============== */}
+
           {
-            showSearch? (
+            tab == 'Find' && showSearch? (
               <TextInput
                 placeholder='Search for friends'
-                placeholderTextColor={'gray'}
-                style={tw`flex-1 text-base pl-6 `}
+                placeholderTextColor={'white'}
+                style={tw`flex-1 text-base pl-6 text-white`}
               />
+            ):null
+          }
+          {
+            tab == 'Invite' && showSearch? (
+              <TextInput
+              onChangeText={handleInvSearchDebounce}
+              placeholder='Invite to play'
+              placeholderTextColor={'white'}
+              style={tw`flex-1 text-base pl-6 text-white`}
+            />
             ):null
           }
 {/* ===============MAGNIFYING GLASS BUTTON============= */}
@@ -71,9 +193,9 @@ export default function SearchScreen({ navigation }) {
           >
             <Ionicons style={tw`p-2`} name="search-outline" size={31} color="white" />
           </TouchableOpacity>
-{/* ================SEARCH RESULTS===================== */}
+{/* ================ADD SEARCH RESULTS===================== */}
           {
-            users.length > 0 && showSearch? (
+            users.length > 0 && tab == 'Find' && showSearch? (
               <View style={tw`absolute w-full bg-gray-100 top-16 rounded-3xl`}>
                 {
                   users.map((user, index) => {
@@ -110,6 +232,61 @@ export default function SearchScreen({ navigation }) {
             ):null
           }
 
+{/* ================INVITE SEARCH RESULTS===================== */}
+          {
+            contactsData.length > 0 && tab == 'Invite' && showSearch? (
+              <View style={tw`absolute w-full bg-gray-100 top-16 rounded-3xl`}>
+                {
+                  contactsData.map((contact, index) => {
+                    let showBorder = index + 1 != contactsData.length;
+                    let borderClass = showBorder? `border-b-2 border-b-gray-400`: ``;
+                    let mobileNumber = 'No mobile number';
+                    if (Array.isArray(contact.phoneNumbers)) {
+                      const mobilePhoneNumberObject = contact.phoneNumbers.find(phone => phone.label === "mobile");
+                      mobileNumber = mobilePhoneNumberObject ? mobilePhoneNumberObject.number : 'No mobile number'
+                      console.log(mobileNumber, '======================================')
+                    }
+
+                    return (
+                      <View
+                        key={index}
+                        style={tw.style(['flex-row', 'items-center', 'p-3', 'border-0', 'px-4', 'mb-1', 'justify-between'], borderClass)}
+                      >
+                        <View style={tw`flex-row items-center `}>
+                          {
+                            contact.imageAvailable? (
+                              <Image 
+                              source={{ uri: contact.image.uri }} 
+                              style={tw`h-10 w-10 rounded-full mr-3`}
+                            />
+                            ):(
+                              <View style={tw`w-10 h-10 bg-slate-600 mr-3 rounded-full justify-center items-center`}>
+                                <Text style={[tw`text-white font-bold text-lg text-center ml-1`, ]}>{ contact.name[0]} </Text>
+                              </View>
+                            )
+                          }
+
+                            <Text style={tw`text-black text-lg w-35`} numberOfLines={1} ellipsizeMode='tail' >{contact.name}</Text>
+                        </View>
+{/* ================INVITE SMS BUTTON================ */}
+                        <TouchableOpacity 
+                          style={tw.style('p-3', 'px-5', 'rounded-3xl', 'self-end', 'bg-blue-600', 'flex-row', 'items-center', {'bg-slate-600': addedInvites[contact.id]}, )}
+                          onPress={() => {
+                            setAddedInvites(prev => ({ ...prev, [contact.id]: !prev[contact.id] }));
+                            handleInviteFriendSMS(mobileNumber);
+                          }}
+                        >
+                          <Text style={tw.style('text-white', 'mr-2' )}>{addedInvites[contact.id]? 'Send again' : 'Send link'}</Text>
+                          <Feather name="send" size={14} color="white" />                         
+                        </TouchableOpacity>
+                      </View>
+                    )
+                  }
+                  )
+                }
+              </View>
+            ):null
+          }
         </View>
 
       </SafeAreaView>

@@ -1,11 +1,14 @@
 import { View, TouchableOpacity } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import tw from 'twrnc';
 import { Ionicons, Foundation } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
+const screens = ['Home', 'Search', 'Leaderboard', 'Profile']
+
 export default function BottomNavBar() {
   const navigation = useNavigation();
+  const [activeScreen, setActiveScreen] = useState('Search');
 
   return (
     <View>
@@ -21,8 +24,82 @@ export default function BottomNavBar() {
         </TouchableOpacity>
         <TouchableOpacity >
           <Ionicons name="person-circle-outline" size={32} color="white" />
-        </TouchableOpacity> 
+        </TouchableOpacity>
       </View>
     </View>
   )
 };
+
+
+
+
+//{
+//  screens.map(screen => {
+//    if (screen == activeScreen) {
+//      if (screen == 'Home') {
+//        return (
+//          <TouchableOpacity key={screen} >
+//            <MaterialCommunityIcons name="home" size={34} color="white" />
+//          </TouchableOpacity>
+//        )
+//      } else if (screen == 'Search') {
+//        return (
+//          <TouchableOpacity key={screen} >
+//            <Ionicons name="search" size={31} color="white" />
+//          </TouchableOpacity>
+//        )
+//      } else if (screen == 'Leaderboard') {
+//        return (
+//          <TouchableOpacity key={screen} >
+//            <Ionicons name="podium" size={31} color="white" />
+//          </TouchableOpacity>
+//        )
+//      } else {
+//        return (
+//          <TouchableOpacity key={screen} >
+//            <Ionicons name="person-circle" size={32} color="white" />
+//          </TouchableOpacity>
+//        )
+//      }
+//
+//    } else {
+//      if (screen == 'Home') {
+//        return (
+//          <TouchableOpacity key={screen} onPress={() => {
+//            setActiveScreen(screen);
+//            navigation.navigate(screen);
+//          }} >
+//            <MaterialCommunityIcons name="home-outline" size={34} color="white" />
+//          </TouchableOpacity>
+//        )
+//      } else if (screen == 'Search') {
+//        return (
+//          <TouchableOpacity key={screen} onPress={() => {
+//            setActiveScreen(screen);
+//            navigation.navigate(screen);
+//          }} >
+//            <Ionicons name="search-outline" size={31} color="white" />
+//          </TouchableOpacity>
+//        )
+//      } else if (screen == 'Leaderboard') {
+//        return (
+//          <TouchableOpacity key={screen} onPress={() => {
+//            setActiveScreen(screen);
+//            navigation.navigate(screen);
+//          }} >
+//            <Ionicons name="podium-outline" size={31} color="white" />
+//          </TouchableOpacity>
+//        )
+//      } else {
+//        return (
+//          <TouchableOpacity key={screen} onPress={() => {
+//            setActiveScreen(screen);
+//            navigation.navigate(screen);
+//          }} >
+//            <Ionicons name="person-circle-outline" size={32} color="white" />
+//          </TouchableOpacity>
+//        )
+//      }
+//    }
+//  })
+//}

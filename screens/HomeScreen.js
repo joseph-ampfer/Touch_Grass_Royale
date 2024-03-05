@@ -115,32 +115,7 @@ export default function HomeScreen({ navigation }) {
   const modalizeRef = useRef(null);
   const [modalOpen, setModalOpen] = useState(false);
 
-  // const scale = useSharedValue(0); // Initial scale for the checkmark
-  // const opacity = useSharedValue(0); // Initial opacity for the checkmark to make it appear
-
-  // // Define the tap gesture
-  // const tapGesture = Gesture.Tap().onBegin(() => {
-  //   scale.value = withSpring(1); // Trigger the bounce animation on tap
-  //   opacity.value = withTiming(1, { duration: 200 }); // Make the checkmark appear
-  // });
-
-  // // Animated style for the checkmark
-  // const checkmarkStyle = useAnimatedStyle(() => ({
-  //   transform: [{ scale: scale.value }],
-  //   opacity: opacity.value,
-  // }));
-
-
-  // const onOpen = async (event) => {
-  //   try {
-  //     if (modalizeRef.current) {
-  //       await modalizeRef.current.open();
-  //     }
-  //   } catch(err) {
-  //     console.log(err);
-  //   }
-  // };
-  
+   
 
 // =========GETTING USAGE STAT PERMISSION ON SCREEN LOAD===========
   useEffect(() => {
@@ -157,7 +132,6 @@ export default function HomeScreen({ navigation }) {
     // Delay the permission check to not interrupt the user immediately
     setTimeout(checkPermission, 10000); // 10 seconds, adjust as needed
   }, []);
-
 
 
 
@@ -240,7 +214,6 @@ useEffect(() => {
   }
 }, [modalizeRef.current]);
 
-
   
   
 
@@ -267,11 +240,11 @@ useEffect(() => {
           </View>
         </View>
 {/* =========CURRENT WINNER======== */}
-        <View style={[tw`mx-5 h-29 flex rounded-3xl justify-center`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
+        <View style={[tw`mx-5 h-29 flex rounded-3xl justify-center mt-2`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
           <View style={tw``}>
             <View style={tw`flex-row justify-between`} >
               {/* pic and stats */}
-              <View style={tw`mx-10`}>
+              <View style={tw`mx-10 self-center`}>
                 <Image 
                   source={{ uri: data[0].pic }} 
                   style={tw`h-16 w-16 rounded-full mx-auto`}
@@ -279,7 +252,7 @@ useEffect(() => {
                 <Text style={tw`text-slate-50 font-semibold text-center py-1`}>{data[0].name}</Text>
               </View>
               <View style={tw`flex-2 justify-center `}>
-                <Text style={tw`font-bold text-lg text-white mr-5 text-center`}>{data[0].name} is winning with {data[0].time} points, put your phone down to catch up! </Text>
+                <Text style={tw`font-bold text-lg text-white mr-5 text-center`}>{data[0].name} is winning with {data[0].time} points, try to catch up! </Text>
               </View>
             </View>
           </View>
@@ -376,7 +349,7 @@ useEffect(() => {
               </View>
             </TouchableOpacity>
           </View>
-          <View style={[tw`mx-5 mt-5 h-12 flex rounded-3xl justify-center`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
+          <View style={[tw`mx-5 mt-5 h-10 flex rounded-3xl justify-center`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
 {/* ==============TODO=============== */}
             <TouchableOpacity style={tw`flex-1`}>
               <Text>press me</Text>
