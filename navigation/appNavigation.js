@@ -8,6 +8,8 @@ import SignupScreen from '../screens/SignupScreen';
 import HomeScreen from '../screens/HomeScreen';
 import SearchScreen from '../screens/SearchScreen';
 import { View } from 'react-native';
+import ProfileScreen from '../screens/ProfileScreen';
+import ProfileScreen2 from '../screens/profileScreen2';
 
 
 const Stack = createNativeStackNavigator();
@@ -24,6 +26,7 @@ export default function AppNavigation() {
                 <Stack.Screen name="SignUp" component={SignupScreen} />
                 <Stack.Screen name="Home" component={HomeScreen} />
                 <Stack.Screen name="Search" component={SearchScreen} />
+                <Stack.Screen name="Profile" component={ProfileScreen2} />
             </Stack.Navigator>
         </NavigationContainer>
         </View>

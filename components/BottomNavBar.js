@@ -22,7 +22,7 @@ export default function BottomNavBar() {
         <TouchableOpacity onPress={() => navigation.navigate('Leaderboard')}>
           <Ionicons name="podium-outline" size={31} color="white" />
         </TouchableOpacity>
-        <TouchableOpacity >
+        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
           <Ionicons name="person-circle-outline" size={32} color="white" />
         </TouchableOpacity>
       </View>

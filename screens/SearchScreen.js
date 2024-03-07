@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, TextInput, Image, } from 'react-native';
+import { View, Text, TextInput, Image, } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import tw from 'twrnc';
 import { StatusBar } from 'expo-status-bar';
@@ -10,6 +10,8 @@ import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-na
 import * as Contacts from 'expo-contacts';
 import * as SMS from 'expo-sms';
 import debounce from '../debounce/debounce';
+import { ScrollView, GestureHandlerRootView, TouchableOpacity } from 'react-native-gesture-handler';
+import RequestCard from '../components/RequestCard';
 
 
 //INSTALLED BUT NOT USED 
@@ -48,6 +50,98 @@ export default function SearchScreen({ navigation }) {
       pic: 'https://i.pravatar.cc/60/68'
     }
 ]);
+  const friendRequests = [
+    {
+      name: 'John Doe1',
+      time: '500',
+      pic: 'https://i.pravatar.cc/600/'
+    },
+    {
+      name: 'Jampfer',
+      time: '400',
+      pic: 'https://i.pravatar.cc/60'
+    },
+    {
+      name: 'Test test 3',
+      time: '399',
+      pic: 'https://i.pravatar.cc/60/68'
+    },
+    {
+      name: 'Test test 4',
+      time: '399',
+      pic: 'https://i.pravatar.cc/60/63'
+    },
+    {
+      name: 'Test test 5',
+      time: '300',
+      pic: 'https://i.pravatar.cc/60/64'
+    },
+    {
+      name: 'Test test 6',
+      time: '250',
+      pic: 'https://i.pravatar.cc/60/65'
+    },
+    {
+      name: 'Test test 1',
+      time: '9.2',
+      pic: 'https://i.pravatar.cc/60/66'
+    },
+    {
+      name: 'Test test 2',
+      time: '9.2',
+      pic: 'https://i.pravatar.cc/60/67'
+    },
+    {
+      name: 'Test test 3',
+      time: '9.2',
+      pic: 'https://i.pravatar.cc/60/69'
+    },
+    {
+      name: 'Test test 4',
+      time: '9.2',
+      pic: 'https://i.pravatar.cc/60/70'
+    },
+    {
+      name: 'Test test 5',
+      time: '9.2',
+      pic: 'https://i.pravatar.cc/60/80'
+    },
+    {
+      name: 'Test test 6',
+      time: '9.2',
+      pic: 'https://i.pravatar.cc/60/90'
+    },
+    {
+      name: 'Test test 1',
+      time: '9.2',
+      pic: 'https://i.pravatar.cc/60/10'
+    },
+    {
+      name: 'Test test 2',
+      time: '9.2',
+      pic: 'https://i.pravatar.cc/60/20'
+    },
+    {
+      name: 'Test test 3',
+      time: '9.2',
+      pic: 'https://i.pravatar.cc/60/30'
+    },
+    {
+      name: 'Test test 4',
+      time: '9.2',
+      pic: 'https://i.pravatar.cc/60/40'
+    },
+    {
+      name: 'Test test 5',
+      time: '9.2',
+      pic: 'https://i.pravatar.cc/60/60'
+    },
+    {
+      name: 'Test test 6',
+      time: '9.2',
+      pic: 'https://i.pravatar.cc/60/60'
+    },
+]
   const [contactsData, setConstactsData] = useState([])
   const [tab, setTab] = useState('Find');
 
@@ -84,7 +178,7 @@ export default function SearchScreen({ navigation }) {
   }
 
   // SLIDER
-  const offset = useSharedValue(67);
+  const offset = useSharedValue(27);
 
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [{translateX: offset.value}]
@@ -94,9 +188,9 @@ export default function SearchScreen({ navigation }) {
     const newOffset = (() => {
       switch (tab) {
         case 'Find':
-          return 67;
+          return 27;
         case 'Invite':
-          return 238;
+          return 277;
         default:
           return 0
       }
@@ -110,7 +204,7 @@ export default function SearchScreen({ navigation }) {
 const handleInviteSearch = async value => {
   console.log('value: ', value);
   if (value == '') {
-    return
+    setConstactsData([]);
   } else {
     const { status } = await Contacts.requestPermissionsAsync();
     console.log(status)
@@ -137,13 +231,14 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
 
 
   return (
+    <GestureHandlerRootView style={tw`flex-1`}>
     <View style={tw`flex-1 bg-gray-900`}>
       <StatusBar style='light'/>
-      <Image blurRadius={10} source={require('../assets/images/panda3.png')} style={tw`absolute w-full h-full`} />
+      <Image blurRadius={10} source={require('../assets/images/full.png')} style={tw`absolute w-full h-full -z-50`} />
       <SafeAreaView style={tw`flex-1`}>
-{/* =========TOP TABS============== */}
-        <View style={tw` pb-5 rounded-b-2xl`}>
-        <View style={tw`flex-row justify-evenly pt-10 pb-1`}>
+{/* ================TOP TABS================ */}
+        <View style={tw` pb-1 rounded-b-2xl`}>
+        <View style={tw`flex-row justify-between mx-7 pt-10 pb-1`}>
           <TouchableOpacity  onPress={() => {
               handlePress('Find');
               setTab('Find');
@@ -187,7 +282,7 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
           }
 {/* ===============MAGNIFYING GLASS BUTTON============= */}
           <TouchableOpacity 
-            style={[tw`rounded-full m-1`, {backgroundColor: showSearch? 'transparent': 'rgba(255,255,255,0.2)'}]}
+            style={[tw`rounded-full m-1`, {backgroundColor: showSearch? 'transparent': 'rgba(0,0,0,0.1)'}]}
             onPress={() => toggleSearch(!showSearch)}
             touchSoundDisabled={true}
           >
@@ -289,9 +384,27 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
           }
         </View>
 
+{/* ===============FRIEND REQUESTS=================== */}
+        <View style={tw` -z-20 `}>
+          <Text style={tw`text-gray-100 text-lg font-semibold ml-5 mb-3 mt-5`}>Friend requests</Text>
+          <View style={tw``}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {
+                friendRequests.map((user, index) => {
+                  return (
+                    // friend component
+                    <RequestCard key={index} user={user} />
+                  )
+                })
+              }
+            </ScrollView>
+          </View>
+        </View>
+
       </SafeAreaView>
-      {/* ============BOTTOM NAV-BAR========== */}
+{/* =============BOTTOM NAV-BAR============== */}
       <BottomNavBar/>
     </View>
+    </GestureHandlerRootView>
   )
 }

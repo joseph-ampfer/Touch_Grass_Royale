@@ -217,22 +217,22 @@ useEffect(() => {
   
   
 
-// ====================SCREEN========================
   return (
     <GestureHandlerRootView style={{ flex:1 }}>
     <View style={tw`flex-1`}>
       <StatusBar style='light' />
       <Image blurRadius={70} source={require('../assets/images/full.png')} style={tw`w-full h-full absolute`} />
       <SafeAreaView style={tw`flex-1`}>
-{/* =========TOP BAR======== */}
+{/* =============TOP BAR============== */}
         <View style={tw`flex-row justify-between content-center mx-5 `}>
           {/* <TouchableOpacity>
             <Ionicons style={tw`ml-5`} name="person-circle-outline" size={32} color="white" />
           </TouchableOpacity> */}
           <View>
-            <Text style={[tw`text-center font-bold text-2xl text-white  mb-2`, {fontFamily: ''}]}>
+            {/* <Text style={[tw`text-center font-bold text-2xl text-white  mb-2`, {fontFamily: ''}]}>
               Touch Grass Royale
-              </Text>
+              </Text> */}
+            <Image source={require('../assets/images/Touch Grass (1).png')} style={tw`w-70 h-9 `}  />
           </View>
           <View style={tw`flex-row`}>
             <Text style={tw`text-white font-bold text-2xl mr-2 `}>{'0'}</Text>
