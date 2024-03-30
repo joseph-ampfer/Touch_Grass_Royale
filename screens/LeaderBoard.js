@@ -10,7 +10,7 @@ import MyNumberTicker from "../components/MyNumberTicker";
 import Animated, {FadeInDown}  from "react-native-reanimated";
 import animations from "../animations/animations";
 import ProfileModal from "../components/ProfileModal";
-import { getLeaderboard } from "../queries"
+// import { getLeaderboard } from "../queries"
 
 
 const data = [
@@ -128,15 +128,16 @@ export function Leaderboard() {
     const [selectedUser, setSelectedUser] = useState({});
     const [modalOpen, setModalOpen] = useState(false);
     const insets = useSafeAreaInsets();
-    const { data: posts, isLoading, isError } = getLeaderboard();
 
-    if (isLoading) {
-      return <Text>Loading...</Text>
-    }
+    // const { data: posts, isLoading, isError } = getLeaderboard();
 
-    if (isError) {
-      return <Text>Error fetching data</Text>
-    }
+    // if (isLoading) {
+    //   return <Text>Loading...</Text>
+    // }
+
+    // if (isError) {
+    //   return <Text>Error fetching data</Text>
+    // }
 
     
     return (

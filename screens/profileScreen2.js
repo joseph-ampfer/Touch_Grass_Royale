@@ -1,4 +1,4 @@
-import { View, Text, Image, Pressable, BackHandler } from 'react-native';
+import { View, Text, Image, Pressable, BackHandler, ActivityIndicator } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import tw from 'twrnc';
 import { StatusBar } from 'expo-status-bar';
@@ -14,6 +14,9 @@ import { Portal } from 'react-native-portalize';
 import Animated, { FadeIn, FadeInDown, FadeInLeft, FadeOut, FadeOutDown } from 'react-native-reanimated';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import LottieAvatarShop from '../components/LottieAvatarShop';
+import { useQuery } from '@tanstack/react-query';
+import { fetchLeaderboard } from '../api/fetches';
+import MagicalLoader from '../components/MagicalLoader';
 
 
 const data = [
@@ -205,6 +208,30 @@ const friendRequests = [
 
 
 export default function ProfileScreen2({ navigation }) {
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [loading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const useEffLeaderboard = async () => {
+      setIsLoading(true);
+
+      try {
+        const leaderboard = await fetchLeaderboard();
+        setLeaderboard(leaderboard);
+        console.log('===============>', JSON.stringify(leaderboard, null, 2));
+      } catch (error) {
+        setError(error);
+      }
+
+      setIsLoading(false);
+    };
+    useEffLeaderboard();
+  }, [])
+
+
+
+  
   const [portalOpen, setPortalOpen] = useState(false);
   const fling = Gesture.Fling();
   const pickImageAsync = async () => {
@@ -219,6 +246,8 @@ export default function ProfileScreen2({ navigation }) {
       alert('You did not select an image.');
     }
   };
+
+
 
   //===============BACK ACTION FOR PORTAL================
   useEffect(() => {
@@ -238,6 +267,15 @@ export default function ProfileScreen2({ navigation }) {
     return () => backHandler.remove();
   }, [portalOpen]);
 
+
+
+  if (error) {
+    return (
+      <View>
+        <Text>{error.message}</Text>
+      </View>
+    )
+  }
 
   return (
     <GestureHandlerRootView style={{ flex:1 }}>
@@ -331,7 +369,7 @@ export default function ProfileScreen2({ navigation }) {
         </Pressable>
 
 
-{/* ===============MODAL============= */}
+{/* ===============AVATAR STORE MODAL============= */}
     {
       portalOpen? (
         <Portal>
@@ -377,6 +415,9 @@ export default function ProfileScreen2({ navigation }) {
         </Portal>
       ):null
     }
+
+    {/* ======================LOADING==================== */}
+      <MagicalLoader loading={loading} />
 
 
       </SafeAreaView>
