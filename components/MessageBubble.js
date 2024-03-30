@@ -10,7 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
-import tw from 'twrnc'; // Assuming you're using Tailwind CSS for React Native
+import tw from 'twrnc'; 
 
 
 

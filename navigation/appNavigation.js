@@ -10,6 +10,9 @@ import SearchScreen from '../screens/SearchScreen';
 import { View } from 'react-native';
 import ProfileScreen from '../screens/ProfileScreen';
 import ProfileScreen2 from '../screens/profileScreen2';
+import ProfileScreen3 from '../screens/ProfileScreen3';
+import { Host } from 'react-native-portalize';
+import FriendsScreen from '../screens/FriendsScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -19,7 +22,8 @@ export default function AppNavigation() {
     return (
         <View style={{ flex: 1, backgroundColor: 'black'}}>
         <NavigationContainer >
-            <Stack.Navigator initialRouteName='Search' screenOptions={{ headerShown: false, animation: 'none' }}>
+            <Host>
+            <Stack.Navigator initialRouteName='Login' screenOptions={{ headerShown: false, animation: 'none' }}>
                 <Stack.Screen name="Leaderboard" component={Leaderboard} />
                 <Stack.Screen name="Onboarding" component={OnboardingScreen} />
                 <Stack.Screen name="Login" component={LoginScreen} />
@@ -27,7 +31,9 @@ export default function AppNavigation() {
                 <Stack.Screen name="Home" component={HomeScreen} />
                 <Stack.Screen name="Search" component={SearchScreen} />
                 <Stack.Screen name="Profile" component={ProfileScreen2} />
+                <Stack.Screen name="Friends" component={FriendsScreen} />
             </Stack.Navigator>
+            </Host>
         </NavigationContainer>
         </View>
     )

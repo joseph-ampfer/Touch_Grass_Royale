@@ -41,6 +41,12 @@
         {
           "contactsPermission": "Allow $(PRODUCT_NAME) to access your contacts."
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Access your photos to select your avatar."
+        }
       ]
     ]
   }

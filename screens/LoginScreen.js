@@ -2,10 +2,12 @@ import { useNavigation } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { Button, View, Text, Image, TextInput, TouchableOpacity } from 'react-native';
 import Animated, { useSharedValue, withSpring, FadeIn, FadeOut, FadeInUp, FadeInDown } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import tw from 'twrnc';
 
 export default function LoginScreen() {
   const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
 
   return (
     <View style={tw`bg-white h-full w-full`}>
@@ -17,7 +19,7 @@ export default function LoginScreen() {
         <View style={tw`w-full h-full absolute`}>
           <Animated.Image entering={FadeInUp.delay(200).duration(1000).springify()} style={tw`h-full w-full`} source={require('../assets/images/birds.png')} />
         </View>
-
+    <View style={[tw`flex-1`, {paddingTop: insets.top, paddingBottom: insets.bottom}]}>
         {/* title and form */}
         <View style={tw`h-full w-full flex justify-around pt-30 pb-10`}>
           {/* title */}
@@ -37,7 +39,9 @@ export default function LoginScreen() {
               {/* submit */}
               <Animated.View entering={FadeInDown.delay(400).duration(1000).springify()} style={tw`w-full`}>
                 <TouchableOpacity
-                  style={tw`w-full bg-sky-400 p-4 rounded-2xl mb-5`}>
+                  style={tw`w-full bg-sky-400 p-4 rounded-2xl mb-5`}
+                  onPress={() => navigation.navigate('Home')}
+                >
                     <Text style={tw`text-white text-center font-bold`}>Login</Text>
                   </TouchableOpacity>   
               </Animated.View>
@@ -50,6 +54,7 @@ export default function LoginScreen() {
             </View>
           </View>
         </View>
+    </View>
     </View>
   );
 }
