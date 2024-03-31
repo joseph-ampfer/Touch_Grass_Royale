@@ -23,7 +23,7 @@ export default function AppNavigation() {
         <View style={{ flex: 1, backgroundColor: 'black'}}>
         <NavigationContainer >
             <Host>
-            <Stack.Navigator initialRouteName='Profile' screenOptions={{ headerShown: false, animation: 'none' }}>
+            <Stack.Navigator initialRouteName='Home' screenOptions={{ headerShown: false, animation: 'none' }}>
                 <Stack.Screen name="Leaderboard" component={Leaderboard} />
                 <Stack.Screen name="Onboarding" component={OnboardingScreen} />
                 <Stack.Screen name="Login" component={LoginScreen} />

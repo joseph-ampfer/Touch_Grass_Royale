@@ -5,7 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BottomNavBar from '../components/BottomNavBar';
 import { ScrollView, GestureHandlerRootView, TouchableOpacity } from 'react-native-gesture-handler';
-import RequestCard from '../components/RequestCard';
+import FriendRequestCard from '../components/FriendRequestCard';
 
 const data = [
     {

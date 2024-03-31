@@ -21,125 +21,161 @@ import animations from '../animations/animations';
 import Modal from 'react-native-modal';
 import { Portal } from 'react-native-portalize';
 import ProfileModal from '../components/ProfileModal';
+import { useQuery } from '@tanstack/react-query';
+import { fetchLeaderboard } from '../api/fetches';
+import toOrdinal from '../functions/toOrdinal';
+import hoursUntilMidnight from '../functions/hoursTillMidnight';
+import MagicalError from '../components/MagicalError';
 
-const data = [
-  {
-    name: 'JohnDoe1',
-    time: '524',
-    pic: 'https://i.pravatar.cc/600/',
-    lottie: 'spaceJam'
-  },
-  {
-    name: 'Hexscuseme',
-    time: '500',
-    pic: 'https://i.pravatar.cc/60',
-    lottie: 'gojoCat'
-  },
-  {
-    name: 'Nephlauxic',
-    time: '499',
-    pic: 'https://i.pravatar.cc/60/68',
-    lottie: null
-  },
-  {
-    name: 'Hobbes',
-    time: '461',
-    pic: 'https://i.pravatar.cc/60/63',
-    lottie: 'eyeBlob'
-  },
-  {
-    name: 'eener_weiner',
-    time: '444',
-    pic: 'https://i.pravatar.cc/60/64',
-    lottie: null
-  },
-  {
-    name: 'Test test 6',
-    time: '443',
-    pic: 'https://i.pravatar.cc/60/65',
-    lottie: 'ghibliGirl'
-  },
-  {
-    name: 'jampfer',
-    time: '411',
-    pic: 'https://i.pravatar.cc/60/66',
-    lottie: 'eyeBlob'
-  },
-  {
-    name: 'Test test 2',
-    time: '400',
-    pic: 'https://i.pravatar.cc/60/67',
-    lottie: 'ghibliGirl'
-  },
-  {
-    name: 'Test test 3',
-    time: '399',
-    pic: 'https://i.pravatar.cc/60/69',
-    lottie: 'ghibliGirl'
-  },
-  {
-    name: 'Test test 4',
-    time: '350',
-    pic: 'https://i.pravatar.cc/60/70',
-    lottie: 'ghibliGirl'
-  },
-  {
-    name: 'Test test 5',
-    time: '300',
-    pic: 'https://i.pravatar.cc/60/80',
-    lottie: 'ghibliGirl'
-  },
-  {
-    name: 'Test test 6',
-    time: '100',
-    pic: 'https://i.pravatar.cc/60/90',
-    lottie: 'ghibliGirl'
-  },
-  {
-    name: 'Test test 1',
-    time: '9.2',
-    pic: 'https://i.pravatar.cc/60/10',
-    lottie: 'ghibliGirl'
-  },
-  {
-    name: 'Test test 2',
-    time: '9.2',
-    pic: 'https://i.pravatar.cc/60/20',
-    lottie: 'ghibliGirl'
-  },
-  {
-    name: 'Test test 3',
-    time: '9.2',
-    pic: 'https://i.pravatar.cc/60/30',
-    lottie: 'ghibliGirl'
-  },
-  {
-    name: 'Test test 4',
-    time: '9.2',
-    pic: 'https://i.pravatar.cc/60/40',
-    lottie: 'ghibliGirl'
-  },
-  {
-    name: 'Test test 5',
-    time: '9.2',
-    pic: 'https://i.pravatar.cc/60/60',
-    lottie: 'ghibliGirl'
-  },
-  {
-    name: 'Test test 6',
-    time: '9.2',
-    pic: 'https://i.pravatar.cc/60/60',
-    lottie: 'ghibliGirl'
-  },
-]
+// const data = [
+//   {
+//     name: 'JohnDoe1',
+//     todays_points: '524',
+//     pic: 'https://i.pravatar.cc/600/',
+//     lottie: 'spaceJam'
+//   },
+//   {
+//     name: 'Hexscuseme',
+//     todays_points: '500',
+//     pic: 'https://i.pravatar.cc/60',
+//     lottie: 'gojoCat'
+//   },
+//   {
+//     name: 'Nephlauxic',
+//     todays_points: '499',
+//     pic: 'https://i.pravatar.cc/60/68',
+//     lottie: null
+//   },
+//   {
+//     name: 'Hobbes',
+//     todays_points: '461',
+//     pic: 'https://i.pravatar.cc/60/63',
+//     lottie: 'eyeBlob'
+//   },
+//   {
+//     name: 'eener_weiner',
+//     todays_points: '444',
+//     pic: 'https://i.pravatar.cc/60/64',
+//     lottie: null
+//   },
+//   {
+//     name: 'Test test 6',
+//     todays_points: '443',
+//     pic: 'https://i.pravatar.cc/60/65',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     name: 'jampfer',
+//     todays_points: '411',
+//     pic: 'https://i.pravatar.cc/60/66',
+//     lottie: 'eyeBlob'
+//   },
+//   {
+//     name: 'Test test 2',
+//     todays_points: '400',
+//     pic: 'https://i.pravatar.cc/60/67',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     name: 'Test test 3',
+//     todays_points: '399',
+//     pic: 'https://i.pravatar.cc/60/69',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     name: 'Test test 4',
+//     todays_points: '350',
+//     pic: 'https://i.pravatar.cc/60/70',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     name: 'Test test 5',
+//     todays_points: '300',
+//     pic: 'https://i.pravatar.cc/60/80',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     name: 'Test test 6',
+//     todays_points: '100',
+//     pic: 'https://i.pravatar.cc/60/90',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     name: 'Test test 1',
+//     todays_points: '9.2',
+//     pic: 'https://i.pravatar.cc/60/10',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     name: 'Test test 2',
+//     todays_points: '9.2',
+//     pic: 'https://i.pravatar.cc/60/20',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     name: 'Test test 3',
+//     todays_points: '9.2',
+//     pic: 'https://i.pravatar.cc/60/30',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     name: 'Test test 4',
+//     todays_points: '9.2',
+//     pic: 'https://i.pravatar.cc/60/40',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     name: 'Test test 5',
+//     todays_points: '9.2',
+//     pic: 'https://i.pravatar.cc/60/60',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     name: 'Test test 6',
+//     todays_points: '9.2',
+//     pic: 'https://i.pravatar.cc/60/60',
+//     lottie: 'ghibliGirl'
+//   },
+// ]
 
-const user = {
-  name: 'jampfer',
-  time: '100',
-  pic: 'https://i.pravatar.cc/60/66'
-}
+
+// const user = {
+//   name: 'jampfer',
+//   todays_points: '100',
+//   pic: 'https://i.pravatar.cc/60/66',
+//   gems: 1
+// }
+const my_id = 32;
 
 export default function HomeScreen({ navigation }) {
+  const {data, isLoading, error} = useQuery({
+    queryKey: ['leaderboard'],
+    queryFn: fetchLeaderboard,
+  })
+  console.log(JSON.stringify(data, null, 2));
+  
+  // FINDING CURRENT USER FROM DATA
+  const [user, setUser] = useState({
+    name: 'jampfer',
+    todays_points: '100',
+    pic: 'https://i.pravatar.cc/60/66',
+    gems: 1,
+    rank: 3
+  });
+   useEffect(() => {
+     if (data) {
+       for (let i = 0; i < data.length; i++) {
+         if (data[i].id === my_id) {
+           console.log(data[i])
+           setUser(data[i])
+           break;
+         }
+       }
+     }
+   }, [data])
+
+
+
   const insets = useSafeAreaInsets();
   const [portalOpen, setPortalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState({});
@@ -255,7 +291,77 @@ export default function HomeScreen({ navigation }) {
   }, [portalOpen]);
 
   
+  if (isLoading) {
+    return (
+      <View style={tw`flex-1`}>
+        <StatusBar style='light' />
+        <Image blurRadius={70} source={require('../assets/images/full.png')} style={tw`w-full h-full absolute`} />
+        <View style={[tw`flex-1`, {paddingTop: insets.top, paddingBottom: insets.bottom}]}>
+  {/* =============TOP BAR============== */}
+          <View style={tw`flex-row justify-between content-center mx-5 mb-1`}>
+            <Animated.View entering={FadeInLeft.duration(1000).springify()} >
+              <Image source={require('../assets/images/Touch Grass (1).png')} style={tw`w-65 h-8 `}  />
+            </Animated.View>
+            <View style={tw`flex-row mb-2`}>
+              
+            </View>
+          </View>
+  {/* =========CURRENT WINNER======== */}
+          <View style={[tw`mx-5 h-29  rounded-3xl justify-center mt-2`, ]}>
+            <View style={tw``}>
+              <View style={tw`flex-row justify-center items-center`} >
+                {/* pic and stats */}
+                <View style={tw`mx-10 self-center mt-4`}>
+
+                  <View style={tw`h-22 w-22 rounded-full mx-auto bg-white/20`}/>
+
+                </View>
+
+              </View>
+            </View>
+          </View>
   
+  {/* =========leaderboard preview========= */}
+          <View style={[tw`mx-5 h-72 flex rounded-3xl mt-5 overflow-hidden`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}
+          >
+
+          </View>
+  
+  {/* ==============USERS own line=============== */}
+         <View style={[tw`mx-5 h-14 flex rounded-2xl mt-5 overflow-hidden`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}
+          >
+          </View>
+  
+  {/* ==============users stats=============== */}
+            <View style={tw`mt-5 flex-row mx-5 justify-between`}>
+              <View style={[tw`h-29 w-45 flex rounded-3xl justify-center `, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
+              </View>
+  {/* ===============hours remaining================ */}
+              <View style={[tw`h-29 w-45 flex rounded-3xl justify-center`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
+              </View>
+            </View>
+  
+  {/*==============notify loser=============== */}
+            <View style={[tw`mx-5 mt-5 h-14 flex rounded-2xl justify-center`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
+            </View>
+    
+        </View>
+
+  {/* ============BOTTOM NAV-BAR========== */}
+      <BottomNavBar/>
+    
+      </View>
+
+    )
+  }
+
+  if (error) {
+    return (
+      <View style={tw`bg-black h-full w-full flex-row justify-center items-center`}>
+        <MagicalError error={error} />
+      </View>
+    )
+  }
 
   return (
     <GestureHandlerRootView style={{ flex:1 }}>
@@ -265,14 +371,13 @@ export default function HomeScreen({ navigation }) {
       <View style={[tw`flex-1`, {paddingTop: insets.top, paddingBottom: insets.bottom}]}>
 {/* =============TOP BAR============== */}
         <View style={tw`flex-row justify-between content-center mx-5 mb-1`}>
-          <Animated.View entering={FadeInLeft.duration(1000).springify()} >
-            {/* <Text style={[tw`text-center font-bold text-2xl text-white  mb-2`, {fontFamily: ''}]}>
-              Touch Grass Royale
-              </Text> */}
+          <View  >
+            {/* Touch Grass Royale
+               */}
             <Image source={require('../assets/images/Touch Grass (1).png')} style={tw`w-65 h-8 `}  />
-          </Animated.View>
+          </View>
           <Animated.View entering={FadeInRight.duration(1000).springify()} style={tw`flex-row`}>
-            <Text style={tw`text-white font-bold text-2xl mr-2 `}>{'0'}</Text>
+            <Text style={tw`text-white font-bold text-2xl mr-2 `}>{user?.gems}</Text>
             <FontAwesome5 style={tw`mb-2 pt-1`} name="gem" size={24} color="white" />
           </Animated.View>
         </View>
@@ -301,10 +406,10 @@ export default function HomeScreen({ navigation }) {
                   )
                 }
 
-                <Text style={tw`text-slate-50 font-bold text-xl text-center pt-1`}>{data[0].name}</Text>
+                <Text style={tw`text-slate-50 font-bold text-xl text-center pt-1`}>{data[0].username}</Text>
               </View>
               {/* <View style={tw`flex-2 justify-center `}>
-                <Text style={tw`font-bold text-lg text-white mr-5 text-center`}>{data[0].name} is winning with {data[0].time} points, try to catch up! </Text>
+                <Text style={tw`font-bold text-lg text-white mr-5 text-center`}>{data[0].username} is winning with {data[0].todays_points} points, try to catch up! </Text>
               </View> */}
             </View>
           </View>
@@ -321,14 +426,14 @@ export default function HomeScreen({ navigation }) {
                 data.slice(0,5).map((user, i) => (
                   <TouchableOpacity 
                     style={tw`flex-row relative py-0.25 w-full`}
-                    key={i}
+                    key={user.id}
                     onPress={() => {
                       setSelectedUser(user);
                       setModalOpen(true);
                     }}
                   >
                     <View style={tw`h-full rounded-r-2xl w-[${
-                            (user.time / data[0].time) * 100
+                            (user.todays_points / data[0].todays_points) * 100
                         }%] bg-blue-500 bg-opacity-40  absolute`} 
                     />
                     <View style={tw`flex-row relative  gap-4 py-2 px-4 items-center w-full`}>
@@ -352,9 +457,9 @@ export default function HomeScreen({ navigation }) {
                           )
                         }
 
-                        <Text style={tw`text-slate-50 flex-1 font-semibold`}>{user.name}</Text>
+                        <Text style={tw`text-slate-50 flex-1 font-semibold`}>{user.username}</Text>
                         <Text style={tw`text-slate-50 text-sm bg-opacity-80 my-auto bg-blue-600 rounded-full px-3`}>
-                          {user.time}
+                          {user.todays_points.toLocaleString()}
                         </Text>
                     </View>
                   </TouchableOpacity>
@@ -370,44 +475,88 @@ export default function HomeScreen({ navigation }) {
           style={[tw`mx-5 h-14 flex rounded-2xl mt-5 overflow-hidden`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}
         >
           <View style={tw`flex-1`}>
-            <View style={tw`flex-row relative py-0.25 w-full`}>
+            <TouchableOpacity 
+              style={tw`flex-row relative py-0.25 w-full`}
+              onPress={() => {
+                setSelectedUser(user);
+                setModalOpen(true);
+              }}
+            >
               <View style={tw`h-full rounded-r-2xl w-[${
-                      (user.time / data[0].time) * 100
+                      (user?.todays_points / data[0].todays_points) * 100
                   }%] bg-blue-500 bg-opacity-40  absolute`} 
               />
               <View style={tw`flex-row relative  gap-4 py-2 px-4 items-center w-full`}>
-                  <Text style={tw`text-slate-50 text-sm`}>{7}</Text>
-                  <Image 
-                    source={{ uri: user.pic }} 
-                    style={tw`h-10 w-10 rounded-full mx-auto`}
-                  />
-                  <Text style={tw`text-slate-50 flex-1 font-semibold`}>{user.name}</Text>
+                  <Text style={tw`text-slate-50 text-sm`}>{user?.rank}</Text>
+                  {
+                    user?.lottie? (
+                      <View style={tw`h-10 w-10 rounded-full  mx-auto`}>
+                        <LottieView
+                          source={animations[user.lottie]}
+                          style={tw`h-full w-full `}
+                          autoPlay
+                          loop
+                          speed={1}
+                        />
+                      </View>
+                    ):(
+                      <Image 
+                      source={{ uri: user?.pic }} 
+                      style={tw`h-10 w-10 rounded-full mx-auto`}
+                    />
+                    )
+                  }
+                  <Text style={tw`text-slate-50 flex-1 font-semibold`}>{user?.username}</Text>
                   <Text style={tw`text-slate-50 text-sm bg-opacity-80 my-auto bg-blue-600 rounded-full px-3`}>
-                    {user.time}
+                    {user?.todays_points.toLocaleString()}
                   </Text>
               </View>
-            </View>
+            </TouchableOpacity>
           </View>
         </Animated.View>
 
 
 {/* ==============users stats=============== */}
           <View style={tw`mt-5 flex-row mx-5 justify-between`}>
-            <Animated.View entering={FadeInLeft.delay(400).duration(1000).springify()} style={[tw`h-29 w-45 flex rounded-3xl justify-center `, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
+          {
+            user?.rank === data.length? (
+              <Animated.View entering={FadeInLeft.delay(400).duration(1000).springify()} style={[tw`h-29 w-45 flex rounded-3xl justify-center `, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
               <View style={tw``}>
-                <Animated.Text entering={BounceIn.duration(1000).delay(100)} style={tw`text-center font-bold text-white text-3xl mb-1`}>7th Place</Animated.Text>
-                <Text style={tw`text-center font-semibold text-white/50 `}>100 points</Text>
+                <Animated.Text 
+                  entering={BounceIn.duration(1000).delay(100)} 
+                  style={tw`text-center font-bold text-white text-3xl mb-1`}
+                >
+                    Last Place
+                </Animated.Text>
+                <Text style={tw`text-center font-semibold text-white/50`}>
+                  {user?.todays_points.toLocaleString()} points
+                </Text>
               </View>
             </Animated.View>
+            ):(
+              <Animated.View entering={FadeInLeft.delay(400).duration(1000).springify()} style={[tw`h-29 w-45 flex rounded-3xl justify-center `, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
+                <View style={tw``}>
+                  <Animated.Text 
+                    entering={BounceIn.duration(1000).delay(100)} 
+                    style={tw`text-center font-bold text-white text-3xl mb-1`}
+                  >
+                      {toOrdinal(user?.rank)} Place
+                  </Animated.Text>
+                  <Text style={tw`text-center font-semibold text-white/50`}>
+                    {user?.todays_points.toLocaleString()} points
+                  </Text>
+                </View>
+              </Animated.View>
+            )
+          }
+
 {/* ===============hours remaining================ */}
-            <Animated.View entering={FadeInRight.delay(400).duration(1000).springify()} style={[tw`h-29 w-45 flex rounded-3xl justify-center`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
-              <View style={tw`flex-row justify-center items-center  h-full`}>
-                
-                  <Text style={tw`font-bold text-white/80 text-6xl ml-2 h-12  `}>10</Text>
-                
-                <View style={tw`flex-col`} >
-                  <Text style={tw` font-semibold text-white/50 ml-2 text-base `}>hours</Text>
-                  <Text style={tw` font-semibold text-white/50 ml-2 mr-2 text-left  pb-1`}>remaining</Text>
+            <Animated.View entering={FadeInRight.delay(400).duration(1000).springify()} style={[tw`h-29 w-45 rounded-3xl `, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
+              <View style={tw`flex-row justify-center items-center w-full h-full`}>
+                <Text style={tw`font-bold text-white/80 text-6xl  h-12 mr-1.5  `}>{hoursUntilMidnight()}</Text>
+                <View style={tw`flex-col ml-1.5`} >
+                  <Text style={tw` font-semibold text-white/50  text-base `}>hours</Text>
+                  <Text style={tw` font-semibold text-white/50  text-left  pb-1`}>remaining</Text>
                 </View>
               </View>
             </Animated.View>
@@ -429,8 +578,8 @@ export default function HomeScreen({ navigation }) {
 
 
 {/* ======================MESSAGE MODAL/PORTAL==================== */}
-    {
-      portalOpen? (
+        {
+          portalOpen? (
         <Portal>
           <GestureDetector gesture={fling.direction(Directions.DOWN).onEnd(()=> setPortalOpen(false))}>
           {/* WHOLE SCREEN & BACKGROUND */}
@@ -466,8 +615,8 @@ export default function HomeScreen({ navigation }) {
           </Animated.View>
           </GestureDetector>
         </Portal>
-      ):null
-    }
+          ):null
+        }
 
 {/* ================PROFILE MODAL================ */}
         <ProfileModal 

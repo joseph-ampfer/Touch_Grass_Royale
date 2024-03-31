@@ -11,11 +11,13 @@ import * as Contacts from 'expo-contacts';
 import * as SMS from 'expo-sms';
 import debounce from '../debounce/debounce';
 import { ScrollView, GestureHandlerRootView, TouchableOpacity } from 'react-native-gesture-handler';
-import RequestCard from '../components/RequestCard';
+import FriendRequestCard from '../components/FriendRequestCard';
 import LottieView from 'lottie-react-native';
 import { Portal } from 'react-native-portalize';
 import ProfileModal from '../components/ProfileModal';
 import animations from '../animations/animations';
+import { useQuery } from '@tanstack/react-query';
+import { fetchFriendRequests } from '../api/fetches';
 
 
 //INSTALLED BUT NOT USED 
@@ -33,6 +35,12 @@ import animations from '../animations/animations';
 const TAB_WIDTH = 150;
 
 export default function SearchScreen({ navigation }) {
+  const { data: friendRequests, isLoading, error } = useQuery({
+    queryKey: ['friend requests'],
+    queryFn: fetchFriendRequests,
+  })
+
+
   const [showSearch, toggleSearch] = useState(false);
   const [addedUsers, setAddedUsers] = useState({});
   const [addedInvites, setAddedInvites] = useState({});
@@ -56,116 +64,116 @@ export default function SearchScreen({ navigation }) {
       lottie: null
     },
 ]);
-  const friendRequests = [
-    {
-      name: 'JohnDoe',
-      time: '524',
-      pic: 'https://i.pravatar.cc/600/',
-      lottie: 'spaceJam'
-    },
-    {
-      name: 'Hexscuseme',
-      time: '500',
-      pic: 'https://i.pravatar.cc/60',
-      lottie: 'gojoCat'
-    },
-    {
-      name: 'Nephlauxic',
-      time: '499',
-      pic: 'https://i.pravatar.cc/60/68',
-      lottie: null
-    },
-    {
-      name: 'Hobbes',
-      time: '461',
-      pic: 'https://i.pravatar.cc/60/63',
-      lottie: 'spaceInvader'
-    },
-    {
-      name: 'eener_weiner',
-      time: '444',
-      pic: 'https://i.pravatar.cc/60/64',
-      lottie: null
-    },
-    {
-      name: 'Test 6',
-      time: '443',
-      pic: 'https://i.pravatar.cc/60/65',
-      lottie: 'ghibliGirl'
-    },
-    {
-      name: 'jampfer',
-      time: '411',
-      pic: 'https://i.pravatar.cc/60/66',
-      lottie: 'eyeBlob'
-    },
-    {
-      name: 'Dennis',
-      time: '400',
-      pic: 'https://i.pravatar.cc/60/67',
-      lottie: 'ramen'
-    },
-    {
-      name: 'frobro',
-      time: '399',
-      pic: 'https://i.pravatar.cc/60/69',
-      lottie: 'meditationCow'
-    },
-    {
-      name: 'Test test 4',
-      time: '350',
-      pic: 'https://i.pravatar.cc/60/70',
-      lottie: 'ghibliGirl'
-    },
-    {
-      name: 'Test test 5',
-      time: '300',
-      pic: 'https://i.pravatar.cc/60/80',
-      lottie: 'ghibliGirl'
-    },
-    {
-      name: 'Test test 6',
-      time: '100',
-      pic: 'https://i.pravatar.cc/60/90',
-      lottie: 'ghibliGirl'
-    },
-    {
-      name: 'Test test 1',
-      time: '9.2',
-      pic: 'https://i.pravatar.cc/60/10',
-      lottie: 'ghibliGirl'
-    },
-    {
-      name: 'Test test 2',
-      time: '9.2',
-      pic: 'https://i.pravatar.cc/60/20',
-      lottie: 'ghibliGirl'
-    },
-    {
-      name: 'Test test 3',
-      time: '9.2',
-      pic: 'https://i.pravatar.cc/60/30',
-      lottie: 'ghibliGirl'
-    },
-    {
-      name: 'Test test 4',
-      time: '9.2',
-      pic: 'https://i.pravatar.cc/60/40',
-      lottie: 'ghibliGirl'
-    },
-    {
-      name: 'Test test 5',
-      time: '9.2',
-      pic: 'https://i.pravatar.cc/60/60',
-      lottie: 'ghibliGirl'
-    },
-    {
-      name: 'Test test 6',
-      time: '9.2',
-      pic: 'https://i.pravatar.cc/60/60',
-      lottie: 'ghibliGirl'
-    },
-  ]
+  // const friendRequests = [
+  //   {
+  //     name: 'JohnDoe',
+  //     time: '524',
+  //     pic: 'https://i.pravatar.cc/600/',
+  //     lottie: 'spaceJam'
+  //   },
+  //   {
+  //     name: 'Hexscuseme',
+  //     time: '500',
+  //     pic: 'https://i.pravatar.cc/60',
+  //     lottie: 'gojoCat'
+  //   },
+  //   {
+  //     name: 'Nephlauxic',
+  //     time: '499',
+  //     pic: 'https://i.pravatar.cc/60/68',
+  //     lottie: null
+  //   },
+  //   {
+  //     name: 'Hobbes',
+  //     time: '461',
+  //     pic: 'https://i.pravatar.cc/60/63',
+  //     lottie: 'spaceInvader'
+  //   },
+  //   {
+  //     name: 'eener_weiner',
+  //     time: '444',
+  //     pic: 'https://i.pravatar.cc/60/64',
+  //     lottie: null
+  //   },
+  //   {
+  //     name: 'Test 6',
+  //     time: '443',
+  //     pic: 'https://i.pravatar.cc/60/65',
+  //     lottie: 'ghibliGirl'
+  //   },
+  //   {
+  //     name: 'jampfer',
+  //     time: '411',
+  //     pic: 'https://i.pravatar.cc/60/66',
+  //     lottie: 'eyeBlob'
+  //   },
+  //   {
+  //     name: 'Dennis',
+  //     time: '400',
+  //     pic: 'https://i.pravatar.cc/60/67',
+  //     lottie: 'ramen'
+  //   },
+  //   {
+  //     name: 'frobro',
+  //     time: '399',
+  //     pic: 'https://i.pravatar.cc/60/69',
+  //     lottie: 'meditationCow'
+  //   },
+  //   {
+  //     name: 'Test test 4',
+  //     time: '350',
+  //     pic: 'https://i.pravatar.cc/60/70',
+  //     lottie: 'ghibliGirl'
+  //   },
+  //   {
+  //     name: 'Test test 5',
+  //     time: '300',
+  //     pic: 'https://i.pravatar.cc/60/80',
+  //     lottie: 'ghibliGirl'
+  //   },
+  //   {
+  //     name: 'Test test 6',
+  //     time: '100',
+  //     pic: 'https://i.pravatar.cc/60/90',
+  //     lottie: 'ghibliGirl'
+  //   },
+  //   {
+  //     name: 'Test test 1',
+  //     time: '9.2',
+  //     pic: 'https://i.pravatar.cc/60/10',
+  //     lottie: 'ghibliGirl'
+  //   },
+  //   {
+  //     name: 'Test test 2',
+  //     time: '9.2',
+  //     pic: 'https://i.pravatar.cc/60/20',
+  //     lottie: 'ghibliGirl'
+  //   },
+  //   {
+  //     name: 'Test test 3',
+  //     time: '9.2',
+  //     pic: 'https://i.pravatar.cc/60/30',
+  //     lottie: 'ghibliGirl'
+  //   },
+  //   {
+  //     name: 'Test test 4',
+  //     time: '9.2',
+  //     pic: 'https://i.pravatar.cc/60/40',
+  //     lottie: 'ghibliGirl'
+  //   },
+  //   {
+  //     name: 'Test test 5',
+  //     time: '9.2',
+  //     pic: 'https://i.pravatar.cc/60/60',
+  //     lottie: 'ghibliGirl'
+  //   },
+  //   {
+  //     name: 'Test test 6',
+  //     time: '9.2',
+  //     pic: 'https://i.pravatar.cc/60/60',
+  //     lottie: 'ghibliGirl'
+  //   },
+  // ]
   const [contactsData, setConstactsData] = useState([])
   const [tab, setTab] = useState('Find');
   const [selectedUser, setSelectedUser] = useState({});
@@ -436,18 +444,20 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
           <Text style={tw`text-gray-100 text-lg font-semibold ml-5 mb-3 mt-5`}>Friend requests</Text>
           <View style={tw``}>
             <ScrollView showsVerticalScrollIndicator={false}>
-              {
-                friendRequests.map((user, index) => {
-                  return (
-                    // friend component
-                    <Animated.View key={index} entering={FadeInDown.delay(index * 100).duration(1000).springify()} >
-                        <RequestCard user={user} onPicturePress={() => {
-                          setSelectedUser(user);
-                          setModalOpen(true);
-                        }} />
-                    </Animated.View>
-                  )
-                })
+              { !isLoading? 
+                (
+                  friendRequests.map((user, index) => {
+                    return (
+                      // friend component
+                      <Animated.View key={index} entering={FadeInDown.delay(index * 100).duration(1000).springify()} >
+                          <FriendRequestCard user={user} onPicturePress={() => {
+                            setSelectedUser(user);
+                            setModalOpen(true);
+                          }} />
+                      </Animated.View>
+                    )
+                  })
+                ):null
               }
             </ScrollView>
           </View>

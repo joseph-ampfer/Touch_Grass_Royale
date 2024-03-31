@@ -10,135 +10,208 @@ import MyNumberTicker from "../components/MyNumberTicker";
 import Animated, {FadeInDown}  from "react-native-reanimated";
 import animations from "../animations/animations";
 import ProfileModal from "../components/ProfileModal";
+import { useQuery } from "@tanstack/react-query";
+import { fetchLeaderboard } from "../api/fetches";
 // import { getLeaderboard } from "../queries"
 
 
-const data = [
-  {
-    name: 'JohnDoe',
-    time: '524',
-    pic: 'https://i.pravatar.cc/600/',
-    lottie: 'spaceJam'
-  },
-  {
-    name: 'Hexscuseme',
-    time: '500',
-    pic: 'https://i.pravatar.cc/60',
-    lottie: 'gojoCat'
-  },
-  {
-    name: 'Nephlauxic',
-    time: '499',
-    pic: 'https://i.pravatar.cc/60/68',
-    lottie: null
-  },
-  {
-    name: 'Hobbes',
-    time: '461',
-    pic: 'https://i.pravatar.cc/60/63',
-    lottie: 'spaceInvader'
-  },
-  {
-    name: 'eener_weiner',
-    time: '444',
-    pic: 'https://i.pravatar.cc/60/64',
-    lottie: null
-  },
-  {
-    name: 'Test 6',
-    time: '443',
-    pic: 'https://i.pravatar.cc/60/65',
-    lottie: 'ghibliGirl'
-  },
-  {
-    name: 'jampfer',
-    time: '411',
-    pic: 'https://i.pravatar.cc/60/66',
-    lottie: 'eyeBlob'
-  },
-  {
-    name: 'Dennis',
-    time: '400',
-    pic: 'https://i.pravatar.cc/60/67',
-    lottie: 'ramen'
-  },
-  {
-    name: 'frobro',
-    time: '399',
-    pic: 'https://i.pravatar.cc/60/69',
-    lottie: 'meditationCow'
-  },
-  {
-    name: 'Test test 4',
-    time: '350',
-    pic: 'https://i.pravatar.cc/60/70',
-    lottie: 'ghibliGirl'
-  },
-  {
-    name: 'Test test 5',
-    time: '300',
-    pic: 'https://i.pravatar.cc/60/80',
-    lottie: 'ghibliGirl'
-  },
-  {
-    name: 'Test test 6',
-    time: '100',
-    pic: 'https://i.pravatar.cc/60/90',
-    lottie: 'ghibliGirl'
-  },
-  {
-    name: 'Test test 1',
-    time: '9.2',
-    pic: 'https://i.pravatar.cc/60/10',
-    lottie: 'ghibliGirl'
-  },
-  {
-    name: 'Test test 2',
-    time: '9.2',
-    pic: 'https://i.pravatar.cc/60/20',
-    lottie: 'ghibliGirl'
-  },
-  {
-    name: 'Test test 3',
-    time: '9.2',
-    pic: 'https://i.pravatar.cc/60/30',
-    lottie: 'ghibliGirl'
-  },
-  {
-    name: 'Test test 4',
-    time: '9.2',
-    pic: 'https://i.pravatar.cc/60/40',
-    lottie: 'ghibliGirl'
-  },
-  {
-    name: 'Test test 5',
-    time: '9.2',
-    pic: 'https://i.pravatar.cc/60/60',
-    lottie: 'ghibliGirl'
-  },
-  {
-    name: 'Test test 6',
-    time: '9.2',
-    pic: 'https://i.pravatar.cc/60/60',
-    lottie: 'ghibliGirl'
-  },
-]
+// const data = [
+//   {
+//     name: 'JohnDoe',
+//     time: '524',
+//     pic: 'https://i.pravatar.cc/600/',
+//     lottie: 'spaceJam'
+//   },
+//   {
+//     name: 'Hexscuseme',
+//     time: '500',
+//     pic: 'https://i.pravatar.cc/60',
+//     lottie: 'gojoCat'
+//   },
+//   {
+//     name: 'Nephlauxic',
+//     time: '499',
+//     pic: 'https://i.pravatar.cc/60/68',
+//     lottie: null
+//   },
+//   {
+//     name: 'Hobbes',
+//     time: '461',
+//     pic: 'https://i.pravatar.cc/60/63',
+//     lottie: 'spaceInvader'
+//   },
+//   {
+//     name: 'eener_weiner',
+//     time: '444',
+//     pic: 'https://i.pravatar.cc/60/64',
+//     lottie: null
+//   },
+//   {
+//     name: 'Test 6',
+//     time: '443',
+//     pic: 'https://i.pravatar.cc/60/65',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     name: 'jampfer',
+//     time: '411',
+//     pic: 'https://i.pravatar.cc/60/66',
+//     lottie: 'eyeBlob'
+//   },
+//   {
+//     name: 'Dennis',
+//     time: '400',
+//     pic: 'https://i.pravatar.cc/60/67',
+//     lottie: 'ramen'
+//   },
+//   {
+//     name: 'frobro',
+//     time: '399',
+//     pic: 'https://i.pravatar.cc/60/69',
+//     lottie: 'meditationCow'
+//   },
+//   {
+//     name: 'Test test 4',
+//     time: '350',
+//     pic: 'https://i.pravatar.cc/60/70',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     name: 'Test test 5',
+//     time: '300',
+//     pic: 'https://i.pravatar.cc/60/80',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     name: 'Test test 6',
+//     time: '100',
+//     pic: 'https://i.pravatar.cc/60/90',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     name: 'Test test 1',
+//     time: '9.2',
+//     pic: 'https://i.pravatar.cc/60/10',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     name: 'Test test 2',
+//     time: '9.2',
+//     pic: 'https://i.pravatar.cc/60/20',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     name: 'Test test 3',
+//     time: '9.2',
+//     pic: 'https://i.pravatar.cc/60/30',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     name: 'Test test 4',
+//     time: '9.2',
+//     pic: 'https://i.pravatar.cc/60/40',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     name: 'Test test 5',
+//     time: '9.2',
+//     pic: 'https://i.pravatar.cc/60/60',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     name: 'Test test 6',
+//     time: '9.2',
+//     pic: 'https://i.pravatar.cc/60/60',
+//     lottie: 'ghibliGirl'
+//   },
+// ]
 
 export function Leaderboard() {
+  const {data, isLoading, error} = useQuery({
+    queryKey: ['leaderboard'],
+    queryFn: fetchLeaderboard,
+  })
+
+
     const [selectedUser, setSelectedUser] = useState({});
     const [modalOpen, setModalOpen] = useState(false);
     const insets = useSafeAreaInsets();
 
-    // const { data: posts, isLoading, isError } = getLeaderboard();
+    const isLoading1 = 0;
 
-    // if (isLoading) {
-    //   return <Text>Loading...</Text>
-    // }
+    if (isLoading) {
+      return (
+        <View style={tw`flex-1 bg-black`}>
+        <SafeAreaView >
+          <Image blurRadius={70} style={tw`w-full h-full absolute`} fadeDuration={100} source={require('../assets/images/full.png')}  />
+          <Image blurRadius={2} style={tw`h-full w-full absolute`} source={require('../assets/images/birds.png')} />
+          <View style={tw`flex h-full`}>
+          <StatusBar style="light" />
 
-    // if (isError) {
-    //   return <Text>Error fetching data</Text>
-    // }
+{/* ==========TOP HALF=========== */}
+            <View style={tw`flex-row h-4/11`}>
+{/* =======SECOND PLACE======= pt-4 */}
+                <TouchableOpacity 
+                  style={[tw`flex-1 mx-auto   mt-21  rounded-t-full mb-0 bg-black/60`,]}
+                  activeOpacity={0.9}
+                >
+                        <View style={tw`h-16 w-16 rounded-full mx-auto mt-5`}>
 
+                        </View>
+                </TouchableOpacity>
+{/* =======FIRST PLACE======= */}
+                <TouchableOpacity 
+                  style={[tw`flex-1 mx-auto   mt-9 rounded-t-full bg-black/60`, ]}
+                  activeOpacity={0.9}
+                >
+                        <View style={tw`h-20 w-20 rounded-full mx-auto mt-5`}>
+
+                        </View>
+                </TouchableOpacity>
+{/* ========THIRD PLACE======= */}
+                <TouchableOpacity
+                  style={[tw`flex-1 mx-auto   mt-27 rounded-t-full mb-0 bg-black/60`, ]}
+                  activeOpacity={0.9}
+                >
+                  <View>
+                        <View style={tw`h-12 w-12 rounded-full mx-auto mt-5`}>
+
+                        </View>
+                  </View>
+                </TouchableOpacity>
+            </View>
+{/* ========LEADERBOARD======= */}
+            <ScrollView 
+              style={tw`flex-1 gap-4 bg-black shadow-md`}
+              contentContainerStyle={{ paddingBottom: insets.bottom + 45 }}
+            >
+                {Array.from({ length: 8}).map((_, i) => (
+                  <View key={i} >
+                    <TouchableOpacity 
+                      style={tw`flex-row relative py-0.5 w-full`}
+
+                    >
+                      <View style={tw`h-full w-[${ (80 - i * 10) }%] bg-blue-500 bg-opacity-30 shadow-sm absolute`} 
+                      />
+                      <View 
+                        style={tw`flex-row relative shadow-sm gap-4 py-4 px-4 items-center w-full`} 
+                      >
+                          {/* <Text style={tw`text-slate-50 text-sm`}>{i + 4}</Text> */}
+
+                              <View style={tw`h-10 w-10 rounded-full mx-auto`}>
+
+                              </View>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                ))}
+            </ScrollView>
+          </View>
+        </SafeAreaView>
+        <BottomNavBar/>
+      </View>
+      )
+    }
     
     return (
       <View style={tw`flex-1 bg-black`}>
@@ -177,9 +250,9 @@ export function Leaderboard() {
                       />
                       )
                     }
-                    <Text style={tw`text-slate-50 font-semibold text-center py-1`}>{data[1].name}</Text>
+                    <Text style={tw`text-slate-50 font-semibold text-center py-1`}>{data[1].username}</Text>
                     <Text style={tw`text-slate-50 text-sm bg-gray-500 rounded-full mx-10 px-2 py-0.5 text-center`}>
-                        {data[1].time}
+                        {data[1].todays_points}
                     </Text>
                     <Text style={tw`text-slate-50 text-center text-5xl py-4 font-black`}>2</Text>
                 </TouchableOpacity>
@@ -193,7 +266,7 @@ export function Leaderboard() {
                   />
                 </View>
                 <TouchableOpacity 
-                  style={[tw`flex-1 mx-auto   mt-9 rounded-t-full bg-black/60`, ]}
+                  style={[tw`flex-1 mx-auto   mt-9 rounded-t-full bg-black/60  z-0`, ]}
                   activeOpacity={0.9}
                   onPress={() => {
                     setSelectedUser(data[0]);
@@ -218,17 +291,17 @@ export function Leaderboard() {
                         />
                       )
                     }
-                    <Text style={tw`text-slate-50 font-semibold text-center py-1 text-base`}>{data[0].name}</Text>
-                    {/* <Text style={tw`text-slate-50 text-sm bg-yellow-500 rounded-full mx-10 px-2 py-0.5 text-center`}>
-                        {data[0].time}
-                    </Text> */}
-                    <MyNumberTicker
-                      number={data[0].time}
+                    <Text style={tw`text-slate-50 font-semibold text-center py-1 text-base`}>{data[0].username}</Text>
+                    <Text style={tw`text-slate-50 text-sm bg-yellow-500 rounded-full mx-10 px-2 py-0.5 text-center`}>
+                        {data[0].todays_points}
+                    </Text>
+                    {/* <MyNumberTicker
+                      number={data[0].todays_points}
                       textSize={17}
                       duration={3500}
                       textStyle={tw`text-slate-50 text-center`}
                       style={tw`bg-yellow-500 rounded-full mx-10 px-2 pb-1.5 pt-.5 `}
-                    />
+                    /> */}
                     <Text style={tw`text-slate-50 text-center text-8xl pt-4 font-black`}>1</Text>
                 </TouchableOpacity>
 {/* ========THIRD PLACE======= */}
@@ -259,9 +332,9 @@ export function Leaderboard() {
                         />
                       )
                     }
-                    <Text style={tw`text-slate-50 font-semibold text-center py-1`}>{data[2].name}</Text>
+                    <Text style={tw`text-slate-50 font-semibold text-center py-1`}>{data[2].username}</Text>
                     <Text style={tw`text-slate-50 text-sm bg-yellow-900 rounded-full mx-10 px-2 py-0.5 text-center`}>
-                        {data[2].time}
+                        {data[2].todays_points}
                     </Text>
                     <Text style={tw`text-slate-50 text-center text-4xl py-4 font-black`}>3</Text>
                   </View>
@@ -282,7 +355,7 @@ export function Leaderboard() {
                       }}
                     >
                       <View style={tw`h-full w-[${
-                              (value.time / data[0].time) * 100
+                              (value.todays_points / data[0].todays_points) * 100
                           }%] bg-blue-500 bg-opacity-30 shadow-sm absolute`} 
                       />
                       <View 
@@ -309,9 +382,9 @@ export function Leaderboard() {
                             )
                           }
 
-                          <Text style={tw`text-slate-50 flex-1 font-semibold`}>{value.name}</Text>
+                          <Text style={tw`text-slate-50 flex-1 font-semibold`}>{value.username}</Text>
                           <Text style={tw`text-slate-50 text-sm bg-opacity-80 my-auto bg-blue-600 rounded-full px-3`}>
-                            {value.time}
+                            {value.todays_points}
                           </Text>
                       </View>
                     </TouchableOpacity>

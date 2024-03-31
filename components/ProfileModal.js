@@ -44,7 +44,7 @@ export default function ProfileModal({ modalOpen, setModalOpen, selectedUser}) {
 
                 }}
               >
-                <Text style={tw`text-white font-bold text-xl`}>52</Text>
+                <Text style={tw`text-white font-bold text-xl`}>{selectedUser.friends_count}</Text>
                 <Text style={tw`text-slate-400 font-semibold`}>Friends</Text>
               </TouchableOpacity>
               {
@@ -66,13 +66,13 @@ export default function ProfileModal({ modalOpen, setModalOpen, selectedUser}) {
                 )
               }
               <View style={tw`flex-col items-center justify-center w-16`}>
-                <Text style={tw`text-white font-bold text-xl`}>0</Text>
+                <Text style={tw`text-white font-bold text-xl`}>{selectedUser.gems}</Text>
                 <Text style={tw`text-slate-400 font-semibold`}>Gems</Text>
               </View>
             </View>
             {/* NAME AND EDIT */}
             <View style={tw`flex-col justify-center items-center w-78 `}>
-              <Text style={tw`text-white text-3xl font-bold text-center mt-3`}>{selectedUser.name}</Text>
+              <Text style={tw`text-white text-3xl font-bold text-center mt-3`}>{selectedUser.username}</Text>
             </View>
           </View>
   
@@ -113,7 +113,7 @@ export default function ProfileModal({ modalOpen, setModalOpen, selectedUser}) {
       {/* =============TOTAL POINTS============= */}
             <View style={tw`flex-row justify-center items-center mt-5`}>
              <Text style={tw`text-gray-100 text-2xl font-bold `}>Total: </Text>
-             <Text style={tw`text-white text-2xl  font-bold`}> 3,458 pts </Text>
+             <Text style={tw`text-white text-2xl  font-bold`}> {selectedUser?.total_points?.toLocaleString() ?? '0'} pts </Text>
             </View>
   
           </View>  

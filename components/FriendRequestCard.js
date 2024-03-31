@@ -4,7 +4,7 @@ import tw from 'twrnc';
 import LottieView from 'lottie-react-native';
 import animations from '../animations/animations';
 
-export default function RequestCard({ user, onPicturePress }) {
+export default function FriendRequestCard({ user, onPicturePress }) {
   return (
     <View 
       style={[tw`mx-5 mb-3 rounded-3xl  flex-row justify-around items-center p-2`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}
@@ -29,7 +29,18 @@ export default function RequestCard({ user, onPicturePress }) {
             <Image source={{ uri: user.pic}} style={tw`h-18 w-18 rounded-full  mr-3`} />
           )
         }
-        <Text numberOfLines={1} ellipsizeMode='tail' style={tw`text-slate-50 mt-1 text-lg font-semibold w-37`}>{user.name}</Text>
+        {
+          user.full_name? (
+            <View style={tw`flex-col`}>
+              <Text numberOfLines={1} ellipsizeMode='tail' style={tw`text-slate-50 mt-1 text-lg font-semibold w-37`}>{user.username}</Text>
+              <Text numberOfLines={1} ellipsizeMode='tail' style={tw`text-slate-50/50 mt-1 text-base font-semibold w-37`}>{user.full_name}</Text>
+            </View>
+          ):(
+            <Text numberOfLines={1} ellipsizeMode='tail' style={tw`text-slate-50 mt-1 text-lg font-semibold w-37`}>{user.username}</Text>
+          )
+        }
+
+        
       </TouchableOpacity>
 
       <View style={tw`flex-col justify-center items-center `}>

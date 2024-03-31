@@ -208,26 +208,33 @@ const friendRequests = [
 
 
 export default function ProfileScreen2({ navigation }) {
-  const [leaderboard, setLeaderboard] = useState([]);
-  const [loading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const {data: leaderboard, isLoading, error } = useQuery({
+    queryKey: ['leaderboard'],
+    queryFn: fetchLeaderboard,
+  })
+  
+  console.log(JSON.stringify(leaderboard, null, 2));
+  
+  // const [leaderboard, setLeaderboard] = useState([]);
+  // const [loading, setIsLoading] = useState(false);
+  // const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const useEffLeaderboard = async () => {
-      setIsLoading(true);
+  // useEffect(() => {
+  //   const useEffLeaderboard = async () => {
+  //     setIsLoading(true);
 
-      try {
-        const leaderboard = await fetchLeaderboard();
-        setLeaderboard(leaderboard);
-        console.log('===============>', JSON.stringify(leaderboard, null, 2));
-      } catch (error) {
-        setError(error);
-      }
+  //     try {
+  //       const leaderboard = await fetchLeaderboard();
+  //       setLeaderboard(leaderboard);
+  //       console.log('===============>', JSON.stringify(leaderboard, null, 2));
+  //     } catch (error) {
+  //       setError(error);
+  //     }
 
-      setIsLoading(false);
-    };
-    useEffLeaderboard();
-  }, [])
+  //     setIsLoading(false);
+  //   };
+  //   useEffLeaderboard();
+  // }, [])
 
 
 
@@ -417,7 +424,7 @@ export default function ProfileScreen2({ navigation }) {
     }
 
     {/* ======================LOADING==================== */}
-      <MagicalLoader loading={loading} />
+      <MagicalLoader loading={isLoading} />
 
 
       </SafeAreaView>
