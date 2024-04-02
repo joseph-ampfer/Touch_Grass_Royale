@@ -15,7 +15,7 @@ import Animated, { FadeIn, FadeInDown, FadeInLeft, FadeOut, FadeOutDown } from '
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import LottieAvatarShop from '../components/LottieAvatarShop';
 import { useQuery } from '@tanstack/react-query';
-import { fetchLeaderboard } from '../api/fetches';
+import { getSelf } from '../api/fetches';
 import MagicalLoader from '../components/MagicalLoader';
 
 
@@ -208,34 +208,11 @@ const friendRequests = [
 
 
 export default function ProfileScreen2({ navigation }) {
-  const {data: leaderboard, isLoading, error } = useQuery({
-    queryKey: ['leaderboard'],
-    queryFn: fetchLeaderboard,
+  const { data: self, isLoading, error } = useQuery({
+    queryKey: ['self'],
+    queryFn: getSelf,
   })
   
-  console.log(JSON.stringify(leaderboard, null, 2));
-  
-  // const [leaderboard, setLeaderboard] = useState([]);
-  // const [loading, setIsLoading] = useState(false);
-  // const [error, setError] = useState(null);
-
-  // useEffect(() => {
-  //   const useEffLeaderboard = async () => {
-  //     setIsLoading(true);
-
-  //     try {
-  //       const leaderboard = await fetchLeaderboard();
-  //       setLeaderboard(leaderboard);
-  //       console.log('===============>', JSON.stringify(leaderboard, null, 2));
-  //     } catch (error) {
-  //       setError(error);
-  //     }
-
-  //     setIsLoading(false);
-  //   };
-  //   useEffLeaderboard();
-  // }, [])
-
 
 
   
@@ -275,12 +252,9 @@ export default function ProfileScreen2({ navigation }) {
   }, [portalOpen]);
 
 
-
-  if (error) {
+  if (isLoading) {
     return (
-      <View>
-        <Text>{error.message}</Text>
-      </View>
+      <MagicalLoader></MagicalLoader>
     )
   }
 
@@ -289,10 +263,10 @@ export default function ProfileScreen2({ navigation }) {
     <View style={tw`flex-1 bg-black`}>
       <StatusBar style='light' />
       <SafeAreaView style={tw`flex-1`}>
-      <Image blurRadius={30} source={require('../assets/images/star (4).png')} style={tw`w-full h-full absolute`} />
+      {/* <Image blurRadius={30} source={require('../assets/images/star (4).png')} style={tw`w-full h-full absolute`} /> */}
         
 {/* ===========PICTURE ROW========= */}
-        <View style={tw`flex-row items-center justify-around mt-10`}>
+        <View style={tw`flex-row items-center justify-around mt-1`}>
           <TouchableOpacity 
             style={tw`flex-col items-center justify-center w-16 `}
             onPress={() => navigation.navigate('Friends', { userID: "TODO", isCurrentUser: true } )}
@@ -300,36 +274,68 @@ export default function ProfileScreen2({ navigation }) {
             <Text style={tw`text-white font-bold text-xl`}>52</Text>
             <Text style={tw`text-slate-400 font-semibold`}>Friends</Text>
           </TouchableOpacity>
+          {/* picture or lottie */}
           {
-            !data[0].lottie? (
-              <View style={tw`h-36 w-36 rounded-full`}>
-                <LottieView 
-                    source={require('../assets/animations/ghibliGirl.json')} 
-                    style={{width:'100%', height:'100%'}}
-                    autoPlay 
-                    loop 
-                    speed={1}
-                />
-              </View> 
+            !self?.lottie? (
+              <View style={tw`relative`}>
+                <View style={tw`h-36 w-36 rounded-full`}>
+                  <LottieView 
+                      source={animations[self?.lottie]} 
+                      style={{width:'100%', height:'100%'}}
+                      autoPlay 
+                      loop 
+                      speed={1}
+                  />
+                </View> 
+                <TouchableOpacity 
+                  style={tw`absolute -bottom-1 right-0`} 
+                  onPress={() => alert("Choose profile pic or lottie")}>
+                  <Ionicons name='add-circle-sharp' style={tw`text-white text-3xl`} />
+                </TouchableOpacity>
+              </View>
             ):(
-              <Image 
-              source={require('../assets/animations/ghibliGirlGif.gif')} 
-              style={tw`h-36 w-36 rounded-full `}
-            />
+              <View style={tw`relative`}>
+                <View style={tw`h-36 w-36 rounded-full bg-black shadow-white shadow-2xl`}>
+                  <Image 
+                    source={{ uri: self?.pic }} 
+                    style={tw`h-36 w-36 rounded-full `}
+                  />
+                </View>
+                <TouchableOpacity 
+                  style={tw`absolute bottom-1 right-1 elevation-30 `} 
+                  onPress={() => alert("Choose profile pic or lottie")}>
+                  <Ionicons name='add-circle-sharp' style={tw`text-white text-3xl`} />
+                </TouchableOpacity>
+              </View>
             )
           }
           <View style={tw`flex-col items-center justify-center w-16`}>
-            <Text style={tw`text-white font-bold text-xl`}>0</Text>
+            <Text style={tw`text-white font-bold text-xl`}>{self?.gems}</Text>
             <Text style={tw`text-slate-400 font-semibold`}>Gems</Text>
           </View>
         </View>
         {/* NAME AND EDIT */}
-        <View style={tw`flex-col justify-center items-center mb-5 `}>
-          <Text style={tw`text-white text-3xl font-bold text-center mt-3`}>{data[6].name}</Text>
-          <TouchableOpacity onPress={()=> alert("Edit your profile.")}>
-            <Text style={tw`text-slate-500 `}>Edit profile</Text>
-          </TouchableOpacity>
-        </View>
+        {
+          self.full_name? (
+            <View style={tw`flex-col justify-center items-center mb-5 `}>
+              <Text style={tw`text-white text-3xl font-bold text-center mt-3`}>{self?.username}</Text>
+              <Text style={tw`text-white/80 text-base text-center mt-1`}>{self?.full_name}</Text>
+              <TouchableOpacity style={tw`flex-row justify-center items-center mt-1`} onPress={()=> alert("Edit your profile.")}>
+                <Text style={tw`text-white/40  mr-1`}>Edit profile</Text>
+                <FontAwesome5 name='edit' style={tw`text-white/40 `} />
+              </TouchableOpacity>
+            </View>
+          ):(
+            <View style={tw`flex-col justify-center items-center mb-5 `}>
+              <Text style={tw`text-white text-3xl font-bold text-center mt-3`}>{self?.username}</Text>
+              <TouchableOpacity style={tw`flex-row justify-center items-center mt-2`} onPress={()=> alert("Edit your profile.")}>
+                <Text style={tw`text-white/40  mr-1`}>Edit profile</Text>
+                <FontAwesome5 name='edit' style={tw`text-white/40 `} />
+              </TouchableOpacity>
+            </View>
+          )
+        }
+
 
 {/* =============TROPHIES============== */}
         <Text style={tw`text-gray-100 text-lg font-semibold ml-5 mb-3`}>Trophies</Text>
@@ -368,7 +374,7 @@ export default function ProfileScreen2({ navigation }) {
 {/* =============TOTAL POINTS============= */}
         <View style={tw` mt-12 ml-5 `}>
          <Text style={tw`text-gray-100 text-lg font-semibold `}>Total points:</Text>
-         <Text style={tw`text-white text-2xl  font-bold`}> 3,458 pts</Text>
+         <Text style={tw`text-white text-2xl  font-bold`}> {self?.total_points} pts</Text>
         </View>
 
         <Pressable onPress={() => setPortalOpen(true)}>

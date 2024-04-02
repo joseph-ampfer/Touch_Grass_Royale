@@ -1,7 +1,8 @@
 const access_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMyLCJpYXQiOjE3MTE1NzIxNDYsIm5iZiI6MTcxMTU3MjE0NiwianRpIjoiZWY0MWNhMTktOWMzZi00NWFjLTgzOWUtMTEyYjBjODdmNzU2IiwiZXhwIjoxNzEyMTc2OTQ2LCJ0eXBlIjoiYWNjZXNzIiwiZnJlc2giOmZhbHNlfQ.Z16SvYu3XISWbPx9alt0oEvsMwKjEnTkMuwsNV7WFmQ'
+const base_url = 'https://1704-50-5-95-80.ngrok-free.app';
 
 export const fetchLeaderboard = async () => {
-    const url = 'https://d476-50-5-95-80.ngrok-free.app/friends-list/leaderboard';
+    const url = `${base_url}/friends-list/leaderboard`;
     const options = {
         method: 'GET',
         headers: {
@@ -23,7 +24,97 @@ export const fetchLeaderboard = async () => {
 
 
 export const fetchFriendRequests = async () => {
-    const url = 'https://d476-50-5-95-80.ngrok-free.app/friend-requests/list';
+    const url = `${base_url}/friend-requests/list`;
+    const options = {
+        method: 'GET',
+        headers: {
+            accept: 'application/json',
+            Authorization: `Bearer ${access_token}`
+        },
+    };
+
+    const res = await fetch(url, options);
+    const json = await res.json();
+
+    if(!res.ok) {
+        const error = new Error("An error occured");
+        error.response = res;
+        throw error;
+    }
+    return json
+};
+
+
+export const acceptFriendRequest = async (friendID) => {
+    const url = `${base_url}/friend-requests/accept/${friendID}`
+    const options = {
+        method: 'PATCH',
+        headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            Authorization: `Bearer ${access_token}`
+        },
+    };
+
+    const res = await fetch(url, options);
+    const json = await res.json();
+
+    if (!res.ok) {
+        const error = new Error("An error occured");
+        error.response = res;
+        throw error;
+    };
+    return json
+}
+
+
+export const denyFriendRequest = async (friendID) => {
+    const url = `${base_url}/friend-requests/deny/${friendID}`
+    const options = {
+        method: 'PATCH',
+        headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            Authorization: `Bearer ${access_token}`
+        },
+    };
+
+    const res = await fetch(url, options);
+    const json = await res.json();
+
+    if (!res.ok) {
+        const error = new Error("An error occured");
+        error.response = res;
+        throw error;
+    };
+    return json
+}
+
+
+export const undoIgnoreRequest = async (friendID) => {
+    const url = `${base_url}/friend-requests/undo/${friendID}`
+    const options = {
+        method: 'POST',
+        headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            Authorization: `Bearer ${access_token}`
+        },
+    };
+
+    const res = await fetch(url, options);
+    const json = await res.json();
+
+    if (!res.ok) {
+        const error = new Error("An error occured");
+        error.response = res;
+        throw error;
+    };
+    return json
+}
+
+export const getSelf = async () => {
+    const url = `${base_url}/user`;
     const options = {
         method: 'GET',
         headers: {
@@ -35,10 +126,14 @@ export const fetchFriendRequests = async () => {
     const res = await fetch(url, options);
     const json = await res.json()
 
-    if(!res.ok) {
+    if (!res.ok) {
         const error = new Error("An error occured");
-        error.response = res;
+        error.res = res;
         throw error;
     }
     return json
-};
+}
+
+export const getFriendsList = async () => {
+    const url = `${base_url}/friends-list`
+}

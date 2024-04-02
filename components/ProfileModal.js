@@ -70,10 +70,20 @@ export default function ProfileModal({ modalOpen, setModalOpen, selectedUser}) {
                 <Text style={tw`text-slate-400 font-semibold`}>Gems</Text>
               </View>
             </View>
-            {/* NAME AND EDIT */}
-            <View style={tw`flex-col justify-center items-center w-78 `}>
-              <Text style={tw`text-white text-3xl font-bold text-center mt-3`}>{selectedUser.username}</Text>
-            </View>
+            {/* ===NAME===*/}
+            {
+              selectedUser.full_name? (
+                <View style={tw`flex-col justify-center items-center w-78 `}>
+                  <Text style={tw`text-white text-3xl font-bold text-center mt-3`}>{selectedUser.username}</Text>
+                  <Text style={tw`text-white/40 text-base text-center`}>{selectedUser.full_name}</Text>
+                </View>
+              ):(
+                <View style={tw`flex-col justify-center items-center w-78 `}>
+                  <Text style={tw`text-white text-3xl font-bold text-center mt-3`}>{selectedUser.username}</Text>
+                </View>
+              )
+            }
+
           </View>
   
       {/* ============bottom part============ */}
@@ -98,7 +108,7 @@ export default function ProfileModal({ modalOpen, setModalOpen, selectedUser}) {
       {/* =============CURRENT RANK============= */}
             <View style={tw`flex-col justify-center items-center mt-5`}>
               <Image style={tw`h-25 w-25`} source={require('../assets/images/noob.png')} />
-              <Text style={tw`text-slate-400 text-base `}>Noob</Text>
+              <Text style={tw`text-white text-base `}>Noob</Text>
             </View>
   
             {/* <View style={tw`mx-5 h-6 border-2 border-slate-200 rounded-lg mt-3`}>

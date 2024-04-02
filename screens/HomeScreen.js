@@ -356,11 +356,7 @@ export default function HomeScreen({ navigation }) {
   }
 
   if (error) {
-    return (
-      <View style={tw`bg-black h-full w-full flex-row justify-center items-center`}>
-        <MagicalError error={error} />
-      </View>
-    )
+    console.error("Failed loading leaderboard:", error)
   }
 
   return (
