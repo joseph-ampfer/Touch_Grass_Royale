@@ -39,7 +39,7 @@ export default function ProfileModal({ modalOpen, setModalOpen, selectedUser}) {
               <TouchableOpacity 
                 style={tw`flex-col items-center justify-center w-16 `}
                 onPress={() => {
-                  navigation.navigate('Friends', { userID: "TODO", isCurrentUser: false });
+                  navigation.push('Friends', { userID: selectedUser.id, isCurrentUser: false, username: selectedUser.username });
                   setModalOpen(false);
 
                 }}

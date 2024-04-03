@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import React, { useState } from 'react';
 import tw from 'twrnc';
 import { StatusBar } from 'expo-status-bar';
@@ -8,142 +8,190 @@ import BottomNavBar from '../components/BottomNavBar';
 import LottieView from 'lottie-react-native';
 import animations from '../animations/animations';
 import ProfileModal from '../components/ProfileModal';
+import { useQuery } from '@tanstack/react-query';
+import { getCurrentUserFriendsList, getSomeOneElsesFriendsList } from '../api/fetches';
+import MagicalLoader from '../components/MagicalLoader';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
-const friends = [
-  {
-    name: 'JohnDoe',
-    time: '524',
-    pic: 'https://i.pravatar.cc/600/',
-    lottie: 'spaceJam',
-    action: 'Add Friend'
-  },
-  {
-    name: 'Hexscuseme',
-    time: '500',
-    pic: 'https://i.pravatar.cc/60',
-    lottie: 'gojoCat',
-    action: 'Remove Friend'
-  },
-  {
-    name: 'Nephlauxic',
-    time: '499',
-    pic: 'https://i.pravatar.cc/60/68',
-    lottie: null,
-    action: 'Add Friend'
-  },
-  {
-    name: 'Hobbes',
-    time: '461',
-    pic: 'https://i.pravatar.cc/60/63',
-    lottie: 'spaceInvader',
-    action: 'Add Friend'
-  },
-  {
-    name: 'eener_weiner',
-    time: '444',
-    pic: 'https://i.pravatar.cc/60/64',
-    lottie: null,
-    action: 'Add Friend'
-  },
-  {
-    name: 'Test 6',
-    time: '443',
-    pic: 'https://i.pravatar.cc/60/65',
-    lottie: 'ghibliGirl',
-    action: 'Add Friend'
-  },
-  {
-    name: 'jampfer',
-    time: '411',
-    pic: 'https://i.pravatar.cc/60/66',
-    lottie: 'eyeBlob',
-    action: 'Add Friend'
-  },
-  {
-    name: 'Dennis',
-    time: '400',
-    pic: 'https://i.pravatar.cc/60/67',
-    lottie: 'ramen',
-    action: 'Add Friend'
-  },
-  {
-    name: 'frobro',
-    time: '399',
-    pic: 'https://i.pravatar.cc/60/69',
-    lottie: 'meditationCow',
-    action: 'Add Friend'
-  },
-  {
-    name: 'Test test 4',
-    time: '350',
-    pic: 'https://i.pravatar.cc/60/70',
-    lottie: 'ghibliGirl',
-    action: 'Add Friend'
-  },
-  {
-    name: 'Test test 5',
-    time: '300',
-    pic: 'https://i.pravatar.cc/60/80',
-    lottie: 'ghibliGirl',
-    action: 'Add Friend'
-  },
-  {
-    name: 'Test test 6',
-    time: '100',
-    pic: 'https://i.pravatar.cc/60/90',
-    lottie: 'ghibliGirl',
-    action: 'Add Friend'
-  },
-  {
-    name: 'Test test 1',
-    time: '9.2',
-    pic: 'https://i.pravatar.cc/60/10',
-    lottie: 'ghibliGirl',
-    action: 'Add Friend'
-  },
-  {
-    name: 'Test test 2',
-    time: '9.2',
-    pic: 'https://i.pravatar.cc/60/20',
-    lottie: 'ghibliGirl',
-    action: 'Add Friend'
-  },
-  {
-    name: 'Test test 3',
-    time: '9.2',
-    pic: 'https://i.pravatar.cc/60/30',
-    lottie: 'ghibliGirl',
-    action: 'Add Friend'
-  },
-  {
-    name: 'Test test 4',
-    time: '9.2',
-    pic: 'https://i.pravatar.cc/60/40',
-    lottie: 'ghibliGirl',
-    action: 'Add Friend'
-  },
-  {
-    name: 'Test test 5',
-    time: '9.2',
-    pic: 'https://i.pravatar.cc/60/60',
-    lottie: 'ghibliGirl',
-    action: 'Add Friend'
-  },
-  {
-    name: 'Last',
-    time: '9.2',
-    pic: 'https://i.pravatar.cc/60/60',
-    lottie: 'ghibliGirl',
-    action: 'Add Friend'
-  },
-]
+// const friends = [
+//   {
+//     name: 'JohnDoe',
+//     time: '524',
+//     pic: 'https://i.pravatar.cc/600/',
+//     lottie: 'spaceJam',
+//     action: 'Add Friend'
+//   },
+//   {
+//     name: 'Hexscuseme',
+//     time: '500',
+//     pic: 'https://i.pravatar.cc/60',
+//     lottie: 'gojoCat',
+//     action: 'Remove Friend'
+//   },
+//   {
+//     name: 'Nephlauxic',
+//     time: '499',
+//     pic: 'https://i.pravatar.cc/60/68',
+//     lottie: null,
+//     action: 'Add Friend'
+//   },
+//   {
+//     name: 'Hobbes',
+//     time: '461',
+//     pic: 'https://i.pravatar.cc/60/63',
+//     lottie: 'spaceInvader',
+//     action: 'Add Friend'
+//   },
+//   {
+//     name: 'eener_weiner',
+//     time: '444',
+//     pic: 'https://i.pravatar.cc/60/64',
+//     lottie: null,
+//     action: 'Add Friend'
+//   },
+//   {
+//     name: 'Test 6',
+//     time: '443',
+//     pic: 'https://i.pravatar.cc/60/65',
+//     lottie: 'ghibliGirl',
+//     action: 'Add Friend'
+//   },
+//   {
+//     name: 'jampfer',
+//     time: '411',
+//     pic: 'https://i.pravatar.cc/60/66',
+//     lottie: 'eyeBlob',
+//     action: 'Add Friend'
+//   },
+//   {
+//     name: 'Dennis',
+//     time: '400',
+//     pic: 'https://i.pravatar.cc/60/67',
+//     lottie: 'ramen',
+//     action: 'Add Friend'
+//   },
+//   {
+//     name: 'frobro',
+//     time: '399',
+//     pic: 'https://i.pravatar.cc/60/69',
+//     lottie: 'meditationCow',
+//     action: 'Add Friend'
+//   },
+//   {
+//     name: 'Test test 4',
+//     time: '350',
+//     pic: 'https://i.pravatar.cc/60/70',
+//     lottie: 'ghibliGirl',
+//     action: 'Add Friend'
+//   },
+//   {
+//     name: 'Test test 5',
+//     time: '300',
+//     pic: 'https://i.pravatar.cc/60/80',
+//     lottie: 'ghibliGirl',
+//     action: 'Add Friend'
+//   },
+//   {
+//     name: 'Test test 6',
+//     time: '100',
+//     pic: 'https://i.pravatar.cc/60/90',
+//     lottie: 'ghibliGirl',
+//     action: 'Add Friend'
+//   },
+//   {
+//     name: 'Test test 1',
+//     time: '9.2',
+//     pic: 'https://i.pravatar.cc/60/10',
+//     lottie: 'ghibliGirl',
+//     action: 'Add Friend'
+//   },
+//   {
+//     name: 'Test test 2',
+//     time: '9.2',
+//     pic: 'https://i.pravatar.cc/60/20',
+//     lottie: 'ghibliGirl',
+//     action: 'Add Friend'
+//   },
+//   {
+//     name: 'Test test 3',
+//     time: '9.2',
+//     pic: 'https://i.pravatar.cc/60/30',
+//     lottie: 'ghibliGirl',
+//     action: 'Add Friend'
+//   },
+//   {
+//     name: 'Test test 4',
+//     time: '9.2',
+//     pic: 'https://i.pravatar.cc/60/40',
+//     lottie: 'ghibliGirl',
+//     action: 'Add Friend'
+//   },
+//   {
+//     name: 'Test test 5',
+//     time: '9.2',
+//     pic: 'https://i.pravatar.cc/60/60',
+//     lottie: 'ghibliGirl',
+//     action: 'Add Friend'
+//   },
+//   {
+//     name: 'Last',
+//     time: '9.2',
+//     pic: 'https://i.pravatar.cc/60/60',
+//     lottie: 'ghibliGirl',
+//     action: 'Add Friend'
+//   },
+// ]
 
 export default function FriendsScreen({ route, navigation }) {
-  const userId = route.params?.userId; // Use optional chaining
-  const isCurrentUser = route.params?.isCurrentUser ?? true; // Default to true if not provided
+  const userID = route.params?.userID; // Use optional chaining
+  const username = route.params?.username; // modify usage
+  const isCurrentUser = route.params?.isCurrentUser; // Default to true if not provided
   const insets = useSafeAreaInsets();
   const [selectedUser, setSelectedUser] = useState({});
   const [modalOpen, setModalOpen] = useState(false);
+
+
+  const { data: friends, isLoading, error } = useQuery({
+    queryKey: ['friends', userID],
+    queryFn: 
+      isCurrentUser ? () => getCurrentUserFriendsList : () => getSomeOneElsesFriendsList(userID)
+  })
+  
+  const isLoading2 = 0;
+
+  if (isLoading) {
+    return (
+      <View style={tw`flex-1 bg-black`}>
+        <StatusBar style='light' />
+        <SafeAreaView style={tw`flex-1`}>
+{/* =====TOP BAR===== */}
+        <View style={tw`flex-row items-center ml-3 mt-4`}>
+          <TouchableOpacity onPress={() => navigation.goBack() }>
+            <Ionicons name="arrow-back" size={28} color="white" />
+          </TouchableOpacity>
+          <Text style={tw`text-white text-2xl font-bold ml-6`}>{username}</Text>
+        </View>
+
+        <View style={tw`flex-row justify-center items-center pb-3 mt-5 border-b-2 border-gray-800`}>
+          
+        </View>
+
+      <View style={tw`flex-1 flex-col justify-center items-center mb-15 bg-black/40`}>
+        <ActivityIndicator size={50} color="#FFFFFF" />
+      </View>
+
+      </SafeAreaView>
+
+{/* =============BOTTOM NAV-BAR============== */}
+      <BottomNavBar />
+
+    </View>
+    )
+  }
+
+  if (error) {
+    console.error(error)
+  }
 
   return (
     <View style={tw`flex-1 bg-black`}>
@@ -154,7 +202,7 @@ export default function FriendsScreen({ route, navigation }) {
           <TouchableOpacity onPress={() => navigation.goBack() }>
             <Ionicons name="arrow-back" size={28} color="white" />
           </TouchableOpacity>
-          <Text style={tw`text-white text-2xl font-bold ml-6`}>joey_ampfer</Text>
+          <Text style={tw`text-white text-2xl font-bold ml-6`}>{username}</Text>
         </View>
 
         <View style={tw`flex-row justify-center items-center pb-3 mt-5 border-b-2 border-gray-800`}>
@@ -176,6 +224,7 @@ export default function FriendsScreen({ route, navigation }) {
                       setModalOpen(true);
                     }}
                   >
+                    {/* pic or lottie */}
                     {
                       friend.lottie? (
                         <View style={tw`h-13 w-13 rounded-full mr-4`}>
@@ -191,21 +240,42 @@ export default function FriendsScreen({ route, navigation }) {
                         <Image source={{ uri: friend.pic }} style={tw`h-13 w-13 rounded-full mr-4`} />
                       )
                     }
-                    <Text numberOfLines={1} ellipsizeMode='tail' style={tw`text-slate-50 mt-1 text-lg  w-37`}>{friend.name}</Text>
+                    {/* username and fullname */}
+                    {
+                      friend.full_name? (
+                        <View style={tw`flex-col justify-center items-center`}>
+                          <Text numberOfLines={1} ellipsizeMode='tail' style={tw`text-slate-50  text-lg  w-37`}>{friend.username}</Text>
+                          <Text numberOfLines={1} ellipsizeMode='tail' style={tw`text-slate-50/70   w-37`}>{friend.full_name}</Text>
+                        </View>
+                      ):(
+                        <View>
+                          <Text numberOfLines={1} ellipsizeMode='tail' style={tw`text-slate-50 mt-1 text-lg  w-37`}>{friend.username}</Text>
+                        </View>
+                      )
+                    }
                   </TouchableOpacity>
 
                   {
                     isCurrentUser? (
-                      <TouchableOpacity style={tw`rounded-lg bg-gray-800 p-2 px-4`}>
+                      <TouchableOpacity 
+                        style={tw`rounded-lg bg-gray-800 p-2 px-4`}
+                        onPress={() => alert('removed friend') }
+                      >
                         <Text style={tw`text-white font-bold`}>Remove</Text>
                       </TouchableOpacity>
                     ):
-                      friend.action === 'Remove Friend'? (
-                        <TouchableOpacity style={tw`rounded-lg bg-gray-800 p-2 px-4`}>
+                      friend.action === 'Remove'? (
+                        <TouchableOpacity 
+                          style={tw`rounded-lg bg-gray-800 p-2 px-4`}
+                          onPress={() => alert('removed friend') }
+                        >
                           <Text style={tw`text-white font-bold`}>Remove</Text>
                         </TouchableOpacity>
                       ):(
-                        <TouchableOpacity style={tw`rounded-lg bg-blue-600 p-2 px-4`}>
+                        <TouchableOpacity 
+                          style={tw`rounded-lg bg-blue-600 p-2 px-4`}
+                          onPress={() => alert('sent friend request') }
+                        >
                           <Text style={tw`text-white font-bold`}>Add Friend</Text>
                         </TouchableOpacity>
                       )

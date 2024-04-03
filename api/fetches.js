@@ -16,7 +16,7 @@ export const fetchLeaderboard = async () => {
 
     if (!res.ok) {
         const error = new Error("An error occured");
-        error.res = res;
+        error.detail = json.detail;
         throw error;
     }
     return json
@@ -134,6 +134,44 @@ export const getSelf = async () => {
     return json
 }
 
-export const getFriendsList = async () => {
-    const url = `${base_url}/friends-list`
+export const getCurrentUserFriendsList = async () => {
+    const url = `${base_url}/friends-list`;
+    const options = {
+        method: 'GET',
+        headers: {
+            accept: 'application/json',
+            Authorization: `Bearer ${access_token}`
+        },
+    };
+
+    const res = await fetch(url, options);
+    const json = await res.json();
+
+    if (!res.ok) {
+        const error = new Error("An error occured in getCurrentUserFriendsList");
+        error.res = res;
+        throw error;
+    }
+    return json
+}
+
+export const getSomeOneElsesFriendsList = async (id) => {
+    const url = `${base_url}/friends-list/others/${id}`;
+    const options = {
+        method: 'GET',
+        headers: {
+            accept: 'application/json',
+            Authorization: `Bearer ${access_token}`
+        },
+    };
+
+    const res = await fetch(url, options);
+    const json = await res.json();
+
+    if (!res.ok) {
+        const error = new Error("An error occured in getCurrentUserFriendsList");
+        error.res = res;
+        throw error;
+    }
+    return json
 }

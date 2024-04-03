@@ -11,12 +11,13 @@ import animations from '../animations/animations';
 import Modal from 'react-native-modal';
 import { Modalize, useModalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
-import Animated, { FadeIn, FadeInDown, FadeInLeft, FadeOut, FadeOutDown } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInDown, FadeInLeft, FadeInRight, FadeOut, FadeOutDown } from 'react-native-reanimated';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import LottieAvatarShop from '../components/LottieAvatarShop';
 import { useQuery } from '@tanstack/react-query';
 import { getSelf } from '../api/fetches';
 import MagicalLoader from '../components/MagicalLoader';
+import toOrdinal from '../functions/toOrdinal';
 
 
 const data = [
@@ -206,6 +207,48 @@ const friendRequests = [
     },
   ]
 
+const recentPlacements = [
+  {
+    date: '4/1/2024',
+    rank: 5
+  },
+  {
+    date: '3/31/2024',
+    rank: 2
+  },
+  {
+    date: '3/30/2024',
+    rank: 13
+  },
+  {
+    date: '3/29/2024',
+    rank: 1
+  },
+  {
+    date: '3/28/2024',
+    rank: 3
+  },
+  {
+    date: '3/27/2024',
+    rank: 6
+  },
+  {
+    date: '3/26/2024',
+    rank: 21
+  },
+  {
+    date: '3/25/2024',
+    rank: 18
+  },
+  {
+    date: '3/24/2024',
+    rank: 3
+  },
+  {
+    date: '3/23/2024',
+    rank: 15
+  },
+]
 
 export default function ProfileScreen2({ navigation }) {
   const { data: self, isLoading, error } = useQuery({
@@ -267,16 +310,17 @@ export default function ProfileScreen2({ navigation }) {
         
 {/* ===========PICTURE ROW========= */}
         <View style={tw`flex-row items-center justify-around mt-1`}>
+          {/* FRIENDS */}
           <TouchableOpacity 
             style={tw`flex-col items-center justify-center w-16 `}
-            onPress={() => navigation.navigate('Friends', { userID: "TODO", isCurrentUser: true } )}
+            onPress={() => navigation.push('Friends', { userID: self.id, isCurrentUser: true, username: self.username } )}
           >
-            <Text style={tw`text-white font-bold text-xl`}>52</Text>
+            <Text style={tw`text-white font-bold text-xl`}>{self?.friends_count}</Text>
             <Text style={tw`text-slate-400 font-semibold`}>Friends</Text>
           </TouchableOpacity>
-          {/* picture or lottie */}
+          {/* PIC OR LOTTIE */}
           {
-            !self?.lottie? (
+            self?.lottie? (
               <View style={tw`relative`}>
                 <View style={tw`h-36 w-36 rounded-full`}>
                   <LottieView 
@@ -288,14 +332,14 @@ export default function ProfileScreen2({ navigation }) {
                   />
                 </View> 
                 <TouchableOpacity 
-                  style={tw`absolute -bottom-1 right-0`} 
+                  style={tw`absolute -bottom-1 -right-1`} 
                   onPress={() => alert("Choose profile pic or lottie")}>
                   <Ionicons name='add-circle-sharp' style={tw`text-white text-3xl`} />
                 </TouchableOpacity>
               </View>
             ):(
               <View style={tw`relative`}>
-                <View style={tw`h-36 w-36 rounded-full bg-black shadow-white shadow-2xl`}>
+                <View style={tw`h-36 w-36  rounded-full bg-black shadow-white shadow-2xl`}>
                   <Image 
                     source={{ uri: self?.pic }} 
                     style={tw`h-36 w-36 rounded-full `}
@@ -309,21 +353,19 @@ export default function ProfileScreen2({ navigation }) {
               </View>
             )
           }
+          {/* GEMS */}
           <View style={tw`flex-col items-center justify-center w-16`}>
             <Text style={tw`text-white font-bold text-xl`}>{self?.gems}</Text>
             <Text style={tw`text-slate-400 font-semibold`}>Gems</Text>
           </View>
         </View>
-        {/* NAME AND EDIT */}
+        {/* NAME OR FULL NAME */}
         {
           self.full_name? (
             <View style={tw`flex-col justify-center items-center mb-5 `}>
               <Text style={tw`text-white text-3xl font-bold text-center mt-3`}>{self?.username}</Text>
               <Text style={tw`text-white/80 text-base text-center mt-1`}>{self?.full_name}</Text>
-              <TouchableOpacity style={tw`flex-row justify-center items-center mt-1`} onPress={()=> alert("Edit your profile.")}>
-                <Text style={tw`text-white/40  mr-1`}>Edit profile</Text>
-                <FontAwesome5 name='edit' style={tw`text-white/40 `} />
-              </TouchableOpacity>
+
             </View>
           ):(
             <View style={tw`flex-col justify-center items-center mb-5 `}>
@@ -336,10 +378,30 @@ export default function ProfileScreen2({ navigation }) {
           )
         }
 
+        {/* body column */}
+        <View style={tw`flex-col justify-between flex-grow mb-11 `}>
+        {/* BUTTONS: EDIT AND USE GEMS */}
+        <View style={tw`flex-row justify-between mx-5 `}>
+          <TouchableOpacity 
+            style={tw`p-2 px-14 border-2 border-white/80 rounded-lg flex-row items-center justify-center`}
+            onPress={() => alert('Edit your profile')}
+          >
+            <Text style={tw`text-white text-center`}>Edit profile</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={tw`p-2 px-14 border-2 border-white/80 rounded-lg flex-row items-center justify-center`}
+            onPress={() => setPortalOpen(true)}
+          >
+            <Text style={tw`text-white text-center`}>Use gems</Text>
+          </TouchableOpacity>
+        </View>
 
-{/* =============TROPHIES============== */}
-        <Text style={tw`text-gray-100 text-lg font-semibold ml-5 mb-3`}>Trophies</Text>
-        <View style={tw`flex-row justify-evenly mx-5`}>
+
+
+
+          {/* =============TROPHIES============== */}
+          {/* <Text style={tw`text-gray-100 text-lg font-semibold ml-5 mb-3`}>Trophies</Text> */}
+          <View style={tw`flex-row justify-evenly mx-5 `}>
           <View style={tw`flex-col items-center`}>
             <Image style={tw`h-10 w-10 `} source={require('../assets/images/first.png')} />
             <Text style={tw`text-white text-lg font-bold`}>0</Text>
@@ -352,34 +414,91 @@ export default function ProfileScreen2({ navigation }) {
             <Image style={tw`h-10 w-10 `} source={require('../assets/images/third.png')} />
             <Text style={tw`text-white text-lg font-bold`}>0</Text>
           </View>
-        </View>
-
-{/* =============CURRENT RANK============= */}
-        <Text style={tw`text-gray-100 text-lg font-semibold ml-5 mb-3 mt-5`}>Current Rank</Text>
-        <View style={tw`flex-col justify-center items-center`}>
-          <Image style={tw`h-25 w-25`} source={require('../assets/images/noob.png')} />
-          <Text style={tw`text-white text-base font-bold`}>Noob</Text>
-        </View>
-
-        <View style={tw`mx-5 h-10 border-2 border-slate-200 rounded-lg mt-3`}>
-          <View style={[tw`bg-zinc-700 rounded-md h-full   w-[${
-                            (4123 / 5000) * 100
-                        }%]`]}>
-            <Image blurRadius={20} source={require('../assets/images/progressBar.png')} style={tw`w-full h-full rounded-md -z-50`} />
           </View>
-          <Text style={tw`text-white text-base text-center`}>4123/5000</Text>
+
+
+
+          <View style={tw`flex-row items-center mx-5  `}>
+{/* =============CURRENT RANK============= */}
+            {/* <Text style={tw`text-gray-100 text-lg font-semibold ml-5 mb-3 mt-5`}>Current Rank</Text> */}
+            <View style={tw`flex-col justify-center items-center `}>
+              <Image style={tw`h-25 w-25`} source={require('../assets/images/noob.png')} />
+              <Text style={tw`text-white text-base font-bold`}>Noob</Text>
+            </View>
+          
+            {/* PROGRESS BAR */}
+          
+            {/* <View style={tw`flex-row justify-between mx-6 mt-0`}>
+              <Text style={tw`text-white/80 text-base text-center`}>Total: {self?.total_points.toLocaleString()}</Text>
+              <Text style={tw`text-white/90 text-base text-center`}>4,123/5,000 points</Text>
+              
+            </View> */}
+            <View style={tw`ml-1 flex-grow h-10 border-2 border-slate-200 rounded-lg mt-0`}>
+              <View style={[tw`bg-zinc-700 rounded-md h-full  w-[${
+                                (4123 / 5000) * 100
+                            }%]`]}>
+                <Image blurRadius={20} source={require('../assets/images/progressBar.png')} style={tw`w-full h-full rounded-md -z-50`} />
+              </View>
+              <Text style={tw`text-white/90 text-base text-center`}>4,123/5,000 points</Text>
+            </View>
+                          
+          </View>
+
+
+          <View style={tw`flex-row justify-center  `}>
+            <Text style={tw`text-white text-3xl font-bold`}>Total: {self?.total_points} pts</Text>
+          </View>
+
+
+{/* ====  =========PLACEMENTS LAST DAYS============== */}
+          <View style={tw``}>
+          <View style={tw`flex-row items-center mx-5 mb-2`}>
+            <Ionicons name='podium' style={tw`text-white/90 mr-3 text-lg`} />
+            <Text style={tw`text-white/90 text-lg `}>Recent placements</Text>
+          </View>
+          <ScrollView
+            horizontal
+            contentContainerStyle={tw`px-5`}
+            showsHorizontalScrollIndicator={false}
+          >
+            {
+              recentPlacements?.map((day, index) => {
+                return (
+                  <Animated.View key={day.date} entering={FadeInRight.delay(index * 100).duration(1000).springify()}>
+                    {
+                      day.rank === 1? (
+                        <View style={tw`flex-col justify-center items-center w-30  rounded-3xl py-3 mr-3 `}>
+                          <Text style={tw`text-yellow-500 text-2xl font-bold mb-3`}>{toOrdinal(day.rank)}</Text>
+                          <Text style={tw`text-white`}>{day.date}</Text>
+                        </View>
+                      ): day.rank === 2? (
+                        <View style={tw`flex-col justify-center items-center w-30  rounded-3xl py-3 mr-3 `}>
+                          <Text style={tw`text-slate-500 text-2xl font-bold mb-3`}>{toOrdinal(day.rank)}</Text>
+                          <Text style={tw`text-white`}>{day.date}</Text>
+                        </View>
+                      ): day.rank === 3? (
+                        <View style={tw`flex-col justify-center items-center w-30  rounded-3xl py-3 mr-3 `}>
+                          <Text style={tw`text-orange-800 text-2xl font-bold mb-3`}>{toOrdinal(day.rank)}</Text>
+                          <Text style={tw`text-white`}>{day.date}</Text>
+                        </View>
+                      ):(
+                        <View style={tw`flex-col justify-center items-center w-30  rounded-3xl py-3 mr-3 `}>
+                          <Text style={tw`text-white text-2xl font-bold mb-3`}>{toOrdinal(day.rank)}</Text>
+                          <Text style={tw`text-white`}>{day.date}</Text>
+                        </View>
+                      )
+                    }
+                  </Animated.View>
+                )
+              })
+            } 
+          </ScrollView>
+          </View>
+
         </View>
 
-        
-{/* =============TOTAL POINTS============= */}
-        <View style={tw` mt-12 ml-5 `}>
-         <Text style={tw`text-gray-100 text-lg font-semibold `}>Total points:</Text>
-         <Text style={tw`text-white text-2xl  font-bold`}> {self?.total_points} pts</Text>
-        </View>
 
-        <Pressable onPress={() => setPortalOpen(true)}>
-          <Text style={tw`text-white`}>open picker</Text>
-        </Pressable>
+
 
 
 {/* ===============AVATAR STORE MODAL============= */}

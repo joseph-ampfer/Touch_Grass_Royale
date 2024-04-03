@@ -85,7 +85,7 @@ export default function LottieAvatarShop() {
       <Modal 
         animationIn='slideInUp' 
         animationInTiming={300}
-        animationOut='slideOutUp'
+        animationOut='slideOutDown'
         animationOutTiming={300}
         backdropTransitionInTiming={600}
         backdropTransitionOutTiming={600}
@@ -98,7 +98,7 @@ export default function LottieAvatarShop() {
         useNativeDriverForBackdrop={true}
         style={tw`justify-center m-auto `}
       >
-        <View style={tw`bg-gray-900 rounded-lg p-7 `}>
+        <View style={tw`bg-gray-700 rounded-lg p-7 `}>
           <View style={tw`flex-col items-center justify-center `}>
             {/* LOTTIE */}
             <View style={[tw`h-66 w-66  rounded-lg`, ]}>

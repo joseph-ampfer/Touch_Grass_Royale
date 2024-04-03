@@ -356,7 +356,7 @@ export default function HomeScreen({ navigation }) {
   }
 
   if (error) {
-    console.error("Failed loading leaderboard:", error)
+    console.error("Failed loading leaderboard:", error, error.detail)
   }
 
   return (
