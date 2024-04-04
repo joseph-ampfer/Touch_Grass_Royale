@@ -1,4 +1,4 @@
-const access_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMyLCJpYXQiOjE3MTE1NzIxNDYsIm5iZiI6MTcxMTU3MjE0NiwianRpIjoiZWY0MWNhMTktOWMzZi00NWFjLTgzOWUtMTEyYjBjODdmNzU2IiwiZXhwIjoxNzEyMTc2OTQ2LCJ0eXBlIjoiYWNjZXNzIiwiZnJlc2giOmZhbHNlfQ.Z16SvYu3XISWbPx9alt0oEvsMwKjEnTkMuwsNV7WFmQ'
+const access_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMyLCJpYXQiOjE3MTIxNzc3MDcsIm5iZiI6MTcxMjE3NzcwNywianRpIjoiNjBlNmJmYTgtYjk3Mi00NDMxLTkzZTgtZDM1NjYyMmQ0MzMzIiwiZXhwIjoxNzEyNzgyNTA3LCJ0eXBlIjoiYWNjZXNzIiwiZnJlc2giOmZhbHNlfQ.uRDJsPDoF_bW0q1RGMKwWeOyz29VDw0ykjeC9zavBic'
 const base_url = 'https://1704-50-5-95-80.ngrok-free.app';
 
 export const fetchLeaderboard = async () => {
@@ -155,8 +155,8 @@ export const getCurrentUserFriendsList = async () => {
     return json
 }
 
-export const getSomeOneElsesFriendsList = async (id) => {
-    const url = `${base_url}/friends-list/others/${id}`;
+export const getSomeOneElsesFriendsList = async (otherID) => {
+    const url = `${base_url}/friends-list/others/${otherID}`;
     const options = {
         method: 'GET',
         headers: {
@@ -173,5 +173,49 @@ export const getSomeOneElsesFriendsList = async (id) => {
         error.res = res;
         throw error;
     }
+    return json
+}
+
+export const removeFriend = async (friendID) => {
+    const url = `${base_url}/friends-list/remove/${friendID}`;
+    const options = {
+        method: 'DELETE',
+        headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            Authorization: `Bearer ${access_token}`
+        },
+    };
+
+    const res = await fetch(url, options);
+    const json = await res.json();
+
+    if (!res.ok) {
+        const error = new Error("An error occured in removeFriend");
+        error.detail = json.detail;
+        throw error;
+    };
+    return json
+}
+
+export const sendFriendRequest = async (friendID) => {
+    const url = `${base_url}/friend-requests/send/${friendID}`;
+    const options = {
+        method: 'POST',
+        headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            Authorization: `Bearer ${access_token}`
+        },
+    };
+
+    const res = await fetch(url, options);
+    const json = await res.json();
+
+    if (!res.ok) {
+        const error = new Error("e");
+        error.detail = json.detail;
+        throw error;
+    };
     return json
 }

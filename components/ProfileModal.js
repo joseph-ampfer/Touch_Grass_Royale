@@ -74,12 +74,18 @@ export default function ProfileModal({ modalOpen, setModalOpen, selectedUser}) {
             {
               selectedUser.full_name? (
                 <View style={tw`flex-col justify-center items-center w-78 `}>
-                  <Text style={tw`text-white text-3xl font-bold text-center mt-3`}>{selectedUser.username}</Text>
-                  <Text style={tw`text-white/40 text-base text-center`}>{selectedUser.full_name}</Text>
+                  <Text 
+                    numberOfLines={1} ellipsizeMode='tail'
+                    style={tw`text-white text-3xl font-bold text-center mt-3`}>{selectedUser.username}</Text>
+                  <Text 
+                    numberOfLines={1} ellipsizeMode='tail'
+                    style={tw`text-white/40 text-base text-center`}>{selectedUser.full_name}</Text>
                 </View>
               ):(
                 <View style={tw`flex-col justify-center items-center w-78 `}>
-                  <Text style={tw`text-white text-3xl font-bold text-center mt-3`}>{selectedUser.username}</Text>
+                  <Text 
+                    numberOfLines={1} ellipsizeMode='tail'
+                    style={tw`text-white text-3xl font-bold text-center mt-3`}>{selectedUser.username}</Text>
                 </View>
               )
             }

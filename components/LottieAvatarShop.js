@@ -114,7 +114,7 @@ export default function LottieAvatarShop() {
             <View style={tw`my-3`}>
               <Text style={tw`text-lg text-slate-50`}>Unlock for {selectedAnimation.price} gems?</Text>
             </View>
-            {/* ANSWER BUTTON ROW */}
+            {/* UNLOCK OR CANCEL BUTTONS */}
             <View style={tw`flex-row justify-center mt-1 `}>
               <TouchableOpacity 
                 style={tw`p-3 px-6 bg-blue-600 rounded-full mx-2`}

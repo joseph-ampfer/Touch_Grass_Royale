@@ -8,10 +8,11 @@ import BottomNavBar from '../components/BottomNavBar';
 import LottieView from 'lottie-react-native';
 import animations from '../animations/animations';
 import ProfileModal from '../components/ProfileModal';
-import { useQuery } from '@tanstack/react-query';
-import { getCurrentUserFriendsList, getSomeOneElsesFriendsList } from '../api/fetches';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { getCurrentUserFriendsList, getSomeOneElsesFriendsList, removeFriend, sendFriendRequest } from '../api/fetches';
 import MagicalLoader from '../components/MagicalLoader';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import Modal from 'react-native-modal';
 
 // const friends = [
 //   {
@@ -149,12 +150,39 @@ export default function FriendsScreen({ route, navigation }) {
   const insets = useSafeAreaInsets();
   const [selectedUser, setSelectedUser] = useState({});
   const [modalOpen, setModalOpen] = useState(false);
+  const [removeModalOpen, setRemoveModalOpen] = useState(false);
 
 
   const { data: friends, isLoading, error } = useQuery({
     queryKey: ['friends', userID],
     queryFn: 
-      isCurrentUser ? () => getCurrentUserFriendsList : () => getSomeOneElsesFriendsList(userID)
+      isCurrentUser ? () => getCurrentUserFriendsList() : () => getSomeOneElsesFriendsList(userID)
+  })
+
+  const queryClient = useQueryClient();
+
+  const removefn = useMutation({
+    mutationFn: (friendID) => removeFriend(friendID),
+    gcTime: 0,
+    onSuccess: () => {
+      setRemoveModalOpen(false);
+      queryClient.invalidateQueries({ queryKey: ['friends', userID] });
+      queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
+    },
+    onError: (error) => {
+      console.error('Error removing friend', error.detail)
+    }
+  })
+
+  const sendFRfn = useMutation({
+    mutationFn: (friendID) => sendFriendRequest(friendID),
+    gcTime: 0,
+    onSuccess: () => {
+      alert('poop')
+    },
+    onError: (error) => {
+      console.error(error.detail)
+    }
   })
   
   const isLoading2 = 0;
@@ -244,12 +272,18 @@ export default function FriendsScreen({ route, navigation }) {
                     {
                       friend.full_name? (
                         <View style={tw`flex-col justify-center items-center`}>
-                          <Text numberOfLines={1} ellipsizeMode='tail' style={tw`text-slate-50  text-lg  w-37`}>{friend.username}</Text>
-                          <Text numberOfLines={1} ellipsizeMode='tail' style={tw`text-slate-50/70   w-37`}>{friend.full_name}</Text>
+                          <Text 
+                            numberOfLines={1} ellipsizeMode='tail' 
+                            style={tw`text-slate-50  text-lg  w-37`}>{friend.username}</Text>
+                          <Text 
+                            numberOfLines={1} ellipsizeMode='tail' 
+                            style={tw`text-slate-50/70   w-37`}>{friend.full_name}</Text>
                         </View>
                       ):(
                         <View>
-                          <Text numberOfLines={1} ellipsizeMode='tail' style={tw`text-slate-50 mt-1 text-lg  w-37`}>{friend.username}</Text>
+                          <Text 
+                            numberOfLines={1} ellipsizeMode='tail' 
+                            style={tw`text-slate-50 mt-1 text-lg  w-37`}>{friend.username}</Text>
                         </View>
                       )
                     }
@@ -259,7 +293,10 @@ export default function FriendsScreen({ route, navigation }) {
                     isCurrentUser? (
                       <TouchableOpacity 
                         style={tw`rounded-lg bg-gray-800 p-2 px-4`}
-                        onPress={() => alert('removed friend') }
+                        onPress={() => {
+                          setSelectedUser(friend);
+                          setRemoveModalOpen(true);
+                        }}
                       >
                         <Text style={tw`text-white font-bold`}>Remove</Text>
                       </TouchableOpacity>
@@ -267,21 +304,22 @@ export default function FriendsScreen({ route, navigation }) {
                       friend.action === 'Remove'? (
                         <TouchableOpacity 
                           style={tw`rounded-lg bg-gray-800 p-2 px-4`}
-                          onPress={() => alert('removed friend') }
+                          onPress={() => {
+                            setSelectedUser(friend);
+                            setRemoveModalOpen(true);
+                          }}
                         >
                           <Text style={tw`text-white font-bold`}>Remove</Text>
                         </TouchableOpacity>
                       ):(
                         <TouchableOpacity 
                           style={tw`rounded-lg bg-blue-600 p-2 px-4`}
-                          onPress={() => alert('sent friend request') }
+                          onPress={() => sendFRfn.mutate(friend.id) }
                         >
                           <Text style={tw`text-white font-bold`}>Add Friend</Text>
                         </TouchableOpacity>
                       )
                   }
-
-
 
                 </View>
               )
@@ -295,6 +333,96 @@ export default function FriendsScreen({ route, navigation }) {
           setModalOpen={setModalOpen} 
           selectedUser={selectedUser}
         />
+
+{/* =========Are you sure you want to remove friend?========= */}
+    <Modal 
+      animationIn='zoomIn' 
+      animationInTiming={300}
+      animationOut='zoomOut'
+      animationOutTiming={300}
+      backdropTransitionInTiming={300}
+      backdropTransitionOutTiming={300}
+      isVisible={removeModalOpen}
+      onBackButtonPress={() => setRemoveModalOpen(false)}
+      onBackdropPress={() => setRemoveModalOpen(false)}
+      onSwipeComplete={() => setRemoveModalOpen(false)}
+      swipeThreshold={10}
+      swipeDirection={['down', 'left', 'right', 'up']}
+      useNativeDriverForBackdrop={true}
+      style={tw`justify-center items-center m-auto  `}
+    >
+      <View style={tw`bg-gray-900 rounded-xl mx-5  pt-3`}>
+        <View style={tw`flex-col justify-center `}>
+  
+      {/*================ top part=============== */}
+          <View style={tw`px-5 flex-col items-center`}>
+  
+      {/* ===========PICTURE ROW========= */}
+            <View style={tw`flex-row items-center justify-around  mt-1`}>
+              {
+                selectedUser.lottie? (
+                  <View style={tw`h-36 w-36 rounded-full mx-4`}>
+                    <LottieView 
+                        source={animations[selectedUser.lottie]} 
+                        style={{width:'100%', height:'100%'}}
+                        autoPlay 
+                        loop 
+                        speed={1}
+                    />
+                  </View> 
+                ):(
+                  <Image 
+                  source={{ uri: selectedUser.pic }} 
+                  style={tw`h-30 w-30 rounded-full mx-4 `}
+                />
+                )
+              }   
+            </View>
+            {/* ===NAME===*/}
+            {
+              selectedUser.full_name? (
+                <View style={tw`flex-col justify-center items-center w-78 `}>
+                  <Text 
+                    numberOfLines={1} ellipsizeMode='tail'
+                    style={tw`text-white text-3xl font-bold text-center mt-3`}>{selectedUser.username}</Text>
+                  <Text 
+                    numberOfLines={1} ellipsizeMode='tail'
+                    style={tw`text-white/40 text-base text-center`}>{selectedUser.full_name}</Text>
+                </View>
+              ):(
+                <View style={tw`flex-col justify-center items-center w-78 `}>
+                  <Text 
+                    numberOfLines={1} ellipsizeMode='tail'
+                    style={tw`text-white text-3xl font-bold text-center mt-3`}>{selectedUser.username}</Text>
+                </View>
+              )
+            }
+          </View>
+  
+      {/* ============bottom part============ */}
+          <View style={tw`bg-gray-800 rounded-t-xl pt-3 pb-3 mt-2 px-15 rounded-b-xl `}>
+            <Text style={tw`text-red-500 text-lg text-center flex-wrap `}>
+              Are you sure you want to remove {selectedUser.username} as your friend?
+            </Text>
+            <View style={tw`flex-row justify-between items-center mt-3`}>
+              <TouchableOpacity 
+                style={tw``}
+                onPress={() => removefn.mutate(selectedUser.id)}
+              >
+                <Text style={tw`text-white text-base`}>Remove Friend</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={tw`bg-blue-600 p-2 px-6 rounded-md`}
+                onPress={() => setRemoveModalOpen(false)}
+              >
+                <Text style={tw`text-white text-base`}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>  
+  
+        </View>
+      </View>
+    </Modal>
 
       </SafeAreaView>
 

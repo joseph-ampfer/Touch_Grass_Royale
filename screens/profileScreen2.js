@@ -297,7 +297,7 @@ export default function ProfileScreen2({ navigation }) {
 
   if (isLoading) {
     return (
-      <MagicalLoader></MagicalLoader>
+      <MagicalLoader loading={isLoading}></MagicalLoader>
     )
   }
 
