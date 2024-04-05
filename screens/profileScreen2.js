@@ -423,7 +423,6 @@ export default function ProfileScreen2({ navigation }) {
             {/* <Text style={tw`text-gray-100 text-lg font-semibold ml-5 mb-3 mt-5`}>Current Rank</Text> */}
             <View style={tw`flex-col justify-center items-center `}>
               <Image style={tw`h-25 w-25`} source={require('../assets/images/noob.png')} />
-              <Text style={tw`text-white text-base font-bold`}>Noob</Text>
             </View>
           
             {/* PROGRESS BAR */}
@@ -445,13 +444,14 @@ export default function ProfileScreen2({ navigation }) {
           </View>
 
 
-          <View style={tw`flex-row justify-center  `}>
-            <Text style={tw`text-white text-3xl font-bold`}>Total: {self?.total_points} pts</Text>
+          <View style={tw`flex-col justify-center items-center `}>
+            <Text style={tw`text-white text-4xl font-bold mb-1 underline `}>Noob</Text>
+            <Text style={tw`text-white text-2xl `}>Total: {self?.total_points} pts</Text>
           </View>
 
 
 {/* ====  =========PLACEMENTS LAST DAYS============== */}
-          <View style={tw``}>
+        <View style={tw``}>
           <View style={tw`flex-row items-center mx-5 mb-2`}>
             <Ionicons name='podium' style={tw`text-white/90 mr-3 text-lg`} />
             <Text style={tw`text-white/90 text-lg `}>Recent placements</Text>
@@ -493,9 +493,9 @@ export default function ProfileScreen2({ navigation }) {
               })
             } 
           </ScrollView>
-          </View>
-
         </View>
+
+      </View>
 
 
 

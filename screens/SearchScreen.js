@@ -17,7 +17,7 @@ import { Portal } from 'react-native-portalize';
 import ProfileModal from '../components/ProfileModal';
 import animations from '../animations/animations';
 import { useQuery } from '@tanstack/react-query';
-import { fetchFriendRequests } from '../api/fetches';
+import { fetchFriendRequests, searchForUsers } from '../api/fetches';
 
 
 //INSTALLED BUT NOT USED 
@@ -34,11 +34,130 @@ import { fetchFriendRequests } from '../api/fetches';
 
 const TAB_WIDTH = 150;
 
+const friendRequests = [
+  {
+    username: 'JohnDoe',
+    time: '524',
+    pic: 'https://i.pravatar.cc/600/',
+    lottie: 'spaceJam',
+    full_name: 'Johnathan Doe'
+  },
+  {
+    username: 'Hexscuseme',
+    time: '500',
+    pic: 'https://i.pravatar.cc/60',
+    lottie: 'gojoCat'
+  },
+  {
+    username: 'Nephlauxic',
+    time: '499',
+    pic: 'https://i.pravatar.cc/60/68',
+    lottie: null
+  },
+  {
+    username: 'Hobbes',
+    time: '461',
+    pic: 'https://i.pravatar.cc/60/63',
+    lottie: 'spaceInvader',
+    full_name: 'Calvin Mclain'
+  },
+  {
+    username: 'eener_weiner',
+    time: '444',
+    pic: 'https://i.pravatar.cc/60/64',
+    lottie: null
+  },
+  {
+    username: 'Test 6',
+    time: '443',
+    pic: 'https://i.pravatar.cc/60/65',
+    lottie: 'ghibliGirl'
+  },
+  {
+    username: 'jampfer',
+    time: '411',
+    pic: 'https://i.pravatar.cc/60/66',
+    lottie: 'eyeBlob'
+  },
+  {
+    username: 'Dennis',
+    time: '400',
+    pic: 'https://i.pravatar.cc/60/67',
+    lottie: 'ramen'
+  },
+  {
+    username: 'frobro',
+    time: '399',
+    pic: 'https://i.pravatar.cc/60/69',
+    lottie: 'meditationCow'
+  },
+  {
+    username: 'Test test 4',
+    time: '350',
+    pic: 'https://i.pravatar.cc/60/70',
+    lottie: 'ghibliGirl'
+  },
+  {
+    username: 'Test test 5',
+    time: '300',
+    pic: 'https://i.pravatar.cc/60/80',
+    lottie: 'ghibliGirl'
+  },
+  {
+    username: 'Test test 6',
+    time: '100',
+    pic: 'https://i.pravatar.cc/60/90',
+    lottie: 'ghibliGirl'
+  },
+  {
+    username: 'Test test 1',
+    time: '9.2',
+    pic: 'https://i.pravatar.cc/60/10',
+    lottie: 'ghibliGirl'
+  },
+  {
+    username: 'Test test 2',
+    time: '9.2',
+    pic: 'https://i.pravatar.cc/60/20',
+    lottie: 'ghibliGirl'
+  },
+  {
+    username: 'Test test 3',
+    time: '9.2',
+    pic: 'https://i.pravatar.cc/60/30',
+    lottie: 'ghibliGirl'
+  },
+  {
+    username: 'Test test 4',
+    time: '9.2',
+    pic: 'https://i.pravatar.cc/60/40',
+    lottie: 'ghibliGirl'
+  },
+  {
+    username: 'Test test 5',
+    time: '9.2',
+    pic: 'https://i.pravatar.cc/60/60',
+    lottie: 'ghibliGirl'
+  },
+  {
+    username: 'Test test 6',
+    time: '9.2',
+    pic: 'https://i.pravatar.cc/60/60',
+    lottie: 'ghibliGirl'
+  },
+]
+
+
+
 export default function SearchScreen({ navigation }) {
-  const { data: friendRequests, isLoading, error } = useQuery({
-    queryKey: ['friend requests'],
-    queryFn: fetchFriendRequests,
-  })
+
+  // const { data: friendRequests, isLoading, error } = useQuery({
+  //   queryKey: ['friend requests'],
+  //   queryFn: fetchFriendRequests,
+  // })
+
+
+  const isLoading = false;
 
 
   const [showSearch, toggleSearch] = useState(false);
@@ -64,122 +183,15 @@ export default function SearchScreen({ navigation }) {
       lottie: null
     },
 ]);
-  // const friendRequests = [
-  //   {
-  //     name: 'JohnDoe',
-  //     time: '524',
-  //     pic: 'https://i.pravatar.cc/600/',
-  //     lottie: 'spaceJam'
-  //   },
-  //   {
-  //     name: 'Hexscuseme',
-  //     time: '500',
-  //     pic: 'https://i.pravatar.cc/60',
-  //     lottie: 'gojoCat'
-  //   },
-  //   {
-  //     name: 'Nephlauxic',
-  //     time: '499',
-  //     pic: 'https://i.pravatar.cc/60/68',
-  //     lottie: null
-  //   },
-  //   {
-  //     name: 'Hobbes',
-  //     time: '461',
-  //     pic: 'https://i.pravatar.cc/60/63',
-  //     lottie: 'spaceInvader'
-  //   },
-  //   {
-  //     name: 'eener_weiner',
-  //     time: '444',
-  //     pic: 'https://i.pravatar.cc/60/64',
-  //     lottie: null
-  //   },
-  //   {
-  //     name: 'Test 6',
-  //     time: '443',
-  //     pic: 'https://i.pravatar.cc/60/65',
-  //     lottie: 'ghibliGirl'
-  //   },
-  //   {
-  //     name: 'jampfer',
-  //     time: '411',
-  //     pic: 'https://i.pravatar.cc/60/66',
-  //     lottie: 'eyeBlob'
-  //   },
-  //   {
-  //     name: 'Dennis',
-  //     time: '400',
-  //     pic: 'https://i.pravatar.cc/60/67',
-  //     lottie: 'ramen'
-  //   },
-  //   {
-  //     name: 'frobro',
-  //     time: '399',
-  //     pic: 'https://i.pravatar.cc/60/69',
-  //     lottie: 'meditationCow'
-  //   },
-  //   {
-  //     name: 'Test test 4',
-  //     time: '350',
-  //     pic: 'https://i.pravatar.cc/60/70',
-  //     lottie: 'ghibliGirl'
-  //   },
-  //   {
-  //     name: 'Test test 5',
-  //     time: '300',
-  //     pic: 'https://i.pravatar.cc/60/80',
-  //     lottie: 'ghibliGirl'
-  //   },
-  //   {
-  //     name: 'Test test 6',
-  //     time: '100',
-  //     pic: 'https://i.pravatar.cc/60/90',
-  //     lottie: 'ghibliGirl'
-  //   },
-  //   {
-  //     name: 'Test test 1',
-  //     time: '9.2',
-  //     pic: 'https://i.pravatar.cc/60/10',
-  //     lottie: 'ghibliGirl'
-  //   },
-  //   {
-  //     name: 'Test test 2',
-  //     time: '9.2',
-  //     pic: 'https://i.pravatar.cc/60/20',
-  //     lottie: 'ghibliGirl'
-  //   },
-  //   {
-  //     name: 'Test test 3',
-  //     time: '9.2',
-  //     pic: 'https://i.pravatar.cc/60/30',
-  //     lottie: 'ghibliGirl'
-  //   },
-  //   {
-  //     name: 'Test test 4',
-  //     time: '9.2',
-  //     pic: 'https://i.pravatar.cc/60/40',
-  //     lottie: 'ghibliGirl'
-  //   },
-  //   {
-  //     name: 'Test test 5',
-  //     time: '9.2',
-  //     pic: 'https://i.pravatar.cc/60/60',
-  //     lottie: 'ghibliGirl'
-  //   },
-  //   {
-  //     name: 'Test test 6',
-  //     time: '9.2',
-  //     pic: 'https://i.pravatar.cc/60/60',
-  //     lottie: 'ghibliGirl'
-  //   },
-  // ]
-  const [contactsData, setConstactsData] = useState([])
+
+  const [findInput, setFindInput] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [contactsData, setConstactsData] = useState([]);
   const [tab, setTab] = useState('Find');
   const [selectedUser, setSelectedUser] = useState({});
   const [modalOpen, setModalOpen] = useState(false);
 
-//CLEANUP
+///CLEANUP
   const isFocused = useIsFocused();
   useEffect(() => {
     if (!isFocused) {
@@ -211,7 +223,7 @@ export default function SearchScreen({ navigation }) {
     }
   }
 
-  // SLIDER
+ //==============SLIDER============
   const offset = useSharedValue(27);
 
   const animatedStyles = useAnimatedStyle(() => ({
@@ -231,8 +243,24 @@ export default function SearchScreen({ navigation }) {
     })();
     offset.value = withTiming(newOffset)
   }
-//////
+// ^^^^^^^^^^^^^SLIDER^^^^^^^^^^^^^^^^^
 
+
+const handleSearchForUsers = async input => {
+  console.log('input:', input);
+  if (input == '') {
+    setSearchResults([]);
+    return
+  }
+  try{
+    const response = await searchForUsers(input);
+    setSearchResults(response);
+  } catch (error) {
+    console.error(error.detail)
+  }
+}
+
+const debounceSearchForUsers = debounce(handleSearchForUsers, 500)
 
 
 const handleInviteSearch = async value => {
@@ -293,12 +321,13 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
         
 
 {/* =============ALL SEARCH============== */}
-        <View style={[tw`bg-slate-200 mx-5 rounded-full  flex-row justify-end`, {backgroundColor: showSearch? 'rgba(255,255,255,0.2)': 'transparent'}]}>
+        <View style={[tw`bg-slate-200 mx-5 rounded-full  flex-row justify-end`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
 
 {/* ============TEXT INPUT============ */}
           {
-            tab == 'Find' && showSearch? (
+            tab == 'Find' ? (
               <TextInput
+                onChangeText={debounceSearchForUsers}
                 placeholder='Search for friends'
                 placeholderTextColor={'white'}
                 style={tw`flex-1 text-base pl-6 text-white`}
@@ -306,18 +335,18 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
             ):null
           }
           {
-            tab == 'Invite' && showSearch? (
+            tab == 'Invite' ? (
               <TextInput
-              onChangeText={handleInvSearchDebounce}
-              placeholder='Search contacts'
-              placeholderTextColor={'white'}
-              style={tw`flex-1 text-base pl-6 text-white`}
-            />
+                onChangeText={handleInvSearchDebounce}
+                placeholder='Search contacts'
+                placeholderTextColor={'white'}
+                style={tw`flex-1 text-base pl-6 text-white`}
+              />
             ):null
           }
 {/* ===============MAGNIFYING GLASS BUTTON============= */}
           <TouchableOpacity 
-            style={[tw`rounded-full m-1`, {backgroundColor: showSearch? 'transparent': 'rgba(0,0,0,0.1)'}]}
+            style={[tw`rounded-full m-1`, {backgroundColor: 'transparent'}]}
             onPress={() => toggleSearch(!showSearch)}
             touchSoundDisabled={true}
           >
@@ -325,11 +354,14 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
           </TouchableOpacity>
 {/* ================FIND FRIENDS SEARCH RESULTS===================== */}
           {
-            users.length > 0 && tab == 'Find' && showSearch? (
-              <View style={tw`absolute w-full bg-gray-800 top-16 rounded-3xl`}>
+            searchResults.length > 0 && tab == 'Find' ? (
+              <View style={[tw`absolute w-full bg-gray-800 top-16 rounded-3xl z-90 overflow-hidden`, {height: searchResults.length * 66 > 594 ? 594 : searchResults.length * 66 } ]}>
+                <ScrollView 
+                  showsVerticalScrollIndicator={false}
+                  contentContainerStyle={tw`z-90`}>
                 {
-                  users.map((user, index) => {
-                    let showBorder = index + 1 != users.length;
+                  searchResults.map((user, index) => {
+                    let showBorder = index + 1 != searchResults.length;
                     let borderClass = showBorder? `border-b-2 border-b-gray-600`: ``;
                     return (
                       <View
@@ -361,9 +393,11 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
                               />
                             )
                           }
-                          <Text numberOfLines={1} ellipsizeMode='tail' style={tw`text-slate-50 text-lg w-45`}>{user.name}</Text>
+                          <Text 
+                            numberOfLines={1} ellipsizeMode='tail' 
+                            style={tw`text-slate-50 text-lg w-45`}>{user.username}</Text>
                         </TouchableOpacity>
-{/* ================FRIEND BUTTON================ */}
+                       {/* =======FRIEND BUTTON======= */}
                         <TouchableOpacity 
                           style={tw.style('p-3', 'px-5', 'rounded-3xl', 'self-end', 'bg-blue-600', {'bg-slate-600': addedUsers[user.id]}, )}
                           onPress={() => {
@@ -378,6 +412,7 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
                   }
                   )
                 }
+                </ScrollView>
               </View>
             ):null
           }
@@ -443,7 +478,10 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
         <View style={tw` -z-20 `}>
           <Text style={tw`text-gray-100 text-lg font-semibold ml-5 mb-3 mt-5`}>Friend requests</Text>
           <View style={tw``}>
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView 
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingBottom: 350 }}
+            >
               { !isLoading? 
                 (
                   friendRequests.map((user, index) => {

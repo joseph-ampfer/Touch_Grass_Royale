@@ -49,7 +49,7 @@ export default function FriendRequestCard({ user, onPicturePress }) {
 
   return (
     <View 
-      style={[tw`mx-5 mb-3 rounded-3xl  flex-row justify-between items-center p-2`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}
+      style={[tw`mx-5 mb-3 rounded-3xl  flex-row justify-between items-center p-2 bg-white/20` ]}
     >
       {/* ====PIC AND USERNAME=== */}
       <TouchableOpacity 
@@ -75,11 +75,11 @@ export default function FriendRequestCard({ user, onPicturePress }) {
         {
           user.full_name? (
             <View style={tw`flex-col`}>
-              <Text numberOfLines={1} ellipsizeMode='tail' style={tw`text-slate-50 mt-1 text-lg font-semibold w-37`}>{user.username}</Text>
-              <Text numberOfLines={1} ellipsizeMode='tail' style={tw`text-slate-50/50 mt-1 text-base font-semibold w-37`}>{user.full_name}</Text>
+              <Text numberOfLines={1} ellipsizeMode='tail' style={tw`text-white mt-1 text-xl font-semibold w-37`}>{user.username}</Text>
+              <Text numberOfLines={1} ellipsizeMode='tail' style={tw`text-gray-100 mt-0 text-base font-semibold w-37`}>{user.full_name}</Text>
             </View>
           ):(
-            <Text numberOfLines={1} ellipsizeMode='tail' style={tw`text-slate-50 mt-1 text-lg font-semibold w-37`}>{user.username}</Text>
+            <Text numberOfLines={1} ellipsizeMode='tail' style={tw`text-white mt-1 text-xl font-semibold w-37`}>{user.username}</Text>
           )
         }
 
@@ -90,16 +90,16 @@ export default function FriendRequestCard({ user, onPicturePress }) {
         !ignored && !accepted ? (
           <View style={tw`flex-col justify-center items-center `}>
             <TouchableOpacity 
-              style={tw`rounded-xl bg-blue-600 p-3 px-6 mb-2`}
+              style={tw`rounded-full bg-blue-600 p-3 px-6 mb-2`}
               onPress={() => acceptfn.mutate()}
             >
-              <Text style={tw`text-white`} >Accept</Text>
+              <Text style={tw`text-white font-bold`} >Accept</Text>
             </TouchableOpacity>
             <TouchableOpacity 
-              style={tw`rounded-xl bg-gray-900/50 p-2 px-6 `}
+              style={tw`rounded-full bg-gray-600 p-2 px-6 `}
               onPress={() => denyfn.mutate()}
             >
-              <Text style={tw`text-white`} >Ignore</Text>
+              <Text style={tw`text-white font-bold`} >Ignore</Text>
             </TouchableOpacity>
           </View>
         ): accepted ? (
@@ -108,12 +108,12 @@ export default function FriendRequestCard({ user, onPicturePress }) {
           </View>
         ):(
           <View style={tw`flex-col justify-center items-center `}>
-            <Text style={tw`text-white  p-3 px-6 mb-2`} >Ignored</Text>
+            <Text style={tw`text-white p-3 px-6 mb-2 font-bold`} >Ignored</Text>
             <TouchableOpacity 
-              style={tw`rounded-xl bg-gray-900/50 p-2 px-6 `}
+              style={tw`rounded-full bg-gray-600 p-2 px-6 `}
               onPress={() => undofn.mutate()}
             >
-              <Text style={tw`text-white`} > Undo </Text>
+              <Text style={tw`text-white font-bold`} >Undo</Text>
             </TouchableOpacity>
           </View>
         )

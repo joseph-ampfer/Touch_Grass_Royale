@@ -9,7 +9,7 @@ import LottieView from 'lottie-react-native';
 import animations from '../animations/animations';
 import ProfileModal from '../components/ProfileModal';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getCurrentUserFriendsList, getSomeOneElsesFriendsList, removeFriend, sendFriendRequest } from '../api/fetches';
+import { getCurrentUserFriendsList, getSomeOneElsesFriendsList, removeFriend, sendFriendRequest, unsendFriendRequest } from '../api/fetches';
 import MagicalLoader from '../components/MagicalLoader';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import Modal from 'react-native-modal';
@@ -178,7 +178,20 @@ export default function FriendsScreen({ route, navigation }) {
     mutationFn: (friendID) => sendFriendRequest(friendID),
     gcTime: 0,
     onSuccess: () => {
-      alert('poop')
+      alert('Friend request sent');
+      queryClient.invalidateQueries({ queryKey: ['friends', userID] });
+    },
+    onError: (error) => {
+      console.error(error.detail)
+    }
+  })
+
+  const unsendFRfn = useMutation({
+    mutationFn: (friendID) => unsendFriendRequest(friendID),
+    gcTime: 0,
+    onSuccess: () => {
+      alert('Friend request unsent');
+      queryClient.invalidateQueries({ queryKey: ['friends', userID] })
     },
     onError: (error) => {
       console.error(error.detail)
@@ -274,16 +287,16 @@ export default function FriendsScreen({ route, navigation }) {
                         <View style={tw`flex-col justify-center items-center`}>
                           <Text 
                             numberOfLines={1} ellipsizeMode='tail' 
-                            style={tw`text-slate-50  text-lg  w-37`}>{friend.username}</Text>
+                            style={tw`text-slate-50  text-lg  w-40`}>{friend.username}</Text>
                           <Text 
                             numberOfLines={1} ellipsizeMode='tail' 
-                            style={tw`text-slate-50/70   w-37`}>{friend.full_name}</Text>
+                            style={tw`text-slate-50/70   w-40`}>{friend.full_name}</Text>
                         </View>
                       ):(
                         <View>
                           <Text 
                             numberOfLines={1} ellipsizeMode='tail' 
-                            style={tw`text-slate-50 mt-1 text-lg  w-37`}>{friend.username}</Text>
+                            style={tw`text-slate-50 mt-1 text-lg  w-40`}>{friend.username}</Text>
                         </View>
                       )
                     }
@@ -301,7 +314,7 @@ export default function FriendsScreen({ route, navigation }) {
                         <Text style={tw`text-white font-bold`}>Remove</Text>
                       </TouchableOpacity>
                     ):
-                      friend.action === 'Remove'? (
+                      friend.action == 'Remove'? (
                         <TouchableOpacity 
                           style={tw`rounded-lg bg-gray-800 p-2 px-4`}
                           onPress={() => {
@@ -310,6 +323,14 @@ export default function FriendsScreen({ route, navigation }) {
                           }}
                         >
                           <Text style={tw`text-white font-bold`}>Remove</Text>
+                        </TouchableOpacity>
+                      ):
+                      friend.action == 'Sent'? (
+                        <TouchableOpacity 
+                          style={tw`rounded-lg bg-gray-800 p-2 px-4`}
+                          onPress={() => unsendFRfn.mutate(friend.id)}
+                        >
+                          <Text style={tw`text-white font-bold`}>Sent</Text>
                         </TouchableOpacity>
                       ):(
                         <TouchableOpacity 
@@ -423,6 +444,8 @@ export default function FriendsScreen({ route, navigation }) {
         </View>
       </View>
     </Modal>
+
+
 
       </SafeAreaView>
 

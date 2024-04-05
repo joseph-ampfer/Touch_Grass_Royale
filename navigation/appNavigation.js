@@ -30,7 +30,7 @@ export default function AppNavigation() {
                 <Stack.Screen name="SignUp" component={SignupScreen} />
                 <Stack.Screen name="Home" component={HomeScreen} />
                 <Stack.Screen name="Search" component={SearchScreen} />
-                <Stack.Screen name="Profile" component={ProfileScreen2} />
+                <Stack.Screen name="Profile" component={ProfileScreen} />
                 <Stack.Screen name="Friends" component={FriendsScreen} />
             </Stack.Navigator>
             </Host>
