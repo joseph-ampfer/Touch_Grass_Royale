@@ -1,5 +1,5 @@
-import { View, Text, TextInput, Image, } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Image, Dimensions, } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
 import tw from 'twrnc';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,14 +10,15 @@ import Animated, { useAnimatedStyle, useSharedValue, withTiming, FadeInDown } fr
 import * as Contacts from 'expo-contacts';
 import * as SMS from 'expo-sms';
 import debounce from '../debounce/debounce';
-import { ScrollView, GestureHandlerRootView, TouchableOpacity } from 'react-native-gesture-handler';
+import { ScrollView, GestureHandlerRootView, TouchableOpacity, RefreshControl } from 'react-native-gesture-handler';
 import FriendRequestCard from '../components/FriendRequestCard';
 import LottieView from 'lottie-react-native';
 import { Portal } from 'react-native-portalize';
 import ProfileModal from '../components/ProfileModal';
 import animations from '../animations/animations';
-import { useQuery } from '@tanstack/react-query';
-import { fetchFriendRequests, searchForUsers } from '../api/fetches';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { fetchFriendRequests, searchForUsers, sendFriendRequest } from '../api/fetches';
+import Modal from 'react-native-modal'
 
 
 //INSTALLED BUT NOT USED 
@@ -30,176 +31,171 @@ import { fetchFriendRequests, searchForUsers } from '../api/fetches';
 //expo image picker
 //npm i @expo/metro-config
 
-
+const screenDimensions = Dimensions.get('screen');
 
 const TAB_WIDTH = 150;
 
-const friendRequests = [
-  {
-    username: 'JohnDoe',
-    time: '524',
-    pic: 'https://i.pravatar.cc/600/',
-    lottie: 'spaceJam',
-    full_name: 'Johnathan Doe'
-  },
-  {
-    username: 'Hexscuseme',
-    time: '500',
-    pic: 'https://i.pravatar.cc/60',
-    lottie: 'gojoCat'
-  },
-  {
-    username: 'Nephlauxic',
-    time: '499',
-    pic: 'https://i.pravatar.cc/60/68',
-    lottie: null
-  },
-  {
-    username: 'Hobbes',
-    time: '461',
-    pic: 'https://i.pravatar.cc/60/63',
-    lottie: 'spaceInvader',
-    full_name: 'Calvin Mclain'
-  },
-  {
-    username: 'eener_weiner',
-    time: '444',
-    pic: 'https://i.pravatar.cc/60/64',
-    lottie: null
-  },
-  {
-    username: 'Test 6',
-    time: '443',
-    pic: 'https://i.pravatar.cc/60/65',
-    lottie: 'ghibliGirl'
-  },
-  {
-    username: 'jampfer',
-    time: '411',
-    pic: 'https://i.pravatar.cc/60/66',
-    lottie: 'eyeBlob'
-  },
-  {
-    username: 'Dennis',
-    time: '400',
-    pic: 'https://i.pravatar.cc/60/67',
-    lottie: 'ramen'
-  },
-  {
-    username: 'frobro',
-    time: '399',
-    pic: 'https://i.pravatar.cc/60/69',
-    lottie: 'meditationCow'
-  },
-  {
-    username: 'Test test 4',
-    time: '350',
-    pic: 'https://i.pravatar.cc/60/70',
-    lottie: 'ghibliGirl'
-  },
-  {
-    username: 'Test test 5',
-    time: '300',
-    pic: 'https://i.pravatar.cc/60/80',
-    lottie: 'ghibliGirl'
-  },
-  {
-    username: 'Test test 6',
-    time: '100',
-    pic: 'https://i.pravatar.cc/60/90',
-    lottie: 'ghibliGirl'
-  },
-  {
-    username: 'Test test 1',
-    time: '9.2',
-    pic: 'https://i.pravatar.cc/60/10',
-    lottie: 'ghibliGirl'
-  },
-  {
-    username: 'Test test 2',
-    time: '9.2',
-    pic: 'https://i.pravatar.cc/60/20',
-    lottie: 'ghibliGirl'
-  },
-  {
-    username: 'Test test 3',
-    time: '9.2',
-    pic: 'https://i.pravatar.cc/60/30',
-    lottie: 'ghibliGirl'
-  },
-  {
-    username: 'Test test 4',
-    time: '9.2',
-    pic: 'https://i.pravatar.cc/60/40',
-    lottie: 'ghibliGirl'
-  },
-  {
-    username: 'Test test 5',
-    time: '9.2',
-    pic: 'https://i.pravatar.cc/60/60',
-    lottie: 'ghibliGirl'
-  },
-  {
-    username: 'Test test 6',
-    time: '9.2',
-    pic: 'https://i.pravatar.cc/60/60',
-    lottie: 'ghibliGirl'
-  },
-]
+// const friendRequests = [
+//   {
+//     username: 'JohnDoe',
+//     time: '524',
+//     pic: 'https://i.pravatar.cc/600/',
+//     lottie: 'spaceJam',
+//     full_name: 'Johnathan Doe'
+//   },
+//   {
+//     username: 'Hexscuseme',
+//     time: '500',
+//     pic: 'https://i.pravatar.cc/60',
+//     lottie: 'gojoCat'
+//   },
+//   {
+//     username: 'Nephlauxic',
+//     time: '499',
+//     pic: 'https://i.pravatar.cc/60/68',
+//     lottie: null
+//   },
+//   {
+//     username: 'Hobbes',
+//     time: '461',
+//     pic: 'https://i.pravatar.cc/60/63',
+//     lottie: 'spaceInvader',
+//     full_name: 'Calvin Mclain'
+//   },
+//   {
+//     username: 'eener_weiner',
+//     time: '444',
+//     pic: 'https://i.pravatar.cc/60/64',
+//     lottie: null
+//   },
+//   {
+//     username: 'Test 6',
+//     time: '443',
+//     pic: 'https://i.pravatar.cc/60/65',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     username: 'jampfer',
+//     time: '411',
+//     pic: 'https://i.pravatar.cc/60/66',
+//     lottie: 'eyeBlob'
+//   },
+//   {
+//     username: 'Dennis',
+//     time: '400',
+//     pic: 'https://i.pravatar.cc/60/67',
+//     lottie: 'ramen'
+//   },
+//   {
+//     username: 'frobro',
+//     time: '399',
+//     pic: 'https://i.pravatar.cc/60/69',
+//     lottie: 'meditationCow'
+//   },
+//   {
+//     username: 'Test test 4',
+//     time: '350',
+//     pic: 'https://i.pravatar.cc/60/70',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     username: 'Test test 5',
+//     time: '300',
+//     pic: 'https://i.pravatar.cc/60/80',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     username: 'Test test 6',
+//     time: '100',
+//     pic: 'https://i.pravatar.cc/60/90',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     username: 'Test test 1',
+//     time: '9.2',
+//     pic: 'https://i.pravatar.cc/60/10',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     username: 'Test test 2',
+//     time: '9.2',
+//     pic: 'https://i.pravatar.cc/60/20',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     username: 'Test test 3',
+//     time: '9.2',
+//     pic: 'https://i.pravatar.cc/60/30',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     username: 'Test test 4',
+//     time: '9.2',
+//     pic: 'https://i.pravatar.cc/60/40',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     username: 'Test test 5',
+//     time: '9.2',
+//     pic: 'https://i.pravatar.cc/60/60',
+//     lottie: 'ghibliGirl'
+//   },
+//   {
+//     username: 'Test test 6',
+//     time: '9.2',
+//     pic: 'https://i.pravatar.cc/60/60',
+//     lottie: 'ghibliGirl'
+//   },
+// ]
 
 
 
 export default function SearchScreen({ navigation }) {
 
-  // const { data: friendRequests, isLoading, error } = useQuery({
-  //   queryKey: ['friend requests'],
-  //   queryFn: fetchFriendRequests,
-  // })
+   const { data: friendRequests, isLoading, error } = useQuery({
+     queryKey: ['friend requests'],
+     queryFn: fetchFriendRequests,
+   })
+   const queryClient = useQueryClient();
+
+   const sendFRfn = useMutation({
+    mutationFn: (friendID) => sendFriendRequest(friendID),
+    gcTime: 0,
+    onSuccess: () => {
+      alert('Sent friend request')
+    },
+    onError: (error) => {
+      console.error(error)
+    }
+   })
 
 
-  const isLoading = false;
-
-
-  const [showSearch, toggleSearch] = useState(false);
   const [addedUsers, setAddedUsers] = useState({});
   const [addedInvites, setAddedInvites] = useState({});
-  const [users, setUsers] = useState([
-    {
-      name: 'JohnDoe',
-      time: '524',
-      pic: 'https://i.pravatar.cc/600/',
-      lottie: 'spaceJam'
-    },
-    {
-      name: 'Hexscuseme',
-      time: '500',
-      pic: 'https://i.pravatar.cc/60',
-      lottie: 'gojoCat'
-    },
-    {
-      name: 'Nephlauxic',
-      time: '499',
-      pic: 'https://i.pravatar.cc/60/68',
-      lottie: null
-    },
-]);
 
-  const [findInput, setFindInput] = useState('');
+  const findUsersInputRef = useRef(null);
+  const inviteContactsRef = useRef(null);
+  const [findFocused, setfindFocused] = useState(false);
+  const [inviteFocused, setInviteFocused] = useState(false);
+
   const [searchResults, setSearchResults] = useState([]);
   const [contactsData, setConstactsData] = useState([]);
   const [tab, setTab] = useState('Find');
   const [selectedUser, setSelectedUser] = useState({});
   const [modalOpen, setModalOpen] = useState(false);
+  const [removeModalOpen, setRemoveModalOpen] = useState(false);
+
+
 
 ///CLEANUP
   const isFocused = useIsFocused();
   useEffect(() => {
     if (!isFocused) {
-        toggleSearch(false);
         setAddedUsers({});
         setConstactsData([]);
     }
   }, [isFocused]);
+
 
   // ===========TODO==================
   const handleAddedFriend = (userID) => {
@@ -225,11 +221,9 @@ export default function SearchScreen({ navigation }) {
 
  //==============SLIDER============
   const offset = useSharedValue(27);
-
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [{translateX: offset.value}]
   }))
-
   const handlePress = (tab) => {
     const newOffset = (() => {
       switch (tab) {
@@ -247,19 +241,17 @@ export default function SearchScreen({ navigation }) {
 
 
 const handleSearchForUsers = async input => {
-  console.log('input:', input);
   if (input == '') {
     setSearchResults([]);
     return
   }
-  try{
+  try {
     const response = await searchForUsers(input);
     setSearchResults(response);
   } catch (error) {
     console.error(error.detail)
   }
 }
-
 const debounceSearchForUsers = debounce(handleSearchForUsers, 500)
 
 
@@ -288,7 +280,6 @@ const handleInviteSearch = async value => {
     }
   }
 }
-
 const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
 
 
@@ -296,20 +287,28 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
     <GestureHandlerRootView style={tw`flex-1`}>
     <View style={tw`flex-1 bg-gray-900`}>
       <StatusBar style='light'/>
-      <Image blurRadius={10} fadeDuration={100} source={require('../assets/images/full.png')} style={tw`absolute w-full h-full -z-50`} />
+      <Image blurRadius={10} fadeDuration={100} source={require('../assets/images/full.png')} style={[tw`absolute w-full  -z-50`, { height: screenDimensions.height } ]} />
       <SafeAreaView style={tw`flex-1`}>
-{/* ================TOP TABS================ */}
+{/* ================TOP TABS find & invite================ */}
         <View style={tw` pb-1 rounded-b-2xl`}>
         <View style={tw`flex-row justify-between mx-7 pt-10 pb-1`}>
           <TouchableOpacity  onPress={() => {
               handlePress('Find');
               setTab('Find');
+              setfindFocused(false);
+              setInviteFocused(false);
+              setConstactsData([]);
+              setSearchResults([]);
             }}>
             <Text style={tw`text-white text-lg`}>Find Friends</Text>
           </TouchableOpacity>
           <TouchableOpacity  onPress={() => {
               handlePress('Invite');
               setTab('Invite');
+              setfindFocused(false);
+              setInviteFocused(false);
+              setConstactsData([]);
+              setSearchResults([]);
             }}>
             <Text style={tw`text-white text-lg`}>Invite Friends</Text>
           </TouchableOpacity>
@@ -323,46 +322,82 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
 {/* =============ALL SEARCH============== */}
         <View style={[tw`bg-slate-200 mx-5 rounded-full  flex-row justify-end`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
 
+  {/* =======magnifying glass button==== */}
+          <View style={[tw`rounded-full m-1 `,]} >
+            <Ionicons style={tw`p-2`} name="search-outline" size={31} color="white" />
+          </View>
 {/* ============TEXT INPUT============ */}
           {
             tab == 'Find' ? (
               <TextInput
+                ref={findUsersInputRef}
                 onChangeText={debounceSearchForUsers}
                 placeholder='Search for friends'
                 placeholderTextColor={'white'}
-                style={tw`flex-1 text-base pl-6 text-white`}
+                style={tw`flex-1 text-base pl-1 text-white`}
+                enterKeyHint='search'
+                returnKeyType='search'
+                onFocus={() => setfindFocused(true)}
+                onBlur={() => setfindFocused(false)}
               />
             ):null
           }
           {
             tab == 'Invite' ? (
               <TextInput
+                ref={inviteContactsRef}
                 onChangeText={handleInvSearchDebounce}
                 placeholder='Search contacts'
                 placeholderTextColor={'white'}
-                style={tw`flex-1 text-base pl-6 text-white`}
+                style={tw`flex-1 text-base pl-1 text-white`}
+                enterKeyHint='search'
+                returnKeyType='search'
+                onFocus={() => setInviteFocused(true)}
+                onBlur={() => setInviteFocused(false)}
               />
             ):null
           }
-{/* ===============MAGNIFYING GLASS BUTTON============= */}
-          <TouchableOpacity 
-            style={[tw`rounded-full m-1`, {backgroundColor: 'transparent'}]}
-            onPress={() => toggleSearch(!showSearch)}
-            touchSoundDisabled={true}
-          >
-            <Ionicons style={tw`p-2`} name="search-outline" size={31} color="white" />
-          </TouchableOpacity>
+          {/* X's to clear search */}
+          {
+            findFocused ? (
+              <TouchableOpacity
+                style={[tw`rounded-full m-1 `, ]}
+                onPress={() => {
+                  setSearchResults([]);
+                  findUsersInputRef.current.clear();
+                  findUsersInputRef.current.blur();
+                }}
+              >
+                <Ionicons style={tw`p-2`} name="close-outline" size={31} color="white" />
+              </TouchableOpacity>
+            ):null
+          }
+          {
+            inviteFocused ? (
+              <TouchableOpacity
+                style={[tw`rounded-full m-1 `, ]}
+                onPress={() => {
+                setConstactsData([]);
+                inviteContactsRef.current.clear();
+                inviteContactsRef.current.blur();
+              }}
+            >
+              <Ionicons style={tw`p-2`} name="close-outline" size={31} color="white" />
+            </TouchableOpacity>
+            ):null
+          }
+
 {/* ================FIND FRIENDS SEARCH RESULTS===================== */}
           {
             searchResults.length > 0 && tab == 'Find' ? (
-              <View style={[tw`absolute w-full bg-gray-800 top-16 rounded-3xl z-90 overflow-hidden`, {height: searchResults.length * 66 > 594 ? 594 : searchResults.length * 66 } ]}>
+              <View style={[tw`absolute w-full bg-black top-16 rounded-3xl z-90 overflow-hidden`, {height: searchResults.length * 66 > 594 ? 594 : searchResults.length * 66 } ]}>
                 <ScrollView 
                   showsVerticalScrollIndicator={false}
                   contentContainerStyle={tw`z-90`}>
                 {
                   searchResults.map((user, index) => {
                     let showBorder = index + 1 != searchResults.length;
-                    let borderClass = showBorder? `border-b-2 border-b-gray-600`: ``;
+                    let borderClass = showBorder? `border-b-2 border-b-gray-600/50`: ``;
                     return (
                       <View
                         key={index}
@@ -397,8 +432,8 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
                             numberOfLines={1} ellipsizeMode='tail' 
                             style={tw`text-slate-50 text-lg w-45`}>{user.username}</Text>
                         </TouchableOpacity>
-                       {/* =======FRIEND BUTTON======= */}
-                        <TouchableOpacity 
+                    {/* =======FRIEND BUTTON======= */}
+                        {/* <TouchableOpacity 
                           style={tw.style('p-3', 'px-5', 'rounded-3xl', 'self-end', 'bg-blue-600', {'bg-slate-600': addedUsers[user.id]}, )}
                           onPress={() => {
                             setAddedUsers(prev => ({ ...prev, [user.id]: !prev[user.id] }));
@@ -406,7 +441,37 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
                           }}
                         >
                           <Text style={tw.style('text-white', )}>{addedUsers[user.id]? 'Undo' : 'Add Friend'}</Text>                         
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
+
+                  {/* new button renders */}
+                        {
+                          user.action == 'Remove'? (
+                            <TouchableOpacity 
+                              style={tw`rounded-full bg-gray-800 p-2 px-4`}
+                              onPress={() => {
+                                setSelectedUser(user);
+                                setRemoveModalOpen(true);
+                              }}
+                            >
+                              <Text style={tw`text-white font-bold`}>Remove</Text>
+                            </TouchableOpacity>
+                          ):
+                          user.action == 'Sent'? (
+                            <TouchableOpacity 
+                              style={tw`rounded-full bg-gray-800 p-2 px-4`}
+                              //onPress={() => unsendFRfn.mutate(user.id)}
+                            >
+                              <Text style={tw`text-white font-bold`}>Sent</Text>
+                            </TouchableOpacity>
+                          ):(
+                            <TouchableOpacity 
+                              style={tw`rounded-full bg-blue-600 p-2 px-4`}
+                              //onPress={() => sendFRfn.mutate(user.id) }
+                            >
+                              <Text style={tw`text-white font-bold`}>Add Friend</Text>
+                            </TouchableOpacity>
+                          )
+                        }
                       </View>
                     )
                   }
@@ -419,12 +484,15 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
 
 {/* ================INVITE FRIENDS SEARCH RESULTS===================== */}
           {
-            contactsData.length > 0 && tab == 'Invite' && showSearch? (
-              <View style={tw`absolute w-full bg-gray-800 top-16 rounded-3xl`}>
+            contactsData.length > 0 && tab == 'Invite' ? (
+              <View style={[tw`absolute w-full bg-black top-16 rounded-3xl z-90 overflow-hidden`, { height: contactsData.length * 66 > 594 ? 594 : contactsData.length * 66 } ]}>
+                <ScrollView
+                  showsVerticalScrollIndicator={false}
+                  contentContainerStyle={tw`z-90`}>
                 {
                   contactsData.map((contact, index) => {
                     let showBorder = index + 1 != contactsData.length;
-                    let borderClass = showBorder? `border-b-2 border-b-gray-600`: ``;
+                    let borderClass = showBorder? `border-b-2 border-b-gray-600/50`: ``;
                     let mobileNumber = 'No mobile number';
                     if (Array.isArray(contact.phoneNumbers)) {
                       const mobilePhoneNumberObject = contact.phoneNumbers.find(phone => phone.label === "mobile");
@@ -445,7 +513,7 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
                               style={tw`h-10 w-10 rounded-full mr-3`}
                             />
                             ):(
-                              <View style={tw`w-10 h-10 bg-slate-600 mr-3 rounded-full justify-center items-center`}>
+                              <View style={tw`w-10 h-10 bg-white/20 mr-3 rounded-full justify-center items-center`}>
                                 <Text style={[tw`text-white font-bold text-lg text-center ml-1`, ]}>{ contact.name[0]} </Text>
                               </View>
                             )
@@ -461,7 +529,7 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
                             handleInviteFriendSMS(mobileNumber);
                           }}
                         >
-                          <Text style={tw.style('text-white', 'mr-2' )}>{addedInvites[contact.id]? 'Send again' : 'Send link'}</Text>
+                          <Text style={tw`mr-2 text-white font-bold`}>{addedInvites[contact.id]? 'Send again' : 'Send link'}</Text>
                           <Feather name="send" size={14} color="white" />                         
                         </TouchableOpacity>
                       </View>
@@ -469,6 +537,7 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
                   }
                   )
                 }
+                </ScrollView>
               </View>
             ):null
           }
@@ -481,7 +550,12 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
             <ScrollView 
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{ paddingBottom: 350 }}
+              refreshControl={
+                <RefreshControl refreshing={isLoading} 
+                  onRefresh={() => queryClient.invalidateQueries({ queryKey: ['friend requests'] })} />
+                }
             >
+
               { !isLoading? 
                 (
                   friendRequests.map((user, index) => {
@@ -507,6 +581,98 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
           setModalOpen={setModalOpen} 
           selectedUser={selectedUser}
         />
+
+
+{/* =========Are you sure you want to remove friend?========= */}
+        <Modal
+          animationIn='zoomIn' 
+          animationInTiming={300}
+          animationOut='zoomOut'
+          animationOutTiming={300}
+          backdropTransitionInTiming={300}
+          backdropTransitionOutTiming={300}
+          isVisible={removeModalOpen}
+          onBackButtonPress={() => setRemoveModalOpen(false)}
+          onBackdropPress={() => setRemoveModalOpen(false)}
+          onSwipeComplete={() => setRemoveModalOpen(false)}
+          swipeThreshold={10}
+          swipeDirection={['down', 'left', 'right', 'up']}
+          useNativeDriverForBackdrop={true}
+          style={tw`justify-center items-center m-auto  `}
+        >
+          <View style={tw`bg-gray-900 rounded-xl mx-5 pt-3`}>
+            <View style={tw`flex-col justify-center `}>
+
+          {/*================ top part=============== */}
+              <View style={tw`px-5 flex-col items-center`}>
+
+          {/* ===========PICTURE ROW========= */}
+                <View style={tw`flex-row items-center justify-around  mt-1`}>
+                  {
+                    selectedUser.lottie? (
+                      <View style={tw`h-36 w-36 rounded-full mx-4`}>
+                        <LottieView 
+                            source={animations[selectedUser.lottie]} 
+                            style={{width:'100%', height:'100%'}}
+                            autoPlay 
+                            loop 
+                            speed={1}
+                        />
+                      </View> 
+                    ):(
+                      <Image 
+                      source={{ uri: selectedUser.pic }} 
+                      style={tw`h-30 w-30 rounded-full mx-4 `}
+                    />
+                    )
+                  }   
+                </View>
+                {/* ===NAME===*/}
+                {
+                  selectedUser.full_name? (
+                    <View style={tw`flex-col justify-center items-center w-78 `}>
+                      <Text 
+                        numberOfLines={1} ellipsizeMode='tail'
+                        style={tw`text-white text-3xl font-bold text-center mt-3`}>{selectedUser.username}</Text>
+                      <Text 
+                        numberOfLines={1} ellipsizeMode='tail'
+                        style={tw`text-white/40 text-base text-center`}>{selectedUser.full_name}</Text>
+                    </View>
+                  ):(
+                    <View style={tw`flex-col justify-center items-center w-78 `}>
+                      <Text 
+                        numberOfLines={1} ellipsizeMode='tail'
+                        style={tw`text-white text-3xl font-bold text-center mt-3`}>{selectedUser.username}</Text>
+                    </View>
+                  )
+                }
+              </View>
+              
+          {/* ============bottom part============ */}
+              <View style={tw`bg-gray-800 rounded-t-xl pt-3 pb-3 mt-2 px-15 rounded-b-xl `}>
+                <Text style={tw`text-red-500 text-lg text-center flex-wrap `}>
+                  Are you sure you want to remove {selectedUser.username} as your friend?
+                </Text>
+                <View style={tw`flex-row justify-between items-center mt-3 z-50 `}>
+                  <TouchableOpacity 
+                    style={tw``}
+                    //onPress={() => removefn.mutate(selectedUser.id)}
+                  >
+                    <Text style={tw`text-white text-base`}>Remove Friend</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    style={tw`bg-blue-600 p-2 px-6 rounded-md z-50`}
+                    //onPress={() => setRemoveModalOpen(false)}
+                  >
+                    <Text style={tw`text-white text-base`}>Cancel</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>  
+              
+            </View>
+          </View>
+        </Modal>
+
 
       </SafeAreaView>
 {/* =============BOTTOM NAV-BAR============== */}

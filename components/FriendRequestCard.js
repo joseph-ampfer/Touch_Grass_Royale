@@ -96,7 +96,7 @@ export default function FriendRequestCard({ user, onPicturePress }) {
               <Text style={tw`text-white font-bold`} >Accept</Text>
             </TouchableOpacity>
             <TouchableOpacity 
-              style={tw`rounded-full bg-gray-600 p-2 px-6 `}
+              style={tw`rounded-full bg-gray-600/10 p-2 px-6 `}
               onPress={() => denyfn.mutate()}
             >
               <Text style={tw`text-white font-bold`} >Ignore</Text>
@@ -110,7 +110,7 @@ export default function FriendRequestCard({ user, onPicturePress }) {
           <View style={tw`flex-col justify-center items-center `}>
             <Text style={tw`text-white p-3 px-6 mb-2 font-bold`} >Ignored</Text>
             <TouchableOpacity 
-              style={tw`rounded-full bg-gray-600 p-2 px-6 `}
+              style={tw`rounded-full bg-gray-600/10 p-2 px-6 `}
               onPress={() => undofn.mutate()}
             >
               <Text style={tw`text-white font-bold`} >Undo</Text>
