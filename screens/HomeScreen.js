@@ -148,11 +148,12 @@ import MagicalError from '../components/MagicalError';
 const my_id = 32;
 
 export default function HomeScreen({ navigation }) {
+  
   const {data, isLoading, error} = useQuery({
     queryKey: ['leaderboard'],
     queryFn: fetchLeaderboard,
   })
-  console.log(JSON.stringify(data, null, 2));
+  
   
   // FINDING CURRENT USER FROM DATA
   const [user, setUser] = useState({
@@ -166,7 +167,6 @@ export default function HomeScreen({ navigation }) {
      if (data) {
        for (let i = 0; i < data.length; i++) {
          if (data[i].id === my_id) {
-           console.log(data[i])
            setUser(data[i])
            break;
          }
@@ -232,7 +232,7 @@ export default function HomeScreen({ navigation }) {
     // Do something with 'result', like analyzing a well-prepared slide under the microscope
     //console.log(result);
     console.log('==============================================================')
-    console.log(events)
+    console.log(JSON.stringify(events, null, 2))
 
     // const totalScreenTime = Object.values(result).reduce((total, app) => {
     //   return total + app.totalTimeInForeground;

@@ -7,7 +7,6 @@ import BottomNavBar from '../components/BottomNavBar';
 import { ScrollView, GestureHandlerRootView, TouchableOpacity, GestureDetector, Gesture, Directions } from 'react-native-gesture-handler';
 import LottieView from 'lottie-react-native';
 import animations from '../animations/animations';
-//import * as ImagePicker from 'expo-image-picker';
 import Modal from 'react-native-modal';
 import { Modalize, useModalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
@@ -17,6 +16,7 @@ import LottieAvatarShop from '../components/LottieAvatarShop';
 import { useQuery } from '@tanstack/react-query';
 import { getSelf } from '../api/fetches';
 import toOrdinal from '../functions/toOrdinal';
+import * as ImagePicker from 'expo-image-picker';
 
 
 
@@ -69,23 +69,23 @@ export default function ProfileScreen2({ navigation }) {
     queryKey: ['self'],
     queryFn: getSelf,
   })
-  
 
-  
-  const [portalOpen, setPortalOpen] = useState(false);
-  const fling = Gesture.Fling();
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       quality: 1,
     });
-
     if (!result.canceled) {
-      console.log(result);
+      console.log(result)
     } else {
-      alert('You did not select an image.');
+      alert('You did not select an image.')
     }
-  };
+  }
+  
+
+  
+  const [portalOpen, setPortalOpen] = useState(false);
+  const fling = Gesture.Fling();
 
 
   //===============BACK ACTION FOR PORTAL================

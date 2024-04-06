@@ -1,15 +1,16 @@
 {
   "expo": {
-    "name": "touch_grass",
+    "name": "Touch Grass Royale",
+    "description": "Getting off the phone to get on the podium.",
     "slug": "touch_grass",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/mysplash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#000000"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -18,10 +19,10 @@
       "supportsTablet": true
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
+      // "adaptiveIcon": {
+      //   "foregroundImage": "./assets/adaptive-icon.png",
+      //   "backgroundColor": "#ffffff"
+      // },
       "permissions": [
         "android.permission.PACKAGE_USAGE_STATS"
       ],
@@ -39,7 +40,7 @@
       [
         "expo-contacts",
         {
-          "contactsPermission": "Allow $(PRODUCT_NAME) to access your contacts."
+          "contactsPermission": "Allow Touch Grass Royale to access your contacts."
         }
       ],
       [

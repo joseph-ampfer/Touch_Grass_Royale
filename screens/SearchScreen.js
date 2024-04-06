@@ -1,4 +1,4 @@
-import { View, Text, TextInput, Image, Dimensions, } from 'react-native';
+import { View, Text, TextInput, Image, Dimensions, Pressable, Alert } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import tw from 'twrnc';
 import { StatusBar } from 'expo-status-bar';
@@ -17,7 +17,7 @@ import { Portal } from 'react-native-portalize';
 import ProfileModal from '../components/ProfileModal';
 import animations from '../animations/animations';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchFriendRequests, searchForUsers, sendFriendRequest } from '../api/fetches';
+import { fetchFriendRequests, removeFriend, searchForUsers, sendFriendRequest, unsendFriendRequest } from '../api/fetches';
 import Modal from 'react-native-modal'
 
 
@@ -162,10 +162,34 @@ export default function SearchScreen({ navigation }) {
     mutationFn: (friendID) => sendFriendRequest(friendID),
     gcTime: 0,
     onSuccess: () => {
-      alert('Sent friend request')
+      alert('Sent friend request');
+      handleSearchForUsers(findTextInput);
+      queryClient.invalidateQueries({ queryKey: ['leaderboard'] })
     },
     onError: (error) => {
       console.error(error)
+    }
+   })
+
+   const unsendFRfn = useMutation({
+    mutationFn: (friendID) => unsendFriendRequest(friendID),
+    gcTime: 0,
+    onSuccess: () => {
+      alert('Unsent friend request');
+      handleSearchForUsers(findTextInput);
+    },
+    onError: (error) =>{
+      console.error(error)
+    }
+   })
+
+   const removefn = useMutation({
+    mutationFn: (friendID) => removeFriend(friendID),
+    gcTime: 0,
+    onSuccess: () => {
+      alert('Removed friend');
+      handleSearchForUsers(findTextInput);
+      queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
     }
    })
 
@@ -177,6 +201,8 @@ export default function SearchScreen({ navigation }) {
   const inviteContactsRef = useRef(null);
   const [findFocused, setfindFocused] = useState(false);
   const [inviteFocused, setInviteFocused] = useState(false);
+  const [findTextInput, setFindTextInput] = useState('');
+  const [inviteTextInput, setInviteTextInput] = useState('');
 
   const [searchResults, setSearchResults] = useState([]);
   const [contactsData, setConstactsData] = useState([]);
@@ -255,7 +281,7 @@ const handleSearchForUsers = async input => {
 const debounceSearchForUsers = debounce(handleSearchForUsers, 500)
 
 
-const handleInviteSearch = async value => {
+const handleContactsSearch = async value => {
   console.log('value: ', value);
   if (value == '') {
     setConstactsData([]);
@@ -280,14 +306,16 @@ const handleInviteSearch = async value => {
     }
   }
 }
-const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
+const debounceContactsSearch = debounce(handleContactsSearch, 500)
 
 
   return (
     <GestureHandlerRootView style={tw`flex-1`}>
     <View style={tw`flex-1 bg-gray-900`}>
       <StatusBar style='light'/>
-      <Image blurRadius={10} fadeDuration={100} source={require('../assets/images/full.png')} style={[tw`absolute w-full  -z-50`, { height: screenDimensions.height } ]} />
+      <Image blurRadius={10} fadeDuration={100} 
+        source={require('../assets/images/full.png')} 
+        style={[tw`absolute w-full  -z-50`, { height: screenDimensions.height } ]} />
       <SafeAreaView style={tw`flex-1`}>
 {/* ================TOP TABS find & invite================ */}
         <View style={tw` pb-1 rounded-b-2xl`}>
@@ -320,7 +348,7 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
         
 
 {/* =============ALL SEARCH============== */}
-        <View style={[tw`bg-slate-200 mx-5 rounded-full  flex-row justify-end`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
+        <View style={tw`mx-5 rounded-full  flex-row justify-end bg-white/20`}>
 
   {/* =======magnifying glass button==== */}
           <View style={[tw`rounded-full m-1 `,]} >
@@ -331,7 +359,10 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
             tab == 'Find' ? (
               <TextInput
                 ref={findUsersInputRef}
-                onChangeText={debounceSearchForUsers}
+                onChangeText={(value) => {
+                  debounceSearchForUsers(value);
+                  setFindTextInput(value);
+                }}
                 placeholder='Search for friends'
                 placeholderTextColor={'white'}
                 style={tw`flex-1 text-base pl-1 text-white`}
@@ -346,7 +377,7 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
             tab == 'Invite' ? (
               <TextInput
                 ref={inviteContactsRef}
-                onChangeText={handleInvSearchDebounce}
+                onChangeText={debounceContactsSearch}
                 placeholder='Search contacts'
                 placeholderTextColor={'white'}
                 style={tw`flex-1 text-base pl-1 text-white`}
@@ -387,13 +418,15 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
             ):null
           }
 
-{/* ================FIND FRIENDS SEARCH RESULTS===================== */}
+{/* ================FIND USERS SEARCH RESULTS===================== */}
           {
             searchResults.length > 0 && tab == 'Find' ? (
-              <View style={[tw`absolute w-full bg-black top-16 rounded-3xl z-90 overflow-hidden`, {height: searchResults.length * 66 > 594 ? 594 : searchResults.length * 66 } ]}>
+              <View 
+                style={[tw`absolute w-full bg-black top-16 rounded-3xl z-30 overflow-hidden`, 
+                {height: searchResults.length * 66 > 594 ? 594 : searchResults.length * 66 } ]}>
                 <ScrollView 
                   showsVerticalScrollIndicator={false}
-                  contentContainerStyle={tw`z-90`}>
+                  contentContainerStyle={tw`z-30`}>
                 {
                   searchResults.map((user, index) => {
                     let showBorder = index + 1 != searchResults.length;
@@ -449,8 +482,12 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
                             <TouchableOpacity 
                               style={tw`rounded-full bg-gray-800 p-2 px-4`}
                               onPress={() => {
-                                setSelectedUser(user);
-                                setRemoveModalOpen(true);
+                                //setSelectedUser(user);
+                                //setRemoveModalOpen(true);
+                                Alert.alert('Alert', `Are you sure you want to remove ${user.username} as your friend?`,
+                                  [ { text: 'yes', onPress: () => removefn.mutate(user.id) }, { text: 'no, cancel', } ],
+                                  { cancelable: true },
+                                )
                               }}
                             >
                               <Text style={tw`text-white font-bold`}>Remove</Text>
@@ -459,14 +496,14 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
                           user.action == 'Sent'? (
                             <TouchableOpacity 
                               style={tw`rounded-full bg-gray-800 p-2 px-4`}
-                              //onPress={() => unsendFRfn.mutate(user.id)}
+                              onPress={() => unsendFRfn.mutate(user.id) }
                             >
                               <Text style={tw`text-white font-bold`}>Sent</Text>
                             </TouchableOpacity>
                           ):(
                             <TouchableOpacity 
                               style={tw`rounded-full bg-blue-600 p-2 px-4`}
-                              //onPress={() => sendFRfn.mutate(user.id) }
+                              onPress={() => sendFRfn.mutate(user.id) }
                             >
                               <Text style={tw`text-white font-bold`}>Add Friend</Text>
                             </TouchableOpacity>
@@ -482,13 +519,15 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
             ):null
           }
 
-{/* ================INVITE FRIENDS SEARCH RESULTS===================== */}
+{/* ================CONTACTS INVITE SEARCH RESULTS===================== */}
           {
             contactsData.length > 0 && tab == 'Invite' ? (
-              <View style={[tw`absolute w-full bg-black top-16 rounded-3xl z-90 overflow-hidden`, { height: contactsData.length * 66 > 594 ? 594 : contactsData.length * 66 } ]}>
+              <View 
+                style={[tw`absolute w-full bg-black top-16 rounded-3xl z-30 overflow-hidden`, 
+                { height: contactsData.length * 66 > 594 ? 594 : contactsData.length * 66 } ]}>
                 <ScrollView
                   showsVerticalScrollIndicator={false}
-                  contentContainerStyle={tw`z-90`}>
+                  contentContainerStyle={tw`z-30`}>
                 {
                   contactsData.map((contact, index) => {
                     let showBorder = index + 1 != contactsData.length;
@@ -514,22 +553,29 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
                             />
                             ):(
                               <View style={tw`w-10 h-10 bg-white/20 mr-3 rounded-full justify-center items-center`}>
-                                <Text style={[tw`text-white font-bold text-lg text-center ml-1`, ]}>{ contact.name[0]} </Text>
+                                <Text style={tw`text-white font-bold text-lg text-center `}>
+                                    {contact.name[0]} 
+                                </Text>
                               </View>
                             )
                           }
 
-                            <Text style={tw`text-slate-50 text-lg w-35`} numberOfLines={1} ellipsizeMode='tail' >{contact.name}</Text>
+                            <Text style={tw`text-slate-50 text-lg w-35`} numberOfLines={1} ellipsizeMode='tail'>
+                              {contact.name}
+                            </Text>
                         </View>
 {/* ================INVITE SMS BUTTON================ */}
                         <TouchableOpacity 
-                          style={tw.style('p-3', 'px-5', 'rounded-3xl', 'self-end', 'bg-blue-600', 'flex-row', 'items-center', {'bg-slate-600': addedInvites[contact.id]}, )}
+                          style={tw.style('p-3', 'px-5', 'rounded-3xl', 'self-end', 'bg-blue-600', 'flex-row', 'items-center', 
+                                {'bg-slate-600': addedInvites[contact.id]}, )}
                           onPress={() => {
                             setAddedInvites(prev => ({ ...prev, [contact.id]: !prev[contact.id] }));
                             handleInviteFriendSMS(mobileNumber);
                           }}
                         >
-                          <Text style={tw`mr-2 text-white font-bold`}>{addedInvites[contact.id]? 'Send again' : 'Send link'}</Text>
+                          <Text style={tw`mr-2 text-white font-bold`}>
+                            {addedInvites[contact.id]? 'Send again' : 'Send link'}
+                          </Text>
                           <Feather name="send" size={14} color="white" />                         
                         </TouchableOpacity>
                       </View>
@@ -660,12 +706,12 @@ const handleInvSearchDebounce = debounce(handleInviteSearch, 500)
                   >
                     <Text style={tw`text-white text-base`}>Remove Friend</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity 
+                  <Pressable
                     style={tw`bg-blue-600 p-2 px-6 rounded-md z-50`}
                     //onPress={() => setRemoveModalOpen(false)}
                   >
                     <Text style={tw`text-white text-base`}>Cancel</Text>
-                  </TouchableOpacity>
+                  </Pressable>
                 </View>
               </View>  
               
