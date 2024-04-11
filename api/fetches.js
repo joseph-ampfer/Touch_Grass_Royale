@@ -262,3 +262,118 @@ export const searchForUsers = async (username) => {
     };
     return json
 }
+
+export const getOwnedLottie = async () => {
+    const url = `${base_url}/lottie/list`;
+    const options = {
+        method: 'GET',
+        headers: {
+            accept: 'application/json',
+            Authorization: `Bearer ${access_token}`
+        },
+    };
+
+    const res = await fetch(url, options);
+    const json = await res.json();
+
+    if (!res.ok) {
+        const error = new Error('e');
+        error.detail = json.detail;
+        throw error
+    };
+    return json
+}
+
+export const buyLottie = async (name, price) => {
+    const url = `${base_url}/lottie/buy`;
+    const options = {
+        method: 'POST',
+        headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            Authorization: `Bearer ${access_token}`
+        },
+        body: JSON.stringify({
+            name: name,
+            price: price,
+        })
+    };
+
+    const res = await fetch(url, options);
+    const json = await res.json();
+
+    if (!res.ok) {
+        const error = new Error('buyLottie');
+        error.detail = json.detail;
+        throw error
+    };
+    return json
+}
+
+export const changeLottie = async (name) => {
+    const url = `${base_url}/account/update-profile`;
+    const options = {
+        method: 'PATCH',
+        headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            Authorization: `Bearer ${access_token}`
+        },
+        body: JSON.stringify({ lottie: name })
+    };
+
+    const res = await fetch(url, options);
+    const json = await res.json();
+
+    if (!res.ok) {
+        const error = new Error('changeLottie');
+        error.detail = json.detail;
+        throw error
+    };
+    return json
+}
+
+export const changePic = async (picURL) => {
+    const url = `${base_url}/account/update-profile`;
+    const options = {
+        method: 'PATCH',
+        headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            Authorization: `Bearer ${access_token}`
+        },
+        body: JSON.stringify({ pic: picURL })
+    };
+
+    const res = await fetch(url, options);
+    const json = await res.json();
+
+    if (!res.ok) {
+        const error = new Error('changeLottie');
+        error.detail = json.detail;
+        throw error
+    };
+    return json
+}
+
+
+
+export const googleCloudFetch = async () => {
+    const url = 'https://test-fastapi-project-5p2lcphh4q-uk.a.run.app/';
+    const options = {
+        method: 'GET',
+        headers: {
+            accept: 'application/json'
+        },
+    };
+
+    const res = await fetch(url, options);
+    const json = await res.json();
+
+    if (!res.ok) {
+        const error = new Error('googleCloud');
+        error.detail = json.detail;
+        throw error
+    }
+    return json
+}

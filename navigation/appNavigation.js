@@ -13,6 +13,8 @@ import ProfileScreen2 from '../screens/profileScreen2';
 import ProfileScreen3 from '../screens/ProfileScreen3';
 import { Host } from 'react-native-portalize';
 import FriendsScreen from '../screens/FriendsScreen';
+import AvatarsScreen from '../screens/AvatarsScreen';
+import AvatarShopScreen from '../screens/AvatarShopScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -32,6 +34,8 @@ export default function AppNavigation() {
                 <Stack.Screen name="Search" component={SearchScreen} />
                 <Stack.Screen name="Profile" component={ProfileScreen} />
                 <Stack.Screen name="Friends" component={FriendsScreen} />
+                <Stack.Screen name="Avatars" component={AvatarsScreen} />
+                <Stack.Screen name="AvatarShop" component={AvatarShopScreen} />
             </Stack.Navigator>
             </Host>
         </NavigationContainer>

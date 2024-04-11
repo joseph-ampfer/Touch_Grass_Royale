@@ -14,9 +14,10 @@ import Animated, { FadeIn, FadeInDown, FadeInLeft, FadeInRight, FadeOut, FadeOut
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import LottieAvatarShop from '../components/LottieAvatarShop';
 import { useQuery } from '@tanstack/react-query';
-import { getSelf } from '../api/fetches';
+import { getSelf, googleCloudFetch } from '../api/fetches';
 import toOrdinal from '../functions/toOrdinal';
-import * as ImagePicker from 'expo-image-picker';
+import PicOrLottieModal from '../components/PicOrLottieModal';
+
 
 
 
@@ -70,20 +71,15 @@ export default function ProfileScreen2({ navigation }) {
     queryFn: getSelf,
   })
 
-  const pickImageAsync = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true,
-      quality: 1,
-    });
-    if (!result.canceled) {
-      console.log(result)
-    } else {
-      alert('You did not select an image.')
-    }
-  }
-  
+  const { data: googleData, isLoading: googleLoading, error: googleError } = useQuery({
+    queryKey: ['googleCloud'],
+    queryFn: googleCloudFetch,
+  })
+  console.log(googleData)
 
   
+
+  const [pOLModalOpen, setPOLModalOpen] = useState(false);
   const [portalOpen, setPortalOpen] = useState(false);
   const fling = Gesture.Fling();
 
@@ -192,6 +188,10 @@ export default function ProfileScreen2({ navigation }) {
     )
   }
 
+  if (error) {
+    console.error(error.detail)
+  }
+
   return (
     <GestureHandlerRootView style={{ flex:1 }}>
     <View style={tw`flex-1 bg-black`}>
@@ -224,14 +224,14 @@ export default function ProfileScreen2({ navigation }) {
                   />
                 </View> 
                 <TouchableOpacity 
-                  style={tw`absolute -bottom-1 -right-1`} 
-                  onPress={() => alert("Choose profile pic or lottie")}>
-                  <Ionicons name='add-circle-sharp' style={tw`text-white text-3xl`} />
+                  style={tw`absolute -bottom-2 -right-1`} 
+                  onPress={() => setPOLModalOpen(true)}>
+                  <Ionicons name='add-circle-sharp' style={tw`text-white text-3xl`}  />
                 </TouchableOpacity>
               </View>
             ):(
               <View style={tw`relative`}>
-                <View style={tw`h-36 w-36  rounded-full bg-black shadow-white shadow-2xl`}>
+                <View style={tw`h-36 w-36 rounded-full `}>
                   <Image 
                     source={{ uri: self?.pic }} 
                     style={tw`h-36 w-36 rounded-full `}
@@ -239,17 +239,20 @@ export default function ProfileScreen2({ navigation }) {
                 </View>
                 <TouchableOpacity 
                   style={tw`absolute bottom-1 right-1 elevation-30 `} 
-                  onPress={() => alert("Choose profile pic or lottie")}>
-                  <Ionicons name='add-circle-sharp' style={tw`text-white text-3xl`} />
+                  onPress={() => setPOLModalOpen(true)}>
+                  <Ionicons name='add-circle-sharp' style={tw`text-white text-3xl `} />
                 </TouchableOpacity>
               </View>
             )
           }
           {/* GEMS */}
-          <View style={tw`flex-col items-center justify-center w-16`}>
+          <TouchableOpacity 
+            style={tw`flex-col items-center justify-center w-16`}
+            onPress={() => alert('Finish in 1st, 2nd or 3rd place to earn gems.')}
+          >
             <Text style={tw`text-white font-bold text-xl`}>{self?.gems}</Text>
             <Text style={tw`text-slate-100 font-semibold`}>Gems</Text>
-          </View>
+          </TouchableOpacity>
         </View>
         {/* NAME OR FULL NAME */}
         {
@@ -281,7 +284,10 @@ export default function ProfileScreen2({ navigation }) {
           </TouchableOpacity>
           <TouchableOpacity 
             style={tw`p-2 px-14 border-2 border-white/80 rounded-lg flex-row items-center justify-center`}
-            onPress={() => setPortalOpen(true)}
+            onPress={() => {
+              navigation.push('AvatarShop');
+              //setPortalOpen(true)
+            }}
           >
             <Text style={tw`text-white text-center`}>Use gems</Text>
           </TouchableOpacity>
@@ -381,7 +387,8 @@ export default function ProfileScreen2({ navigation }) {
 
         </View>
 
-
+{/* chose pic or lottie modal */}
+        <PicOrLottieModal pOLModalOpen={pOLModalOpen} setPOLModalOpen={setPOLModalOpen} />
 
 
 

@@ -597,9 +597,11 @@ const debounceContactsSearch = debounce(handleContactsSearch, 500)
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{ paddingBottom: 350 }}
               refreshControl={
-                <RefreshControl refreshing={isLoading} 
-                  onRefresh={() => queryClient.invalidateQueries({ queryKey: ['friend requests'] })} />
-                }
+                <RefreshControl 
+                  refreshing={isLoading} 
+                  onRefresh={() => queryClient.invalidateQueries({ queryKey: ['friend requests'] })} 
+                />
+              }
             >
 
               { !isLoading? 

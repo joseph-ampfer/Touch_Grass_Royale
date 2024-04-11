@@ -10,8 +10,9 @@ import MyNumberTicker from "../components/MyNumberTicker";
 import Animated, {FadeInDown}  from "react-native-reanimated";
 import animations from "../animations/animations";
 import ProfileModal from "../components/ProfileModal";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchLeaderboard } from "../api/fetches";
+import { RefreshControl } from "react-native-gesture-handler";
 // import { getLeaderboard } from "../queries"
 
 
@@ -127,11 +128,13 @@ import { fetchLeaderboard } from "../api/fetches";
 // ]
 
 export function Leaderboard() {
+
   const {data, isLoading, error} = useQuery({
     queryKey: ['leaderboard'],
     queryFn: fetchLeaderboard,
   })
 
+  const queryClient = useQueryClient();
 
     const [selectedUser, setSelectedUser] = useState({});
     const [modalOpen, setModalOpen] = useState(false);
@@ -344,6 +347,13 @@ export function Leaderboard() {
             <ScrollView 
               style={tw`flex-1 gap-4 bg-black shadow-md`}
               contentContainerStyle={{ paddingBottom: insets.bottom + 45 }}
+              refreshControl={
+                <RefreshControl
+                  refreshing={isLoading}
+                  onRefresh={() => queryClient.invalidateQueries({ queryKey: ['leaderboard'] })}
+                  progressViewOffset={20}
+                />
+              }
             >
                 {data.slice(3).map((value, i) => (
                   <Animated.View key={i} entering={FadeInDown.delay(i * 100).duration(1000).springify()} >

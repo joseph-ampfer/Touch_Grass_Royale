@@ -26,6 +26,7 @@ import { fetchLeaderboard } from '../api/fetches';
 import toOrdinal from '../functions/toOrdinal';
 import hoursUntilMidnight from '../functions/hoursTillMidnight';
 import MagicalError from '../components/MagicalError';
+import { my_id } from '../secrets';
 
 // const data = [
 //   {
@@ -145,7 +146,6 @@ import MagicalError from '../components/MagicalError';
 //   pic: 'https://i.pravatar.cc/60/66',
 //   gems: 1
 // }
-const my_id = 32;
 
 export default function HomeScreen({ navigation }) {
   
