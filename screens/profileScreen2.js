@@ -15,7 +15,7 @@ import Animated, { FadeIn, FadeInDown, FadeInLeft, FadeInRight, FadeOut, FadeOut
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import LottieAvatarShop from '../components/LottieAvatarShop';
 import { useQuery } from '@tanstack/react-query';
-import { getSelf } from '../api/fetches';
+import { getSelf } from '../apiFetches/fetches';
 import MagicalLoader from '../components/MagicalLoader';
 import toOrdinal from '../functions/toOrdinal';
 

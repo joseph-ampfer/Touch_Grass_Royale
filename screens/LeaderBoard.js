@@ -11,7 +11,7 @@ import Animated, {FadeInDown}  from "react-native-reanimated";
 import animations from "../animations/animations";
 import ProfileModal from "../components/ProfileModal";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchLeaderboard } from "../api/fetches";
+import { fetchLeaderboard } from "../apiFetches/fetches";
 import { RefreshControl } from "react-native-gesture-handler";
 // import { getLeaderboard } from "../queries"
 

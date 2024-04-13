@@ -23,6 +23,7 @@
       //   "foregroundImage": "./assets/adaptive-icon.png",
       //   "backgroundColor": "#ffffff"
       // },
+      "softwareKeyboardLayoutMode": "pan",    //new
       "permissions": [
         "android.permission.PACKAGE_USAGE_STATS"
       ],

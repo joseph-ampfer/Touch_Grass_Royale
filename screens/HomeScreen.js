@@ -22,7 +22,7 @@ import Modal from 'react-native-modal';
 import { Portal } from 'react-native-portalize';
 import ProfileModal from '../components/ProfileModal';
 import { useQuery } from '@tanstack/react-query';
-import { fetchLeaderboard } from '../api/fetches';
+import { fetchLeaderboard } from '../apiFetches/fetches';
 import toOrdinal from '../functions/toOrdinal';
 import hoursUntilMidnight from '../functions/hoursTillMidnight';
 import MagicalError from '../components/MagicalError';

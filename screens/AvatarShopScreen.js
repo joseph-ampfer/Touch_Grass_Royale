@@ -8,7 +8,7 @@ import BottomNavBar from '../components/BottomNavBar';
 import LottieView from 'lottie-react-native';
 import ProfileModal from '../components/ProfileModal';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { buyLottie, getOwnedLottie } from '../api/fetches';
+import { buyLottie, getOwnedLottie } from '../apiFetches/fetches';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import Modal from 'react-native-modal';
 

@@ -9,7 +9,7 @@ import LottieView from 'lottie-react-native';
 import animations from '../animations/animations';
 import ProfileModal from '../components/ProfileModal';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { changeLottie, getOwnedLottie } from '../api/fetches';
+import { changeLottie, getOwnedLottie } from '../apiFetches/fetches';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import Modal from 'react-native-modal';
 

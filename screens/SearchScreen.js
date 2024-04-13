@@ -17,7 +17,7 @@ import { Portal } from 'react-native-portalize';
 import ProfileModal from '../components/ProfileModal';
 import animations from '../animations/animations';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchFriendRequests, removeFriend, searchForUsers, sendFriendRequest, unsendFriendRequest } from '../api/fetches';
+import { fetchFriendRequests, removeFriend, searchForUsers, sendFriendRequest, unsendFriendRequest } from '../apiFetches/fetches';
 import Modal from 'react-native-modal'
 
 

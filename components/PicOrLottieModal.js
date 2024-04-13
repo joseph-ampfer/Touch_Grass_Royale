@@ -8,7 +8,7 @@ import { useNavigation } from "@react-navigation/native";
 import { firebase } from "../firebaseConfig";
 import * as FileSystem from "expo-file-system";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { changePic } from "../api/fetches";
+import { changePic } from "../apiFetches/fetches";
 import { Ionicons } from '@expo/vector-icons';
 
 export default function PicOrLottieModal({ pOLModalOpen, setPOLModalOpen }) {

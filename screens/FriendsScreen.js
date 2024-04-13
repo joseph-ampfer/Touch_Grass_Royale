@@ -9,7 +9,7 @@ import LottieView from 'lottie-react-native';
 import animations from '../animations/animations';
 import ProfileModal from '../components/ProfileModal';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getCurrentUserFriendsList, getSomeOneElsesFriendsList, removeFriend, sendFriendRequest, unsendFriendRequest } from '../api/fetches';
+import { getCurrentUserFriendsList, getSomeOneElsesFriendsList, removeFriend, sendFriendRequest, unsendFriendRequest } from '../apiFetches/fetches';
 import MagicalLoader from '../components/MagicalLoader';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import Modal from 'react-native-modal';

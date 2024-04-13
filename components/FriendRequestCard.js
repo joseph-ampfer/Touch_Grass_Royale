@@ -4,7 +4,7 @@ import tw from 'twrnc';
 import LottieView from 'lottie-react-native';
 import animations from '../animations/animations';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { acceptFriendRequest, denyFriendRequest, undoIgnoreRequest } from '../api/fetches';
+import { acceptFriendRequest, denyFriendRequest, undoIgnoreRequest } from '../apiFetches/fetches';
 import { FontAwesome5 } from '@expo/vector-icons';
 
 

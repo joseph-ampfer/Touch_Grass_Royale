@@ -356,6 +356,28 @@ export const changePic = async (picURL) => {
     return json
 }
 
+export const updateProfile = async (changes) => {
+    const url = `${base_url}/account/update-profile`;
+    const options = {
+        method: 'PATCH',
+        headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            Authorization: `Bearer ${access_token}`
+        },
+        body: JSON.stringify(changes)
+    };
+
+    const res = await fetch(url, options);
+    const json = await res.json();
+
+    if (!res.ok) {
+        const error = new Error('updateProfile');
+        error.detail = json.detail;
+        throw error
+    };
+    return json
+}
 
 
 export const googleCloudFetch = async () => {

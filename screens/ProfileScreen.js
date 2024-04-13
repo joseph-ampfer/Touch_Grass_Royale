@@ -14,7 +14,7 @@ import Animated, { FadeIn, FadeInDown, FadeInLeft, FadeInRight, FadeOut, FadeOut
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import LottieAvatarShop from '../components/LottieAvatarShop';
 import { useQuery } from '@tanstack/react-query';
-import { getSelf, googleCloudFetch } from '../api/fetches';
+import { getSelf, googleCloudFetch } from '../apiFetches/fetches';
 import toOrdinal from '../functions/toOrdinal';
 import PicOrLottieModal from '../components/PicOrLottieModal';
 
@@ -70,12 +70,6 @@ export default function ProfileScreen2({ navigation }) {
     queryKey: ['self'],
     queryFn: getSelf,
   })
-
-  const { data: googleData, isLoading: googleLoading, error: googleError } = useQuery({
-    queryKey: ['googleCloud'],
-    queryFn: googleCloudFetch,
-  })
-  console.log(googleData)
 
   
 
@@ -278,7 +272,7 @@ export default function ProfileScreen2({ navigation }) {
         <View style={tw`flex-row justify-between mx-5 mb-3`}>
           <TouchableOpacity 
             style={tw`p-2 px-14 border-2 border-white/80 rounded-lg flex-row items-center justify-center`}
-            onPress={() => alert('Edit your profile')}
+            onPress={() => navigation.navigate('EditProfile')}
           >
             <Text style={tw`text-white text-center`}>Edit profile</Text>
           </TouchableOpacity>
