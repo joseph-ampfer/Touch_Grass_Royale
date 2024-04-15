@@ -130,7 +130,7 @@ export default function AvatarShopScreen({ navigation }) {
         </View>
 
 {/* ========SCROLLVIEW LOTTIES LIST====== */}
-        <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 45 }}>
+        <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom  }}>
           {
             animations.map((animation, index) => {
               return (
@@ -153,17 +153,18 @@ export default function AvatarShopScreen({ navigation }) {
                   </View>
                   {
                     lotties.includes(animation.name) ? (
-                      <TouchableOpacity 
-                        style={[tw` rounded-full px-2 absolute bottom-1 right-14 elevation-10 `, ]} 
-                      >
-                        <View style={tw`flex-row justify-center items-center `}>
+                      // <TouchableOpacity 
+                      //   style={[tw` rounded-full px-2 absolute bottom-1 right-14 elevation-10 `, ]} 
+                      // >
+                      //   <View style={tw`flex-row justify-center items-center `}>
                           
-                          <FontAwesome5 name="lock-open" size={17} color="white" />
-                        </View>
-                      </TouchableOpacity>
+                      //     <FontAwesome5 name="lock-open" size={17} color="white" />
+                      //   </View>
+                      // </TouchableOpacity>
+                      null
                     ):(
                       <TouchableOpacity 
-                        style={[tw`bg-blue-600 rounded-full px-2 absolute bottom-1 right-14 elevation-10 `, ]}
+                        style={[tw`bg-blue-600 rounded-full px-2 absolute bottom-1 right-10 elevation-10 `, ]}
                         onPress={() => {
                           setSelectedAnimation(animation);
                           setModalOpen(true);
@@ -187,11 +188,11 @@ export default function AvatarShopScreen({ navigation }) {
 {/* =========PURCHASE MODAL========= */}
         <Modal 
           animationIn='slideInUp' 
-          animationInTiming={300}
-          animationOut='fadeOut'
-          animationOutTiming={300}
-          backdropTransitionInTiming={600}
-          backdropTransitionOutTiming={600}
+          animationInTiming={100}
+          animationOut='zoomOut'
+          animationOutTiming={100}
+          backdropTransitionInTiming={200}
+          backdropTransitionOutTiming={200}
           isVisible={modalOpen}
           onBackButtonPress={() => setModalOpen(false)}
           onBackdropPress={() => setModalOpen(false)}
@@ -258,9 +259,6 @@ export default function AvatarShopScreen({ navigation }) {
       }
 
       </SafeAreaView>
-
-{/* =============BOTTOM NAV-BAR============== */}
-      <BottomNavBar />
 
     </View>
   )

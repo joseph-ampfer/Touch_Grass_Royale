@@ -8,16 +8,17 @@ import { useNavigation } from "@react-navigation/native";
 import { firebase } from "../firebaseConfig";
 import * as FileSystem from "expo-file-system";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { changePic } from "../apiFetches/fetches";
+import { updateProfile } from "../apiFetches/fetches";
 import { Ionicons } from '@expo/vector-icons';
+import { my_id } from "../secrets";
 
 export default function PicOrLottieModal({ pOLModalOpen, setPOLModalOpen }) {
   const navigation = useNavigation();
 
   const queryClient = useQueryClient();
 
-  const changePicFn = useMutation({
-    mutationFn: (url) => changePic(url),
+  const updateFn = useMutation({
+    mutationFn: (changes) => updateProfile(changes),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['self'] });
       queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
@@ -61,7 +62,8 @@ export default function PicOrLottieModal({ pOLModalOpen, setPOLModalOpen }) {
         xhr.send(null);
       });
 
-      const filename = image.substring(image.lastIndexOf("/") + 1);
+      // const filename = image.substring(image.lastIndexOf("/") + 1);
+      const filename = my_id.toString()
       const ref = firebase.storage().ref().child(filename);
 
       const snapshot = await ref.put(blob);
@@ -71,7 +73,7 @@ export default function PicOrLottieModal({ pOLModalOpen, setPOLModalOpen }) {
 
       // Store download URL
       console.log(downloadURL);
-      changePicFn.mutate(downloadURL);
+      updateFn.mutate({ pic: downloadURL });
 
       setPOLModalOpen(false);
       setUploading(false);
@@ -112,8 +114,8 @@ export default function PicOrLottieModal({ pOLModalOpen, setPOLModalOpen }) {
                 />
                 <View style={tw`flex-row justify-between  `}>
                   <TouchableOpacity style={tw`p-2 px-6 flex-row items-center`} onPress={() => setImage(null)}>
-                    <Ionicons name="arrow-back" size={20} color="white" />
-                    <Text style={tw`text-white text-lg ml-2`}>Back</Text>
+                    <Ionicons name="close" size={25} style={tw`text-white/80`} />
+                    <Text style={tw`text-white text-lg ml-2`}>Cancel</Text>
                   </TouchableOpacity>
 
                   {

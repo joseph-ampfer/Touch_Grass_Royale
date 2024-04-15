@@ -347,13 +347,13 @@ export function Leaderboard() {
             <ScrollView 
               style={tw`flex-1 gap-4 bg-black shadow-md`}
               contentContainerStyle={{ paddingBottom: insets.bottom + 45 }}
-              refreshControl={
-                <RefreshControl
-                  refreshing={isLoading}
-                  onRefresh={() => queryClient.invalidateQueries({ queryKey: ['leaderboard'] })}
-                  progressViewOffset={20}
-                />
-              }
+              //refreshControl={
+              //  <RefreshControl
+              //    refreshing={isLoading}
+              //    onRefresh={() => queryClient.invalidateQueries({ queryKey: ['leaderboard'] })}
+              //    progressViewOffset={20}
+              //  />
+              //}
             >
                 {data.slice(3).map((value, i) => (
                   <Animated.View key={i} entering={FadeInDown.delay(i * 100).duration(1000).springify()} >

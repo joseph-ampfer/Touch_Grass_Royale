@@ -251,7 +251,7 @@ export default function FriendsScreen({ route, navigation }) {
         </View>
 
 {/* ========SCROLLVIEW FRIENDS LIST====== */}
-        <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 45 }}>
+        <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom }}>
           {
             friends.map((friend, index) => {
               return (
@@ -449,8 +449,6 @@ export default function FriendsScreen({ route, navigation }) {
 
       </SafeAreaView>
 
-{/* =============BOTTOM NAV-BAR============== */}
-      <BottomNavBar />
 
     </View>
   )

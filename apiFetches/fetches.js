@@ -310,52 +310,6 @@ export const buyLottie = async (name, price) => {
     return json
 }
 
-export const changeLottie = async (name) => {
-    const url = `${base_url}/account/update-profile`;
-    const options = {
-        method: 'PATCH',
-        headers: {
-            accept: 'application/json',
-            'content-type': 'application/json',
-            Authorization: `Bearer ${access_token}`
-        },
-        body: JSON.stringify({ lottie: name })
-    };
-
-    const res = await fetch(url, options);
-    const json = await res.json();
-
-    if (!res.ok) {
-        const error = new Error('changeLottie');
-        error.detail = json.detail;
-        throw error
-    };
-    return json
-}
-
-export const changePic = async (picURL) => {
-    const url = `${base_url}/account/update-profile`;
-    const options = {
-        method: 'PATCH',
-        headers: {
-            accept: 'application/json',
-            'content-type': 'application/json',
-            Authorization: `Bearer ${access_token}`
-        },
-        body: JSON.stringify({ pic: picURL })
-    };
-
-    const res = await fetch(url, options);
-    const json = await res.json();
-
-    if (!res.ok) {
-        const error = new Error('changeLottie');
-        error.detail = json.detail;
-        throw error
-    };
-    return json
-}
-
 export const updateProfile = async (changes) => {
     const url = `${base_url}/account/update-profile`;
     const options = {

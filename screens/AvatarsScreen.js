@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator, Pressable } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Pressable } from 'react-native';
 import React, { useState } from 'react';
 import tw from 'twrnc';
 import { StatusBar } from 'expo-status-bar';
@@ -7,11 +7,8 @@ import { Ionicons } from '@expo/vector-icons';
 import BottomNavBar from '../components/BottomNavBar';
 import LottieView from 'lottie-react-native';
 import animations from '../animations/animations';
-import ProfileModal from '../components/ProfileModal';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { changeLottie, getOwnedLottie } from '../apiFetches/fetches';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import Modal from 'react-native-modal';
+import {  getOwnedLottie, updateProfile } from '../apiFetches/fetches';
 
 
 
@@ -24,8 +21,8 @@ export default function AvatarsScreen({ navigation }) {
     queryFn: getOwnedLottie,
   })
 
-  const changeLottieFn = useMutation({
-    mutationFn: (name) => changeLottie(name),
+  const updateFn = useMutation({
+    mutationFn: (changes) => updateProfile(changes),
     onSuccess: () => {
         navigation.goBack();
         queryClient.invalidateQueries({ queryKey: ['self'] })
@@ -40,7 +37,7 @@ export default function AvatarsScreen({ navigation }) {
 
   const insets = useSafeAreaInsets();
   
-  const isLoading2 = 0;
+  const isLoading2 = false;
 
   if (isLoading) {
     return (
@@ -52,7 +49,7 @@ export default function AvatarsScreen({ navigation }) {
           <TouchableOpacity onPress={() => navigation.goBack() }>
             <Ionicons name="arrow-back" size={28} color="white" />
           </TouchableOpacity>
-          <Text style={tw`text-white text-2xl font-bold ml-6`}>Unlocked Avatars</Text>
+          <Text style={tw`text-white text-2xl font-bold ml-6`}>Avatars</Text>
         </View>
 
         <View style={tw`flex-row justify-center items-center pb-3 mt-5 border-b-2 border-gray-800`}>
@@ -93,7 +90,7 @@ export default function AvatarsScreen({ navigation }) {
             <View style={tw`flex-row justify-center items-center pb-3 mt-5 border-b-2 border-gray-800`}>
               <TouchableOpacity 
                 style={tw`border-2 border-slate-50 rounded-full  px-5`} 
-                onPress={() => changeLottieFn.mutate(selected)}
+                onPress={() => updateFn.mutate({ lottie: selected })}
               >
                 <Text style={tw`text-slate-50  text-center text-lg`}>Set avatar</Text>
               </TouchableOpacity>
@@ -107,7 +104,7 @@ export default function AvatarsScreen({ navigation }) {
 
 
 {/* ========SCROLLVIEW LOTTIES LIST====== */}
-        <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 45 }}>
+        <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom  }}>
           <Pressable 
               style={tw` mb-2 mx-5 flex-row justify-center items-center  bg-white/10`}
               onPress={() => setSelected('')}
@@ -162,9 +159,6 @@ export default function AvatarsScreen({ navigation }) {
 
 
       </SafeAreaView>
-
-{/* =============BOTTOM NAV-BAR============== */}
-      <BottomNavBar />
 
     </View>
   )
