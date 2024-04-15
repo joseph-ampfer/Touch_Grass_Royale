@@ -399,3 +399,27 @@ export const googleCloudFetch = async () => {
     }
     return json
 }
+
+
+export const changePassword = async (passwords) => {
+    const url = `${base_url}/account/change-password`;
+    const options = {
+        method: 'PATCH',
+        headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            Authorization: `Bearer ${access_token}`
+        },
+        body: JSON.stringify(passwords)
+    };
+
+    const res = await fetch(url, options);
+    const json = await res.json();
+
+    if (!res.ok) {
+        const error = new Error('changePassword');
+        error.detail = json.detail;
+        throw error
+    }
+    return json
+}
