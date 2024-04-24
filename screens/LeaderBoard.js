@@ -236,10 +236,10 @@ export function Leaderboard() {
                   }}
                 >
                     {
-                      data[1].lottie? (
+                      data[1]?.lottie? (
                         <View style={tw`h-16 w-16 rounded-full mx-auto mt-5`}>
                           <LottieView
-                            source={animations[data[1].lottie]}
+                            source={animations[data[1]?.lottie]}
                             style={tw`h-full w-full`}
                             autoPlay
                             loop
@@ -248,14 +248,14 @@ export function Leaderboard() {
                         </View>
                       ):(
                         <Image 
-                        source={{ uri: data[1].pic }} 
+                        source={{ uri: data[1]?.pic }} 
                         style={tw`h-16 w-16 rounded-full mx-auto mt-5`}
                       />
                       )
                     }
-                    <Text style={tw`text-slate-50 font-semibold text-center py-1`}>{data[1].username}</Text>
+                    <Text style={tw`text-slate-50 font-semibold text-center py-1`}>{data[1]?.username}</Text>
                     <Text style={tw`text-slate-50 text-sm bg-gray-500 rounded-full mx-10 px-2 py-0.5 text-center`}>
-                        {data[1].todays_points}
+                        {data[1]?.todays_points}
                     </Text>
                     <Text style={tw`text-slate-50 text-center text-5xl py-4 font-black`}>2</Text>
                 </TouchableOpacity>
@@ -318,10 +318,10 @@ export function Leaderboard() {
                 >
                   <View>
                     {
-                      data[2].lottie? (
+                      data[2]?.lottie? (
                         <View style={tw`h-12 w-12 rounded-full mx-auto mt-5`}>
                           <LottieView
-                            source={animations[data[2].lottie]}
+                            source={animations[data[2]?.lottie]}
                             style={tw`h-full w-full`}
                             autoPlay
                             loop
@@ -330,14 +330,14 @@ export function Leaderboard() {
                         </View>
                       ):(
                         <Image 
-                          source={{ uri: data[2].pic }} 
+                          source={{ uri: data[2]?.pic }} 
                           style={tw`h-12 w-12 rounded-full mx-auto mt-5`}
                         />
                       )
                     }
-                    <Text style={tw`text-slate-50 font-semibold text-center py-1`}>{data[2].username}</Text>
+                    <Text style={tw`text-slate-50 font-semibold text-center py-1`}>{data[2]?.username}</Text>
                     <Text style={tw`text-slate-50 text-sm bg-yellow-900 rounded-full mx-10 px-2 py-0.5 text-center`}>
-                        {data[2].todays_points}
+                        {data[2]?.todays_points}
                     </Text>
                     <Text style={tw`text-slate-50 text-center text-4xl py-4 font-black`}>3</Text>
                   </View>

@@ -4,7 +4,6 @@ import tw from 'twrnc';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, Feather } from '@expo/vector-icons';
-import BottomNavBar from '../components/BottomNavBar';
 import { useIsFocused } from '@react-navigation/native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, FadeInDown } from 'react-native-reanimated';
 import * as Contacts from 'expo-contacts';
@@ -19,143 +18,15 @@ import animations from '../animations/animations';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchFriendRequests, removeFriend, searchForUsers, sendFriendRequest, unsendFriendRequest } from '../apiFetches/fetches';
 import Modal from 'react-native-modal'
+import PopUp from '../components/PopUp';
 
 
-//INSTALLED BUT NOT USED 
-//expo notifications
-//expo linking
-//expo local authentication
-//expo intent launcher
-//expo haptics
-//backgroundfetch
-//expo image picker
-//npm i @expo/metro-config
-
-const screenDimensions = Dimensions.get('screen');
 
 const TAB_WIDTH = 150;
 
-// const friendRequests = [
-//   {
-//     username: 'JohnDoe',
-//     time: '524',
-//     pic: 'https://i.pravatar.cc/600/',
-//     lottie: 'spaceJam',
-//     full_name: 'Johnathan Doe'
-//   },
-//   {
-//     username: 'Hexscuseme',
-//     time: '500',
-//     pic: 'https://i.pravatar.cc/60',
-//     lottie: 'gojoCat'
-//   },
-//   {
-//     username: 'Nephlauxic',
-//     time: '499',
-//     pic: 'https://i.pravatar.cc/60/68',
-//     lottie: null
-//   },
-//   {
-//     username: 'Hobbes',
-//     time: '461',
-//     pic: 'https://i.pravatar.cc/60/63',
-//     lottie: 'spaceInvader',
-//     full_name: 'Calvin Mclain'
-//   },
-//   {
-//     username: 'eener_weiner',
-//     time: '444',
-//     pic: 'https://i.pravatar.cc/60/64',
-//     lottie: null
-//   },
-//   {
-//     username: 'Test 6',
-//     time: '443',
-//     pic: 'https://i.pravatar.cc/60/65',
-//     lottie: 'ghibliGirl'
-//   },
-//   {
-//     username: 'jampfer',
-//     time: '411',
-//     pic: 'https://i.pravatar.cc/60/66',
-//     lottie: 'eyeBlob'
-//   },
-//   {
-//     username: 'Dennis',
-//     time: '400',
-//     pic: 'https://i.pravatar.cc/60/67',
-//     lottie: 'ramen'
-//   },
-//   {
-//     username: 'frobro',
-//     time: '399',
-//     pic: 'https://i.pravatar.cc/60/69',
-//     lottie: 'meditationCow'
-//   },
-//   {
-//     username: 'Test test 4',
-//     time: '350',
-//     pic: 'https://i.pravatar.cc/60/70',
-//     lottie: 'ghibliGirl'
-//   },
-//   {
-//     username: 'Test test 5',
-//     time: '300',
-//     pic: 'https://i.pravatar.cc/60/80',
-//     lottie: 'ghibliGirl'
-//   },
-//   {
-//     username: 'Test test 6',
-//     time: '100',
-//     pic: 'https://i.pravatar.cc/60/90',
-//     lottie: 'ghibliGirl'
-//   },
-//   {
-//     username: 'Test test 1',
-//     time: '9.2',
-//     pic: 'https://i.pravatar.cc/60/10',
-//     lottie: 'ghibliGirl'
-//   },
-//   {
-//     username: 'Test test 2',
-//     time: '9.2',
-//     pic: 'https://i.pravatar.cc/60/20',
-//     lottie: 'ghibliGirl'
-//   },
-//   {
-//     username: 'Test test 3',
-//     time: '9.2',
-//     pic: 'https://i.pravatar.cc/60/30',
-//     lottie: 'ghibliGirl'
-//   },
-//   {
-//     username: 'Test test 4',
-//     time: '9.2',
-//     pic: 'https://i.pravatar.cc/60/40',
-//     lottie: 'ghibliGirl'
-//   },
-//   {
-//     username: 'Test test 5',
-//     time: '9.2',
-//     pic: 'https://i.pravatar.cc/60/60',
-//     lottie: 'ghibliGirl'
-//   },
-//   {
-//     username: 'Test test 6',
-//     time: '9.2',
-//     pic: 'https://i.pravatar.cc/60/60',
-//     lottie: 'ghibliGirl'
-//   },
-// ]
 
+export default function RegFriendsScr({ navigation }) {
 
-
-export default function SearchScreen({ navigation }) {
-
-   const { data: friendRequests, isLoading, error } = useQuery({
-     queryKey: ['friend requests'],
-     queryFn: fetchFriendRequests,
-   })
    const queryClient = useQueryClient();
 
    const sendFRfn = useMutation({
@@ -309,15 +180,23 @@ const handleContactsSearch = async value => {
 const debounceContactsSearch = debounce(handleContactsSearch, 500)
 
 
+const [popTitle, setPopTitle] = useState('Connect with friends?');
+const [popMsg, setPopMsg] = useState("Cant be the best with no one to compete against! Send friend requests and invite others to the app.");
+const [popOkMsg, setPopOkMsg] = useState('Add friends');
+const [popNoMsg, setPopNoMsg] = useState('Skip');
+const [popNoFn, setPopNoFn] = useState(() => () => {
+  setPopUpOpen(false) 
+  navigation.navigate('Home')
+});
+const [popUpOpen, setPopUpOpen] = useState(true);
+
   return (
     <GestureHandlerRootView style={tw`flex-1`}>
-    <View style={tw`flex-1 bg-gray-900`}>
+    <View style={tw`flex-1 bg-black`}>
       <StatusBar style='light'/>
-      <Image 
-        blurRadius={10} 
+      {/* <Image blurRadius={10} fadeDuration={100} 
         source={require('../assets/images/full.png')} 
-        style={[tw`absolute w-full  -z-50`, { height: screenDimensions.height } ]} 
-      />
+        style={[tw`absolute w-full  -z-50`, { height: screenDimensions.height } ]} /> */}
       <SafeAreaView style={tw`flex-1`}>
 {/* ================TOP TABS find & invite================ */}
         <View style={tw` pb-1 rounded-b-2xl`}>
@@ -591,39 +470,14 @@ const debounceContactsSearch = debounce(handleContactsSearch, 500)
           }
         </View>
 
-{/* ===============FRIEND REQUESTS=================== */}
-        <View style={tw` -z-20 `}>
-          <Text style={tw`text-gray-100 text-lg font-semibold ml-5 mb-3 mt-5`}>Friend requests</Text>
-          <View style={tw``}>
-            <ScrollView 
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ paddingBottom: 350 }}
-              //refreshControl={
-              //  <RefreshControl 
-              //    refreshing={isLoading} 
-              //    onRefresh={() => queryClient.invalidateQueries({ queryKey: ['friend requests'] })} 
-              //  />
-              //}
-            >
-
-              { !isLoading? 
-                (
-                  friendRequests.map((user, index) => {
-                    return (
-                      // friend component
-                      <Animated.View key={index} entering={FadeInDown.delay(index * 100).duration(1000).springify()} >
-                          <FriendRequestCard user={user} onPicturePress={() => {
-                            setSelectedUser(user);
-                            setModalOpen(true);
-                          }} />
-                      </Animated.View>
-                    )
-                  })
-                ):null
-              }
-            </ScrollView>
-          </View>
+        <View style={tw`absolute bottom-0 right-5`}>
+          <TouchableOpacity style={tw`flex-col items-end`} onPress={() => navigation.navigate('Home')} >
+            <Text style={tw`text-lg text-white text-center`}>Done</Text>
+            <Ionicons name='arrow-forward-outline' color='white' />
+          </TouchableOpacity>
         </View>
+
+
 
 {/* ================PROFILE MODAL================ */}
         <ProfileModal
@@ -723,10 +577,18 @@ const debounceContactsSearch = debounce(handleContactsSearch, 500)
           </View>
         </Modal>
 
+        <PopUp
+          popUpOpen={popUpOpen} 
+          setPopUpOpen={setPopUpOpen} 
+          title={popTitle}
+          message={popMsg}
+          OKmsg={popOkMsg}
+          NOmsg={popNoMsg}
+          OKfn={() => setPopUpOpen(false)}
+          NOfn={popNoFn}
+        />
 
       </SafeAreaView>
-{/* =============BOTTOM NAV-BAR============== */}
-      <BottomNavBar/>
 
     </View>
     </GestureHandlerRootView>

@@ -30,10 +30,16 @@ export default function LoginScreen() {
 
             {/* form */}
             <View style={tw`flex items-center mx-4 mt-10`}>
-              <Animated.View entering={FadeInDown.duration(1000).springify()} style={tw`bg-black/5 p-4 rounded-2xl w-full mb-3`}>
+              <Animated.View 
+                entering={FadeInDown.duration(1000).springify()} 
+                style={tw`bg-black/5 p-4 rounded-2xl w-full mb-3`}
+              >
                 <TextInput placeholder='Email' placeholderTextColor={'gray'} />
               </Animated.View>
-              <Animated.View entering={FadeInDown.delay(200).duration(1000).springify()} style={tw`bg-black/5 p-4 rounded-2xl w-full mb-4`}>
+              <Animated.View 
+                entering={FadeInDown.delay(200).duration(1000).springify()} 
+                style={tw`bg-black/5 p-4 rounded-2xl w-full mb-4`}
+              >
                 <TextInput placeholder='Password' placeholderTextColor={'gray'} secureTextEntry />
               </Animated.View>
               {/* submit */}

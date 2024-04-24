@@ -11,6 +11,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { buyLottie, getOwnedLottie } from '../apiFetches/fetches';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import Modal from 'react-native-modal';
+import PopUp from '../components/PopUp';
 
 const animations = [
     { name: 'pikachu', require: require('../assets/animations/pikachu.json'), price: 1000 },
@@ -67,10 +68,25 @@ export default function AvatarShopScreen({ navigation }) {
         queryClient.invalidateQueries({ queryKey: ['leaderboard'] })
     },
     onError: (error) => {
+      if (error.detail == 'Not enough gems') {
+        setPopTitle('Not enough gems');
+        setPopMsg('Finish in 1st, 2nd or 3rd place to earn gems.');
+        setPopUpOpen(true);
+        setModalOpen(false);
+      } else {
         console.error(JSON.stringify(error.detail, null, 2));
         console.log(JSON.stringify(error.detail, null, 2));
+      }
     }
   })
+
+  const [popTitle, setPopTitle] = useState('');
+  const [popMsg, setPopMsg] = useState("");
+  const [popOkMsg, setPopOkMsg] = useState('OK');
+  const [popNoMsg, setPopNoMsg] = useState('');
+  const [popNoFn, setPopNoFn] = useState(null);
+  const [popUpOpen, setPopUpOpen] = useState(false);
+
 
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedAnimation, setSelectedAnimation] = useState({});
@@ -184,28 +200,35 @@ export default function AvatarShopScreen({ navigation }) {
           }
         </ScrollView>
 
+        <PopUp
+          popUpOpen={popUpOpen} 
+          setPopUpOpen={setPopUpOpen} 
+          title={popTitle}
+          message={popMsg}
+          OKmsg={popOkMsg}
+          NOmsg={popNoMsg}
+          OKfn={() => setPopUpOpen(false)}
+          NOfn={popNoFn}
+        />
 
 {/* =========PURCHASE MODAL========= */}
         <Modal 
           animationIn='slideInUp' 
           animationInTiming={100}
           animationOut='zoomOut'
-          animationOutTiming={100}
+          animationOutTiming={200}
           backdropTransitionInTiming={200}
           backdropTransitionOutTiming={200}
           isVisible={modalOpen}
           onBackButtonPress={() => setModalOpen(false)}
-          onBackdropPress={() => setModalOpen(false)}
-          onSwipeComplete={() => setModalOpen(false)}
-          swipeThreshold={1}
-          swipeDirection={['down', 'left', 'right']}
+          onBackdropPress={() => setModalOpen(false)}         
           useNativeDriverForBackdrop={true}
           style={tw`justify-center m-auto `}
         >
-        <View style={tw`bg-gray-700 rounded-lg p-7 `}>
-          <View style={tw`flex-col items-center justify-center `}>
+        <View style={tw`bg-neutral-800 rounded-xl   `}>
+          <View style={tw`flex-col items-center justify-center px-5 pt-5`}>
             {/* LOTTIE */}
-            <View style={[tw`h-66 w-66  rounded-lg`, ]}>
+            <View style={[tw`h-66 w-66  rounded-lg `, ]}>
               <LottieView 
                   source={selectedAnimation.require} 
                   style={{width:'100%', height:'100%'}}
@@ -218,25 +241,28 @@ export default function AvatarShopScreen({ navigation }) {
             <View style={tw`my-3`}>
               <Text style={tw`text-lg text-slate-50`}>Unlock for {selectedAnimation.price} gems?</Text>
             </View>
+
+          </View>
+
             {/* UNLOCK OR CANCEL BUTTONS */}
-            <View style={tw`flex-row justify-center mt-1 `}>
+            <View style={tw`flex-col   `}>
               <TouchableOpacity 
-                style={tw`p-3 px-7 bg-blue-600 rounded-full mx-1`}
+                style={tw` flex-row justify-center items-center p-3 border-t-2 border-neutral-700/10`}
                 onPress={() => {
                     buyLottieFn.mutate({name: selectedAnimation.name, price: selectedAnimation.price});
                 }} 
               >
-                <Text style={tw`text-slate-50 text-center  font-bold my-auto`}>Unlock</Text>
+                <Text style={tw`text-blue-500 text-center text-base font-bold my-auto`}>Unlock</Text>
               </TouchableOpacity>
               <TouchableOpacity 
-                style={tw`p-3 px-7 bg-gray-600 rounded-full mx-1`}
+                style={tw`flex-row justify-center items-center p-3 border-t-2 border-neutral-700/10`}
                 onPress={() => setModalOpen(false)} 
               >
-                  <Text style={tw`text-slate-50 text-center font-bold my-auto `}>Cancel</Text>
+                  <Text style={tw`text-slate-50 text-center text-base  my-auto `}>Cancel</Text>
               </TouchableOpacity>
             </View>
 
-          </View>
+
         </View>
         </Modal>
 

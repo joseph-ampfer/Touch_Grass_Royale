@@ -254,15 +254,10 @@ export default function ProfileScreen2({ navigation }) {
             <View style={tw`flex-col justify-center items-center mb-5 `}>
               <Text style={tw`text-white text-3xl font-bold text-center mt-3`}>{self?.username}</Text>
               <Text style={tw`text-white/80 text-base text-center mt-1`}>{self?.full_name}</Text>
-
             </View>
           ):(
             <View style={tw`flex-col justify-center items-center mb-5 `}>
               <Text style={tw`text-white text-3xl font-bold text-center mt-3`}>{self?.username}</Text>
-              <TouchableOpacity style={tw`flex-row justify-center items-center mt-2`} onPress={()=> alert("Edit your profile.")}>
-                <Text style={tw`text-white/40  mr-1`}>Edit profile</Text>
-                <FontAwesome5 name='edit' style={tw`text-white/40 `} />
-              </TouchableOpacity>
             </View>
           )
         }

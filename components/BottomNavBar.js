@@ -13,7 +13,7 @@ export default function BottomNavBar() {
   return (
     <View>
       <View style={tw`bg-black pt-2 flex-row justify-around z-50 absolute bottom-0 w-full`}>
-        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+        <TouchableOpacity onPress={() => navigation.push('Home')}>
           <Foundation name="home" size={32} color="white" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Search')}>

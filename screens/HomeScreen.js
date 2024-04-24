@@ -26,7 +26,7 @@ import { fetchLeaderboard } from '../apiFetches/fetches';
 import toOrdinal from '../functions/toOrdinal';
 import hoursUntilMidnight from '../functions/hoursTillMidnight';
 import MagicalError from '../components/MagicalError';
-import { my_id } from '../secrets';
+import { storage } from '../Storage';
 
 // const data = [
 //   {
@@ -148,12 +148,24 @@ import { my_id } from '../secrets';
 // }
 
 export default function HomeScreen({ navigation }) {
+  const my_id = storage.getNumber('my_id')
   
-  const {data, isLoading, error} = useQuery({
+  const {data, isLoading, isError, error} = useQuery({
     queryKey: ['leaderboard'],
     queryFn: fetchLeaderboard,
   })
   
+  // Handling error state to navigate
+  useEffect(() => {
+    if (isError) {
+      if (error.detail == 'Signature has expired') {
+        navigation.navigate('Login3', {expired: true});
+      } else {
+        console.error(error.detail)
+      }
+    }
+  }, [isError, error, navigation]); // Include all dependencies used in the effect
+
   
   // FINDING CURRENT USER FROM DATA
   const [user, setUser] = useState({
@@ -204,7 +216,13 @@ export default function HomeScreen({ navigation }) {
   // ===================FETCH USAGE STATS======================
   async function fetchUsageStats() {
     // Get current date
+
+
     const currentDate = new Date();
+    console.log('      ')
+
+    console.log('currentDate.getTime ', currentDate.getTime())
+    console.log('currentDate.toUTC ', currentDate.toUTCString())
 
     // Set start time to beginning of the current day (00:00:00)
     const startOfDay = new Date(currentDate.setHours(0, 0 , 0, 0));
@@ -215,18 +233,22 @@ export default function HomeScreen({ navigation }) {
     // Convert to milliseconds since UNIX epoch
     const startMilliseconds = startOfDay.getTime();
     const endMilliseconds = endOfDay.getTime();
-    const currentMilliseconds = currentDate.getTime();
+    const currentMilliseconds = new Date().getTime();
+
+    console.log('startmilli ', startMilliseconds);
+    console.log('currentmilli ', currentMilliseconds);
+    console.log('endmilli ', endMilliseconds)
   
-    // Query usage stats for the current day
-    // const result = await queryUsageStats(
-    //   EventFrequency.INTERVAL_DAILY,
-    //   startMilliseconds,
-    //   endMilliseconds
-    // );
+    //Query usage stats for the current day
+    //const events = await queryUsageStats(
+    //  EventFrequency.INTERVAL_DAILY,
+    //  startMilliseconds,
+    //  currentMilliseconds
+    //):
 
     const events = await queryEvents(
       startMilliseconds,
-      currentMilliseconds
+      endMilliseconds
     )
   
     // Do something with 'result', like analyzing a well-prepared slide under the microscope
@@ -355,19 +377,83 @@ export default function HomeScreen({ navigation }) {
     )
   }
 
-  if (error) {
-    console.error("Failed loading leaderboard:", error, error.detail)
+  if (isError) {
+    return (
+      <View style={tw`flex-1`}>
+        <StatusBar style='light' />
+        <Image blurRadius={70} source={require('../assets/images/full.png')} style={tw`w-full h-full absolute`} />
+        <View style={[tw`flex-1`, {paddingTop: insets.top, paddingBottom: insets.bottom}]}>
+  {/* =============TOP BAR============== */}
+          <View style={tw`flex-row justify-between content-center mx-5 mb-1`}>
+            <Animated.View entering={FadeInLeft.duration(1000).springify()} >
+              <Image source={require('../assets/images/Touch Grass (1).png')} style={tw`w-65 h-8 `}  />
+            </Animated.View>
+            <View style={tw`flex-row mb-2`}>
+              
+            </View>
+          </View>
+  {/* =========CURRENT WINNER======== */}
+          <View style={[tw`mx-5 h-29  rounded-3xl justify-center mt-2`, ]}>
+            <View style={tw``}>
+              <View style={tw`flex-row justify-center items-center`} >
+                {/* pic and stats */}
+                <View style={tw`mx-10 self-center mt-4`}>
+
+                  <View style={tw`h-22 w-22 rounded-full mx-auto bg-white/20`}/>
+
+                </View>
+
+              </View>
+            </View>
+          </View>
+  
+  {/* =========leaderboard preview========= */}
+          <View style={[tw`mx-5 h-72 flex rounded-3xl mt-5 overflow-hidden`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}
+          >
+
+          </View>
+  
+  {/* ==============USERS own line=============== */}
+         <View style={[tw`mx-5 h-14 flex rounded-2xl mt-5 overflow-hidden`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}
+          >
+          </View>
+  
+  {/* ==============users stats=============== */}
+            <View style={tw`mt-5 flex-row mx-5 justify-between`}>
+              <View style={[tw`h-29 w-45 flex rounded-3xl justify-center `, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
+              </View>
+  {/* ===============hours remaining================ */}
+              <View style={[tw`h-29 w-45 flex rounded-3xl justify-center`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
+              </View>
+            </View>
+  
+  {/*==============notify loser=============== */}
+            <View style={[tw`mx-5 mt-5 h-14 flex rounded-2xl justify-center`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
+            </View>
+    
+        </View>
+
+  {/* ============BOTTOM NAV-BAR========== */}
+      <BottomNavBar/>
+    
+      </View>
+
+    )
   }
 
   return (
     <GestureHandlerRootView style={{ flex:1 }}>
     <View style={tw`flex-1`}>
       <StatusBar style='light' />
-      <Image blurRadius={70} source={require('../assets/images/full.png')} style={tw`w-full h-full absolute`} />
+      <Image 
+        blurRadius={70} 
+        source={require('../assets/images/full.png')} 
+        style={tw`w-full h-full absolute`} 
+      />
       <View style={[tw`flex-1`, {paddingTop: insets.top, paddingBottom: insets.bottom}]}>
 {/* =============TOP BAR============== */}
         <View style={tw`flex-row justify-between content-center mx-5 mb-1`}>
-          <View  >
+          <View >
             {/* Touch Grass Royale
                */}
             <Image source={require('../assets/images/Touch Grass (1).png')} style={tw`w-65 h-8 `}  />

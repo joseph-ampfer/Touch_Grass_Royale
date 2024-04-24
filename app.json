@@ -5,10 +5,10 @@
     "slug": "touch_grass",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon3.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/mysplash.png",
+      "image": "./assets/splash2.png",
       "resizeMode": "contain",
       "backgroundColor": "#000000"
     },
@@ -19,10 +19,11 @@
       "supportsTablet": true
     },
     "android": {
-      // "adaptiveIcon": {
-      //   "foregroundImage": "./assets/adaptive-icon.png",
-      //   "backgroundColor": "#ffffff"
-      // },
+       "adaptiveIcon": {
+         "foregroundImage": "./assets/adaptive-icon2.png",
+         "backgroundImage": "./assets/adaptive-icon-bg (2).png",
+         "monochromeImage": "./assets/monochrome5.png"
+       },
       "softwareKeyboardLayoutMode": "pan",    //new
       "permissions": [
         "android.permission.PACKAGE_USAGE_STATS"
@@ -47,7 +48,13 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Access your photos to select your avatar."
+          "photosPermission": "Allow access to your photos to select your profile picture."
+        }
+      ],
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Allow Touch Grass Royale to use Face ID."
         }
       ]
     ]

@@ -1,7 +1,11 @@
-import { access_token, base_url } from "../secrets";
+import { storage } from "../Storage";
+import { base_url } from "../secrets";
 
+
+const short_tokenexpired = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE4LCJpYXQiOjE3MTM1NjU2MzEsIm5iZiI6MTcxMzU2NTYzMSwianRpIjoiZGExODdhZGMtMDlmNS00ZWY3LWE3OTgtZGEwOTVhODU0MDVjIiwiZXhwIjoxNzEzNTY2NTMxLCJ0eXBlIjoiYWNjZXNzIiwiZnJlc2giOmZhbHNlfQ.TIa2ULgXY5d4ZS_mOrwIXioJbnMtnJLNF7dcHj8DGQE'
 
 export const fetchLeaderboard = async () => {
+    const access_token = storage.getString('access_token');
     const url = `${base_url}/friends-list/leaderboard`;
     const options = {
         method: 'GET',
@@ -12,7 +16,7 @@ export const fetchLeaderboard = async () => {
     };
 
     const res = await fetch(url, options);
-    const json = await res.json()
+    const json = await res.json();
 
     if (!res.ok) {
         const error = new Error("An error occured");
@@ -24,6 +28,7 @@ export const fetchLeaderboard = async () => {
 
 
 export const fetchFriendRequests = async () => {
+    const access_token = storage.getString('access_token');
     const url = `${base_url}/friend-requests/list`;
     const options = {
         method: 'GET',
@@ -46,6 +51,7 @@ export const fetchFriendRequests = async () => {
 
 
 export const acceptFriendRequest = async (friendID) => {
+    const access_token = storage.getString('access_token');
     const url = `${base_url}/friend-requests/accept/${friendID}`
     const options = {
         method: 'PATCH',
@@ -69,6 +75,7 @@ export const acceptFriendRequest = async (friendID) => {
 
 
 export const denyFriendRequest = async (friendID) => {
+    const access_token = storage.getString('access_token');
     const url = `${base_url}/friend-requests/deny/${friendID}`
     const options = {
         method: 'DELETE',
@@ -92,6 +99,7 @@ export const denyFriendRequest = async (friendID) => {
 
 
 export const undoIgnoreRequest = async (friendID) => {
+    const access_token = storage.getString('access_token');
     const url = `${base_url}/friend-requests/undo/ignore/${friendID}`
     const options = {
         method: 'POST',
@@ -114,6 +122,7 @@ export const undoIgnoreRequest = async (friendID) => {
 }
 
 export const getSelf = async () => {
+    const access_token = storage.getString('access_token');
     const url = `${base_url}/user`;
     const options = {
         method: 'GET',
@@ -135,6 +144,7 @@ export const getSelf = async () => {
 }
 
 export const getCurrentUserFriendsList = async () => {
+    const access_token = storage.getString('access_token');
     const url = `${base_url}/friends-list`;
     const options = {
         method: 'GET',
@@ -156,6 +166,7 @@ export const getCurrentUserFriendsList = async () => {
 }
 
 export const getSomeOneElsesFriendsList = async (otherID) => {
+    const access_token = storage.getString('access_token');
     const url = `${base_url}/friends-list/others/${otherID}`;
     const options = {
         method: 'GET',
@@ -177,6 +188,7 @@ export const getSomeOneElsesFriendsList = async (otherID) => {
 }
 
 export const removeFriend = async (friendID) => {
+    const access_token = storage.getString('access_token');
     const url = `${base_url}/friends-list/remove/${friendID}`;
     const options = {
         method: 'DELETE',
@@ -199,6 +211,7 @@ export const removeFriend = async (friendID) => {
 }
 
 export const sendFriendRequest = async (friendID) => {
+    const access_token = storage.getString('access_token');
     const url = `${base_url}/friend-requests/send/${friendID}`;
     const options = {
         method: 'POST',
@@ -221,6 +234,7 @@ export const sendFriendRequest = async (friendID) => {
 }
 
 export const unsendFriendRequest = async (friendID) => {
+    const access_token = storage.getString('access_token');
     const url = `${base_url}/friend-requests/unsend/${friendID}`;
     const options = {
         method: 'DELETE',
@@ -243,6 +257,7 @@ export const unsendFriendRequest = async (friendID) => {
 }
 
 export const searchForUsers = async (username) => {
+    const access_token = storage.getString('access_token');
     const url = `${base_url}/search/${username}`;
     const options = {
         method: 'GET',
@@ -264,6 +279,7 @@ export const searchForUsers = async (username) => {
 }
 
 export const getOwnedLottie = async () => {
+    const access_token = storage.getString('access_token');
     const url = `${base_url}/lottie/list`;
     const options = {
         method: 'GET',
@@ -285,6 +301,7 @@ export const getOwnedLottie = async () => {
 }
 
 export const buyLottie = async (name, price) => {
+    const access_token = storage.getString('access_token');
     const url = `${base_url}/lottie/buy`;
     const options = {
         method: 'POST',
@@ -311,6 +328,7 @@ export const buyLottie = async (name, price) => {
 }
 
 export const updateProfile = async (changes) => {
+    const access_token = storage.getString('access_token');
     const url = `${base_url}/account/update-profile`;
     const options = {
         method: 'PATCH',
@@ -334,28 +352,8 @@ export const updateProfile = async (changes) => {
 }
 
 
-export const googleCloudFetch = async () => {
-    const url = 'https://test-fastapi-project-5p2lcphh4q-uk.a.run.app/';
-    const options = {
-        method: 'GET',
-        headers: {
-            accept: 'application/json'
-        },
-    };
-
-    const res = await fetch(url, options);
-    const json = await res.json();
-
-    if (!res.ok) {
-        const error = new Error('googleCloud');
-        error.detail = json.detail;
-        throw error
-    }
-    return json
-}
-
-
 export const changePassword = async (passwords) => {
+    const access_token = storage.getString('access_token');
     const url = `${base_url}/account/change-password`;
     const options = {
         method: 'PATCH',
@@ -372,6 +370,155 @@ export const changePassword = async (passwords) => {
 
     if (!res.ok) {
         const error = new Error('changePassword');
+        error.detail = json.detail;
+        throw error
+    }
+    return json
+}
+
+export const loginFetch = async (creds) => {
+    const url = `${base_url}/login`;
+    const options = {
+        method: 'POST',
+        headers: {
+            accept: 'application/json',
+            'content-type': 'application/json'
+        },
+        body: JSON.stringify(creds)
+    };
+    const res = await fetch(url, options);
+    const json = await res.json()
+
+    if (!res.ok) {
+        const error = new Error('loginFetch');
+        error.detail = json.detail;
+        throw error
+    }
+    return json
+}
+
+
+export const sendRecoverCode = async (input) => {
+    const url = `${base_url}/recover/code/${input}`
+    const options = {
+        method: 'POST',
+        headers: {
+            accept: 'application/json',
+            'content-type': 'application/json'
+        }
+    };
+    const res = await fetch(url, options);
+    const json = await res.json();
+
+    if (!res.ok) {
+        const error = new Error('getRecoverCode');
+        error.detail = json.detail;
+        throw error
+    }
+    return json
+}
+
+export const validateCode = async (data) => {
+    const url = `${base_url}/recover/validate`;
+    const options = {
+        method: 'POST',
+        headers: {
+            accept: 'application/json',
+            'content-type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    };
+    const res = await fetch(url, options);
+    const json = await res.json();
+
+    if (!res.ok) {
+        const error = new Error('validateCode');
+        error.detail = json.detail;
+        throw error
+    }
+    return json
+}
+
+
+export const resetPassword = async (passwords) => {
+    const short_token = storage.getString('short_token');
+    const url = `${base_url}/recover/reset-password`;
+    const options = {
+        method: 'POST',
+        headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            Authorization: `Bearer ${short_token}`
+        },
+        body: JSON.stringify(passwords)
+    };
+    const res = await fetch(url, options);
+    const json = await res.json();
+
+    if (!res.ok) {
+        const error = new Error('resetPassword');
+        error.detail = json.detail;
+        throw error
+    }
+    return json
+}
+
+export const checkUsername = async (username) => {
+    const url = `${base_url}/username-check/${username}`
+    const options = {
+        method: 'POST',
+        headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+        }
+    };
+    const res = await fetch(url, options);
+    const json = await res.json();
+
+    if (!res.ok) {
+        const error = new Error('checkUsername');
+        error.detail = json.detail;
+        throw error
+    }
+    return json
+}
+
+export const checkEmail = async (email) => {
+    const url = `${base_url}/email-check/${email}`
+    const options = {
+        method: 'POST',
+        headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+        }
+    };
+    const res = await fetch(url, options);
+    const json = await res.json();
+
+    if (!res.ok) {
+        const error = new Error('checkEmail');
+        error.detail = json.detail;
+        throw error
+    }
+    return json
+}
+
+
+export const register = async (data) => {
+    const url = `${base_url}/register`;
+    const options = {
+        method: 'POST',
+        headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    };
+    const res = await fetch(url, options);
+    const json = await res.json();
+
+    if (!res.ok) {
+        const error = new Error('register');
         error.detail = json.detail;
         throw error
     }
