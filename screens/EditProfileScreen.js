@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, ActivityIndicator, Pressable } from 'react-native';
+import { View, Text, TouchableOpacity, Image, ActivityIndicator, Pressable, Linking } from 'react-native';
 import React, { useState } from 'react';
 import tw from 'twrnc';
 import { StatusBar } from 'expo-status-bar';
@@ -6,7 +6,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import BottomNavBar from '../components/BottomNavBar';
 import LottieView from 'lottie-react-native';
-import animations from '../animations/animations';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { updateProfile } from '../apiFetches/fetches';
 import Modal from 'react-native-modal';
@@ -15,6 +14,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import { firebase } from "../firebaseConfig";
 import { my_id } from '../secrets';
+import { registerForPushAsync } from '../usePushNotifications';
 
 
 export default function EditProfileScreen({ navigation }) {
@@ -163,7 +163,7 @@ export default function EditProfileScreen({ navigation }) {
               {
                 self?.lottie ? (
                   <LottieView 
-                    source={animations[self?.lottie]} 
+                    source={{ uri: self.lottie }} 
                     style={{width:'100%', height:'100%'}}
                   />
                 ):(
@@ -219,6 +219,18 @@ export default function EditProfileScreen({ navigation }) {
             <Text style={tw`text-white/50`}>Password</Text>
             <Text style={tw`text-white text-lg`}>************</Text>
           </Pressable>
+        </View>
+
+        <View style={tw`flex-col items-end absolute bottom-0 right-5`}>
+          <TouchableOpacity style={tw`mb-3`} onPress={() => navigation.push('Notifications')} >
+            <Text style={tw`text-blue-600 text-lg`}>Notifications</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={tw`mb-3`} onPress={() => navigation.push('Login3')}>
+            <Text style={tw`text-red-700/50 text-lg`}>Logout</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={tw``} >
+            <Text style={tw`text-red-700/50 text-lg`}>Delete account</Text>
+          </TouchableOpacity>
         </View>
 
 

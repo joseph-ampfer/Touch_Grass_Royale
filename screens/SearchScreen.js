@@ -15,7 +15,6 @@ import FriendRequestCard from '../components/FriendRequestCard';
 import LottieView from 'lottie-react-native';
 import { Portal } from 'react-native-portalize';
 import ProfileModal from '../components/ProfileModal';
-import animations from '../animations/animations';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchFriendRequests, removeFriend, searchForUsers, sendFriendRequest, unsendFriendRequest } from '../apiFetches/fetches';
 import Modal from 'react-native-modal'
@@ -449,7 +448,7 @@ const debounceContactsSearch = debounce(handleContactsSearch, 500)
                             user.lottie? (
                               <View style={tw`h-10 w-10 rounded-full mr-2`}>
                                 <LottieView
-                                  source={animations[user.lottie]}
+                                  source={{ uri: user.lottie }}
                                   style={tw`h-full w-full `}
                                   autoPlay
                                   loop={false}
@@ -662,7 +661,7 @@ const debounceContactsSearch = debounce(handleContactsSearch, 500)
                     selectedUser.lottie? (
                       <View style={tw`h-36 w-36 rounded-full mx-4`}>
                         <LottieView 
-                            source={animations[selectedUser.lottie]} 
+                            source={{ uri: selectedUser.lottie }} 
                             style={{width:'100%', height:'100%'}}
                             autoPlay 
                             loop 

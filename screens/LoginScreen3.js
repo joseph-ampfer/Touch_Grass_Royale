@@ -4,14 +4,15 @@ import tw from 'twrnc';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import { useMutation } from '@tanstack/react-query';
-import { loginFetch } from '../apiFetches/fetches';
+import { loginFetch, sendPushTokenToServer } from '../apiFetches/fetches';
 import { storage } from '../Storage';
 import PopUp from '../components/PopUp';
 import * as LocalAuthentication from 'expo-local-authentication';
+import { usePushNotifications } from '../usePushNotifications'; 
 
 export default function LoginScreen3({ route, navigation }) {
   const expired = route?.params?.expired
-
+  const { registerForPushNotificationsAsync } = usePushNotifications();
 
   const [popUpOpen, setPopUpOpen] = useState(false);
   const [popTitle, setPopTitle] = useState('');
@@ -34,12 +35,23 @@ export default function LoginScreen3({ route, navigation }) {
 
   const loginFn = useMutation({
     mutationFn: (creds) => loginFetch(creds),
-    onSuccess: (result) => {
+    onSuccess: async (result) => {
       storage.set('access_token', result.access_token);
       storage.set('my_id', result.user_id);
       setEmail('');
       setPassword('');
+
+      try {
+        const push_token = await registerForPushNotificationsAsync();
+        if (push_token) {
+          await sendPushTokenToServer(push_token.data);
+        }
+      } catch (error) {
+        console.error("Error in updating the push token: ", error.detail || error.message);
+      }
+
       navigation.push('Home');
+
     },
     onError: (error) => {
       console.error(error.detail);
@@ -48,7 +60,10 @@ export default function LoginScreen3({ route, navigation }) {
       setPopOkMsg("Try Again" )
       setPopNoMsg("Sign Up")
       setPopOkFn(() => setPopUpOpen(false))
-      setPopNoFn(() => navigation.navigate('SignUp'))
+      setPopNoFn(() => () => {
+        navigation.navigate('SignUp3');
+        setPopUpOpen(false);
+      })
       setPopUpOpen(true);
 
     }

@@ -19,16 +19,15 @@
       "supportsTablet": true
     },
     "android": {
-       "adaptiveIcon": {
-         "foregroundImage": "./assets/adaptive-icon2.png",
-         "backgroundImage": "./assets/adaptive-icon-bg (2).png",
-         "monochromeImage": "./assets/monochrome5.png"
-       },
-      "softwareKeyboardLayoutMode": "pan",    //new
-      "permissions": [
-        "android.permission.PACKAGE_USAGE_STATS"
-      ],
-      "package": "com.jampfer.touch_grass"
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon2.png",
+        "backgroundImage": "./assets/adaptive-icon-bg (2).png",
+        "monochromeImage": "./assets/monochrome5.png"
+      },
+      "softwareKeyboardLayoutMode": "pan",
+      "permissions": ["android.permission.PACKAGE_USAGE_STATS"],
+      "package": "com.jampfer.touch_grass",
+      "googleServicesFile": "./android/app/google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -55,6 +54,13 @@
         "expo-local-authentication",
         {
           "faceIDPermission": "Allow Touch Grass Royale to use Face ID."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification.png",
+          "color": "#2564eb"
         }
       ]
     ]

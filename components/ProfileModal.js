@@ -3,12 +3,14 @@ import { View, Text, TouchableOpacity, Image } from 'react-native';
 import Modal from 'react-native-modal';
 import LottieView from 'lottie-react-native';
 import tw from 'twrnc';
-import animations from '../animations/animations';
 import { Portal } from 'react-native-portalize';
 import { useNavigation } from '@react-navigation/native';
+import { getUserLevel, levels } from '../levelingUp/levelConstants';
 
 export default function ProfileModal({ modalOpen, setModalOpen, selectedUser}) {
   const navigation = useNavigation();
+
+  const { currentLevel } = getUserLevel(selectedUser?.total_points)
 
   return (
     <Portal>
@@ -45,13 +47,13 @@ export default function ProfileModal({ modalOpen, setModalOpen, selectedUser}) {
                 }}
               >
                 <Text style={tw`text-white font-bold text-xl`}>{selectedUser.friends_count}</Text>
-                <Text style={tw`text-slate-400 font-semibold`}>Friends</Text>
+                <Text style={tw`text-neutral-200 font-semibold`}>Friends</Text>
               </TouchableOpacity>
               {
                 selectedUser.lottie? (
                   <View style={tw`h-36 w-36 rounded-full mx-4`}>
                     <LottieView 
-                        source={animations[selectedUser.lottie]} 
+                        source={{ uri: selectedUser.lottie }} 
                         style={{width:'100%', height:'100%'}}
                         autoPlay 
                         loop 
@@ -67,7 +69,7 @@ export default function ProfileModal({ modalOpen, setModalOpen, selectedUser}) {
               }
               <View style={tw`flex-col items-center justify-center w-16`}>
                 <Text style={tw`text-white font-bold text-xl`}>{selectedUser.gems}</Text>
-                <Text style={tw`text-slate-400 font-semibold`}>Gems</Text>
+                <Text style={tw`text-neutral-200 font-semibold`}>Gems</Text>
               </View>
             </View>
             {/* ===NAME===*/}
@@ -79,7 +81,7 @@ export default function ProfileModal({ modalOpen, setModalOpen, selectedUser}) {
                     style={tw`text-white text-3xl font-bold text-center mt-3`}>{selectedUser.username}</Text>
                   <Text 
                     numberOfLines={1} ellipsizeMode='tail'
-                    style={tw`text-white/40 text-base text-center`}>{selectedUser.full_name}</Text>
+                    style={tw`text-neutral-400 text-base text-center`}>{selectedUser.full_name}</Text>
                 </View>
               ):(
                 <View style={tw`flex-col justify-center items-center w-78 `}>
@@ -99,22 +101,22 @@ export default function ProfileModal({ modalOpen, setModalOpen, selectedUser}) {
             <View style={tw`flex-row justify-evenly mx-5`}>
               <View style={tw`flex-col items-center`}>
                 <Image style={tw`h-10 w-10 `} source={require('../assets/images/first.png')} />
-                <Text style={tw`text-white text-lg font-bold`}>0</Text>
+                <Text style={tw`text-white text-lg font-bold`}>{selectedUser.first}</Text>
               </View>
               <View style={tw`flex-col items-center`}>
                 <Image style={tw`h-10 w-10 `} source={require('../assets/images/second.png')} />
-                <Text style={tw`text-white text-lg font-bold`}>0</Text>
+                <Text style={tw`text-white text-lg font-bold`}>{selectedUser.second}</Text>
               </View>
               <View style={tw`flex-col items-center`}>
                 <Image style={tw`h-10 w-10 `} source={require('../assets/images/third.png')} />
-                <Text style={tw`text-white text-lg font-bold`}>0</Text>
+                <Text style={tw`text-white text-lg font-bold`}>{selectedUser.third}</Text>
               </View>
             </View>
   
       {/* =============CURRENT RANK============= */}
-            <View style={tw`flex-col justify-center items-center mt-5`}>
-              <Image style={tw`h-25 w-25`} source={require('../assets/images/noob.png')} />
-              <Text style={tw`text-white text-base `}>Noob</Text>
+            <View style={tw`flex-col justify-center items-center mt-4`}>
+              <Image style={tw`h-30 w-30`} source={currentLevel?.image} />
+              <Text style={tw`text-neutral-200 font-semibold text-base `}>{currentLevel?.level_name}</Text>
             </View>
   
             {/* <View style={tw`mx-5 h-6 border-2 border-slate-200 rounded-lg mt-3`}>

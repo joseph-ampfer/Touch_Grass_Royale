@@ -8,52 +8,23 @@ import BottomNavBar from '../components/BottomNavBar';
 import LottieView from 'lottie-react-native';
 import ProfileModal from '../components/ProfileModal';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { buyLottie, getOwnedLottie } from '../apiFetches/fetches';
+import { buyLottie, getAllAnimations, getOwnedLottie } from '../apiFetches/fetches';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import Modal from 'react-native-modal';
 import PopUp from '../components/PopUp';
 
-const animations = [
-    { name: 'pikachu', require: require('../assets/animations/pikachu.json'), price: 1000 },
-    { name: 'toaster', require: require('../assets/animations/toaster.json'), price: 300 },
-    { name: 'zenWork', require: require('../assets/animations/zenWork.json'), price: 300 },
-    { name: 'animeGirl', require: require('../assets/animations/animeGirl.json'), price: 300 },
-    { name: 'catBox', require: require('../assets/animations/catBox.json'), price: 300 },
-    { name: 'eyeBlob', require: require('../assets/animations/eyeBlob.json'), price: 300 },
-    { name: 'ghibliGirl', require: require('../assets/animations/ghibliGirl.json'), price: 300 },
-    { name: 'girlCatEars', require: require('../assets/animations/girlCatEars.json'), price: 300 },
-    { name: 'meditationCow', require: require('../assets/animations/meditationCow.json'), price: 300 },
-    { name: 'catWitch', require: require('../assets/animations/catWitch.json'), price: 300 },
-    { name: 'meditationGirl', require: require('../assets/animations/meditationGirl.json'), price: 300 },
-    { name: 'gojoCat', require: require('../assets/animations/gojoCat.json'), price: 300 },
-    { name: 'meditationCoffee', require: require('../assets/animations/meditationCoffee.json'), price: 300 },
-    { name: 'catSleep', require: require('../assets/animations/catSleep.json'), price: 300 },
-    { name: 'meditationGuy', require: require('../assets/animations/meditationGuy.json'), price: 300 },
-    { name: 'nyanCat', require: require('../assets/animations/nyanCat.json'), price: 300 },
-    { name: 'panda', require: require('../assets/animations/panda.json'), price: 300 },
-    { name: 'meditationMan2', require: require('../assets/animations/meditationMan2.json'), price: 300 },
-    { name: 'robotGamer', require: require('../assets/animations/robotGamer.json'), price: 300 },
-    { name: 'dogWalk', require: require('../assets/animations/dogWalk.json'), price: 300 },
-    { name: 'meditationSloth', require: require('../assets/animations/meditationSloth.json'), price: 300 },
-    { name: 'dogWalk2', require: require('../assets/animations/dogWalk2.json'), price: 300 },
-    { name: 'noFace', require: require('../assets/animations/noFace.json'), price: 300 },
-    { name: 'ramen', require: require('../assets/animations/ramen.json'), price: 300 },
-    { name: 'catCool', require: require('../assets/animations/catCool.json'), price: 300 },
-    { name: 'robot', require: require('../assets/animations/robot.json'), price: 300 },
-    { name: 'spaceInvader', require: require('../assets/animations/spaceInvader.json'), price: 300 },
-    { name: 'spaceJam', require: require('../assets/animations/spaceJam.json'), price: 300 },
-    { name: 'dogFloat', require: require('../assets/animations/dogFloat.json'), price: 300 },
-    { name: 'spaceWork', require: require('../assets/animations/spaceWork.json'), price: 300 },
-    { name: 'studying', require: require('../assets/animations/studying.json'), price: 300 },
-    { name: 'animeGuy', require: require('../assets/animations/animeGuy.json'), price: 300 },
-    { name: 'meditationTurtle', require: require('../assets/animations/meditationTurtle.json'), price: 300 },
-  ];
+
 
 export default function AvatarShopScreen({ navigation }) {
 
   const queryClient = useQueryClient();
 
-  const {data: lotties, isLoading, error} = useQuery({
+  const {data: animations, isLoading, error } = useQuery({
+    queryKey: ['all animations'],
+    queryFn: getAllAnimations,
+  })
+
+  const {data: lotties, isLoading: ownedLoading, error: ownedError} = useQuery({
     queryKey: ['lotties'],
     queryFn: getOwnedLottie,
   })
@@ -159,7 +130,7 @@ export default function AvatarShopScreen({ navigation }) {
                   <View style={tw` `}>
                     <View style={tw`h-50 w-50 rounded-full `}>
                       <LottieView
-                        source={animation.require}
+                        source={{ uri: animation.download_url }}
                         style={tw`h-full w-full `}
                         autoPlay={ selectedPreview == animation.name }
                         loop={ selectedPreview == animation.name }
@@ -168,7 +139,7 @@ export default function AvatarShopScreen({ navigation }) {
                     </View>
                   </View>
                   {
-                    lotties.includes(animation.name) ? (
+                    lotties?.includes(animation.name) ? (
                       // <TouchableOpacity 
                       //   style={[tw` rounded-full px-2 absolute bottom-1 right-14 elevation-10 `, ]} 
                       // >
@@ -230,7 +201,7 @@ export default function AvatarShopScreen({ navigation }) {
             {/* LOTTIE */}
             <View style={[tw`h-66 w-66  rounded-lg `, ]}>
               <LottieView 
-                  source={selectedAnimation.require} 
+                  source={{ uri: selectedAnimation.download_url }} 
                   style={{width:'100%', height:'100%'}}
                   autoPlay 
                   loop 

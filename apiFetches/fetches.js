@@ -278,54 +278,6 @@ export const searchForUsers = async (username) => {
     return json
 }
 
-export const getOwnedLottie = async () => {
-    const access_token = storage.getString('access_token');
-    const url = `${base_url}/lottie/list`;
-    const options = {
-        method: 'GET',
-        headers: {
-            accept: 'application/json',
-            Authorization: `Bearer ${access_token}`
-        },
-    };
-
-    const res = await fetch(url, options);
-    const json = await res.json();
-
-    if (!res.ok) {
-        const error = new Error('e');
-        error.detail = json.detail;
-        throw error
-    };
-    return json
-}
-
-export const buyLottie = async (name, price) => {
-    const access_token = storage.getString('access_token');
-    const url = `${base_url}/lottie/buy`;
-    const options = {
-        method: 'POST',
-        headers: {
-            accept: 'application/json',
-            'content-type': 'application/json',
-            Authorization: `Bearer ${access_token}`
-        },
-        body: JSON.stringify({
-            name: name,
-            price: price,
-        })
-    };
-
-    const res = await fetch(url, options);
-    const json = await res.json();
-
-    if (!res.ok) {
-        const error = new Error('buyLottie');
-        error.detail = json.detail;
-        throw error
-    };
-    return json
-}
 
 export const updateProfile = async (changes) => {
     const access_token = storage.getString('access_token');
@@ -503,7 +455,6 @@ export const checkEmail = async (email) => {
     return json
 }
 
-
 export const register = async (data) => {
     const url = `${base_url}/register`;
     const options = {
@@ -522,5 +473,169 @@ export const register = async (data) => {
         error.detail = json.detail;
         throw error
     }
+    return json
+}
+
+
+export const updatePoints = async (data) => {
+    const access_token = storage.getString('access_token');
+    const url = `${base_url}/points/update/today`;
+    const options = {
+        method: 'PATCH',
+        headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            Authorization: `Bearer ${access_token}`
+        },
+        body: JSON.stringify(data)
+    };
+    const res = await fetch(url, options);
+    const json = await res.json();
+
+    if (!res.ok) {
+        const error = new Error('register');
+        error.detail = json.detail;
+        throw error
+    }
+    return json
+}
+
+
+export const sendPushTokenToServer = async (push_token) => {
+    const access_token = storage.getString('access_token');
+    const url = `${base_url}/notifications/store`;
+    const options = {
+        method: 'POST',
+        headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            Authorization: `Bearer ${access_token}`
+        },
+        body: JSON.stringify({ 'push_token': push_token })
+    };
+    const res = await fetch(url, options);
+    const json = await res.json();
+
+    if (!res.ok) {
+        const error = new Error('sendPushTokenToServer');
+        error.detail = json.detail;
+        throw error
+    }
+    return json
+}
+
+
+export const pointsCheckWinner = async () => {
+    const access_token = storage.getString('access_token');
+    const url = `${base_url}/points/check-winner`;
+    const options = {
+        method: 'GET',
+        headers: {
+            accept: 'application/json',
+            Authorization: `Bearer ${access_token}`
+        }
+    };
+    const res = await fetch(url, options);
+    const json = await res.json()
+
+    if (!res.ok) {
+        const error = new Error('pointsCheckWinner');
+        error.detail = json.detail;
+        throw error
+    }
+    return json
+}
+
+
+export const getTenDayRank = async () => {
+    const access_token = storage.getString('access_token');
+    const url = `${base_url}/user/10-day`;
+    const options = {
+        method: 'GET',
+        headers: {
+            accept: 'application/json',
+            Authorization: `Bearer ${access_token}`
+        }
+    };
+    const res = await fetch(url, options);
+    const json = await res.json()
+
+    if (!res.ok) {
+        const error = new Error('pointsCheckWinner');
+        error.detail = json.detail;
+        throw error
+    }
+    return json
+}
+
+
+export const getAllAnimations = async () => {
+    const access_token = storage.getString('access_token');
+    const url = `${base_url}/lottie/animations`;
+    const options = {
+        method: 'GET',
+        headers: {
+            accept: 'application/json',
+            Authorization: `Bearer ${access_token}`
+        }
+    };
+    const res = await fetch(url, options);
+    const json = await res.json()
+
+    if (!res.ok) {
+        const error = new Error('pointsCheckWinner');
+        error.detail = json.detail;
+        throw error
+    }
+    return json
+}
+
+
+export const getOwnedLottie = async () => {
+    const access_token = storage.getString('access_token');
+    const url = `${base_url}/lottie/all-unlocked`;
+    const options = {
+        method: 'GET',
+        headers: {
+            accept: 'application/json',
+            Authorization: `Bearer ${access_token}`
+        },
+    };
+
+    const res = await fetch(url, options);
+    const json = await res.json();
+
+    if (!res.ok) {
+        const error = new Error('getOwnedLottie');
+        error.detail = json.detail;
+        throw error
+    };
+    return json
+}
+
+export const buyLottie = async (name, price) => {
+    const access_token = storage.getString('access_token');
+    const url = `${base_url}/lottie/buy`;
+    const options = {
+        method: 'POST',
+        headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            Authorization: `Bearer ${access_token}`
+        },
+        body: JSON.stringify({
+            name: name,
+            price: price,
+        })
+    };
+
+    const res = await fetch(url, options);
+    const json = await res.json();
+
+    if (!res.ok) {
+        const error = new Error('buyLottie');
+        error.detail = json.detail;
+        throw error
+    };
     return json
 }

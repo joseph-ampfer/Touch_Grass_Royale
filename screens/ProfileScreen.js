@@ -6,63 +6,65 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import BottomNavBar from '../components/BottomNavBar';
 import { ScrollView, GestureHandlerRootView, TouchableOpacity, GestureDetector, Gesture, Directions } from 'react-native-gesture-handler';
 import LottieView from 'lottie-react-native';
-import animations from '../animations/animations';
 import Modal from 'react-native-modal';
 import { Modalize, useModalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
-import Animated, { FadeIn, FadeInDown, FadeInLeft, FadeInRight, FadeOut, FadeOutDown } from 'react-native-reanimated';
+import Animated, { Easing, FadeIn, FadeInDown, FadeInLeft, FadeInRight, FadeOut, FadeOutDown, useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
-import LottieAvatarShop from '../components/LottieAvatarShop';
+import LottieAvatarShop from '../components/LottieAvatarShopUnused';
 import { useQuery } from '@tanstack/react-query';
-import { getSelf, googleCloudFetch } from '../apiFetches/fetches';
+import { getSelf, getTenDayRank, googleCloudFetch } from '../apiFetches/fetches';
 import toOrdinal from '../functions/toOrdinal';
 import PicOrLottieModal from '../components/PicOrLottieModal';
+import { getUserLevel } from '../levelingUp/levelConstants';
+import { storage } from '../Storage';
+import ProgressBar from '../components/ProgressBar';
 
 
 
 
-const recentPlacements = [
-  {
-    date: '4/1/2024',
-    rank: 5
-  },
-  {
-    date: '3/31/2024',
-    rank: 2
-  },
-  {
-    date: '3/30/2024',
-    rank: 13
-  },
-  {
-    date: '3/29/2024',
-    rank: 1
-  },
-  {
-    date: '3/28/2024',
-    rank: 3
-  },
-  {
-    date: '3/27/2024',
-    rank: 6
-  },
-  {
-    date: '3/26/2024',
-    rank: 21
-  },
-  {
-    date: '3/25/2024',
-    rank: 18
-  },
-  {
-    date: '3/24/2024',
-    rank: 3
-  },
-  {
-    date: '3/23/2024',
-    rank: 15
-  },
-]
+// const recentPlacements = [
+//   {
+//     date: '4/1/2024',
+//     rank: 5
+//   },
+//   {
+//     date: '3/31/2024',
+//     rank: 2
+//   },
+//   {
+//     date: '3/30/2024',
+//     rank: 13
+//   },
+//   {
+//     date: '3/29/2024',
+//     rank: 1
+//   },
+//   {
+//     date: '3/28/2024',
+//     rank: 3
+//   },
+//   {
+//     date: '3/27/2024',
+//     rank: 6
+//   },
+//   {
+//     date: '3/26/2024',
+//     rank: 21
+//   },
+//   {
+//     date: '3/25/2024',
+//     rank: 18
+//   },
+//   {
+//     date: '3/24/2024',
+//     rank: 3
+//   },
+//   {
+//     date: '3/23/2024',
+//     rank: 15
+//   },
+// ]
 
 export default function ProfileScreen2({ navigation }) {
 
@@ -71,32 +73,34 @@ export default function ProfileScreen2({ navigation }) {
     queryFn: getSelf,
   })
 
-  
+  const { data: recentPlacements, isLoading: tenLoading, error: tenError } = useQuery({
+    queryKey: ['10-day'],
+    queryFn: getTenDayRank,
+  })
+
+  const { currentLevel, progress } = getUserLevel(self?.total_points);
 
   const [pOLModalOpen, setPOLModalOpen] = useState(false);
-  const [portalOpen, setPortalOpen] = useState(false);
-  const fling = Gesture.Fling();
-
-
-  //===============BACK ACTION FOR PORTAL================
-  useEffect(() => {
-    const backAction = () => {
-      if (portalOpen) {
-        setPortalOpen(false);
-        return true;
-      }
-      return false; 
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction,
-    );
-
-    return () => backHandler.remove();
-  }, [portalOpen]);
-
  
+  const start = 800;
+  const end = 1000;
+
+  // Progress bar animation
+  const progressWidth = useSharedValue(0);
+
+  useEffect(() => {
+    progressWidth.value = withDelay(600, withTiming((progress / currentLevel.points_next_level) * 100, {
+      duration: 1500,
+      easing: Easing.bezier(0.25, 0.1, 0.25, 1)
+    }));
+  }, [])
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      width: `${progressWidth.value}%`
+    }
+  })
+
 
   if (isLoading) {
     return (
@@ -210,7 +214,7 @@ export default function ProfileScreen2({ navigation }) {
               <View style={tw`relative`}>
                 <View style={tw`h-36 w-36 rounded-full`}>
                   <LottieView 
-                      source={animations[self?.lottie]} 
+                      source={{ uri: self.lottie }} 
                       style={{width:'100%', height:'100%'}}
                       autoPlay 
                       loop 
@@ -290,39 +294,21 @@ export default function ProfileScreen2({ navigation }) {
         <View style={tw`flex-row justify-evenly mx-5 bg-white/10 p-1 pt-2 rounded-2xl`}>
           <View style={tw`flex-col items-center `}>
             <Image style={tw`h-15 w-15 `} source={require('../assets/images/first.png')} />
-            <Text style={tw`text-white text-lg font-bold`}>0</Text>
+            <Text style={tw`text-white text-lg font-bold`}>{self?.first}</Text>
           </View>
           <View style={tw`flex-col items-center`}>
             <Image style={tw`h-15 w-15 `} source={require('../assets/images/second.png')} />
-            <Text style={tw`text-white text-lg font-bold`}>0</Text>
+            <Text style={tw`text-white text-lg font-bold`}>{self?.second}</Text>
           </View>
           <View style={tw`flex-col items-center`}>
             <Image style={tw`h-15 w-15 `} source={require('../assets/images/third.png')} />
-            <Text style={tw`text-white text-lg font-bold`}>0</Text>
+            <Text style={tw`text-white text-lg font-bold`}>{self?.third}</Text>
           </View>
         </View>
 
 
 {/* =============CURRENT RANK============= */} 
-          <View style={tw`flex-col items-center mx-5 bg-white/10 p-2 rounded-2xl `}>
-            {/* <Image source={require('../assets/images/grass_bg.png')} style={tw`absolute h-full w-full -z-50`} /> */}
-      
-            <View style={tw`flex-col justify-center items-center mb-2`}>
-             <Text style={tw`text-white text-4xl font-bold mb-2 underline `}>Noob</Text>
-              <Image style={tw`h-25 w-25`} source={require('../assets/images/noob.png')} />
-            </View>
-          
-            {/* PROGRESS BAR */}
-          
-            <View style={tw`w-full h-10 border-2 border-white/10 rounded-lg  mt-0`}>
-              <View style={[tw`bg-zinc-700 rounded-md h-full  w-[${
-                                (4123 / 5000) * 100
-                            }%]`]}>
-                <Image blurRadius={20} source={require('../assets/images/progressBar.png')} style={tw`w-full h-full rounded-md -z-50`} />
-              </View>
-            </View>
-            <Text style={tw`text-white text-base  text-center`}>4,123/5,000 pts</Text>       
-          </View>
+          <ProgressBar totalPoints={self?.total_points} />
 
 {/* ==== =========PLACEMENTS LAST FEW DAYS============== */}
           <View style={tw``}>
@@ -368,7 +354,7 @@ export default function ProfileScreen2({ navigation }) {
 
 {/* ========TOTAL POINTS====== */}
           <View style={tw`flex-col justify-center items-center bg-white/10 p-2 `}>
-            <Text style={tw`text-white text-2xl `}>Total: {self?.total_points} pts</Text>
+            <Text style={tw`text-white text-2xl `}>Total: {self?.total_points?.toLocaleString()} pts</Text>
           </View>
 
 
@@ -381,52 +367,6 @@ export default function ProfileScreen2({ navigation }) {
 
 
 
-{/* ===============AVATAR STORE MODAL============= */}
-    {
-      portalOpen? (
-        <Portal>
-          <GestureDetector gesture={fling.direction(Directions.DOWN).onEnd(()=> setPortalOpen(false))}>
-          
-          {/* WHOLE SCREEN & BACKGROUND */}
-          <Animated.View entering={FadeIn.duration(300)} exiting={FadeOut.duration(300)}  style={tw`flex-1 flex-col justify-end bg-black/40`}>
-            
-            {/* HANDLE */}
-            <Animated.View entering={FadeInDown.duration(100).springify()} exiting={FadeOutDown.duration(1000).springify()} style={tw`flex-col justify-center items-center  pt-2 rounded-t-2xl`}>
-              <View style={tw`bg-white rounded-full h-1 w-10 mb-2 `} />
-            </Animated.View>
-            
-            {/* MAIN MODAL, HEADER BELOW */}
-            <Animated.View 
-              entering={FadeInDown.duration(1000).springify()}
-              exiting={FadeOutDown.duration(1000).springify()} 
-              style={tw` h-2/3 w-full `}>
-              
-              {/* HEADER */}
-              <View style={tw`pt-4 pb-4 relative bg-gray-800 rounded-t-2xl `}>
-                <Text style={tw`font-bold text-center text-xl text-white/90`}>
-                  Avatar Store
-                </Text>
-                {/* <TouchableOpacity style={tw`absolute -bottom-1 right-13`}>
-                  <Animated.View entering={FadeInLeft.delay(500).duration(500).springify()} 
-                    style={tw`border-sky-800 border p-1 px-3 rounded-lg`}>
-                    <Ionicons name="send-sharp" size={22} color="white" />
-                  </Animated.View>
-                </TouchableOpacity> */}
-              </View>
-              
-              {/* SCROLL CONTENT */}
-              <View style={tw`flex-1 bg-gray-800 `}>
-                <LottieAvatarShop />
-              </View>
-
-            </Animated.View>
-
-          </Animated.View>
-          
-          </GestureDetector>
-        </Portal>
-      ):null
-    }
 
     {/* ======================LOADING==================== */}
       

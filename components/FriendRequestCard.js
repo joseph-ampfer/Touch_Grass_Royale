@@ -2,7 +2,6 @@ import { View, Text, Image, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 import tw from 'twrnc';
 import LottieView from 'lottie-react-native';
-import animations from '../animations/animations';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { acceptFriendRequest, denyFriendRequest, undoIgnoreRequest } from '../apiFetches/fetches';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -60,7 +59,7 @@ export default function FriendRequestCard({ user, onPicturePress }) {
           user.lottie? (
             <View style={tw`h-18 w-18 rounded-full  mr-3`}>
               <LottieView
-                source={animations[user.lottie]}
+                source={{ uri: user.lottie }}
                 style={tw`h-full w-full `}
                 autoPlay
                 loop={false}
@@ -76,7 +75,7 @@ export default function FriendRequestCard({ user, onPicturePress }) {
           user.full_name? (
             <View style={tw`flex-col`}>
               <Text numberOfLines={1} ellipsizeMode='tail' style={tw`text-white mt-1 text-xl font-semibold w-37`}>{user.username}</Text>
-              <Text numberOfLines={1} ellipsizeMode='tail' style={tw`text-gray-100 mt-0 text-base font-semibold w-37`}>{user.full_name}</Text>
+              <Text numberOfLines={1} ellipsizeMode='tail' style={tw`text-white/80 mt-0 text-base  w-37`}>{user.full_name}</Text>
             </View>
           ):(
             <Text numberOfLines={1} ellipsizeMode='tail' style={tw`text-white mt-1 text-xl font-semibold w-37`}>{user.username}</Text>

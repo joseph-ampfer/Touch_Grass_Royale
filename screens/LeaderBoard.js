@@ -8,7 +8,6 @@ import BottomNavBar from "../components/BottomNavBar";
 import NumberTicker from 'react-native-number-ticker';
 import MyNumberTicker from "../components/MyNumberTicker";
 import Animated, {FadeInDown}  from "react-native-reanimated";
-import animations from "../animations/animations";
 import ProfileModal from "../components/ProfileModal";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchLeaderboard } from "../apiFetches/fetches";
@@ -239,7 +238,7 @@ export function Leaderboard() {
                       data[1]?.lottie? (
                         <View style={tw`h-16 w-16 rounded-full mx-auto mt-5`}>
                           <LottieView
-                            source={animations[data[1]?.lottie]}
+                            source={{ uri: data[1].lottie }}
                             style={tw`h-full w-full`}
                             autoPlay
                             loop
@@ -280,7 +279,7 @@ export function Leaderboard() {
                       data[0].lottie? (
                         <View style={tw`h-20 w-20 rounded-full mx-auto mt-5`}>
                           <LottieView
-                            source={animations[data[0].lottie]}
+                            source={{ uri: data[0].lottie }}
                             style={tw`h-full w-full`}
                             autoPlay
                             loop
@@ -321,7 +320,7 @@ export function Leaderboard() {
                       data[2]?.lottie? (
                         <View style={tw`h-12 w-12 rounded-full mx-auto mt-5`}>
                           <LottieView
-                            source={animations[data[2]?.lottie]}
+                            source={{ uri: data[2].lottie }}
                             style={tw`h-full w-full`}
                             autoPlay
                             loop
@@ -377,7 +376,7 @@ export function Leaderboard() {
                             value.lottie? (
                               <View style={tw`h-10 w-10 rounded-full mx-auto`}>
                                 <LottieView
-                                  source={animations[value.lottie]}
+                                  source={{ uri: value.lottie }}
                                   style={tw`h-full w-full`}
                                   loop={true}
                                   autoplay={true}

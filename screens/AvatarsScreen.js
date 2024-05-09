@@ -6,7 +6,6 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons';
 import BottomNavBar from '../components/BottomNavBar';
 import LottieView from 'lottie-react-native';
-import animations from '../animations/animations';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {  getOwnedLottie, updateProfile } from '../apiFetches/fetches';
 
@@ -128,7 +127,7 @@ export default function AvatarsScreen({ navigation }) {
                 // friend component
                 <Pressable 
                   key={index} style={tw` mb-2 mx-5 flex-row justify-center items-center  bg-white/10`}
-                  onPress={() => setSelected(lottie)}
+                  onPress={() => setSelected(lottie.download_url)}
                 >
 
                   <View 
@@ -136,16 +135,16 @@ export default function AvatarsScreen({ navigation }) {
                   >
                     <View style={tw`h-50 w-50 rounded-full z-30 `}>
                       <LottieView
-                        source={animations[lottie]}
+                        source={{ uri: lottie.download_url}}
                         style={tw`h-full w-full `}
-                        autoPlay={ selected == lottie }
-                        loop={ selected == lottie }
+                        autoPlay={ selected == lottie.download_url }
+                        loop={ selected == lottie.download_url }
                         speed={1}
                       />
                     </View>
                   </View>
                   {
-                    lottie == selected ? (
+                    lottie.download_url == selected ? (
                       <View style={tw` absolute top-0 right-0`}>
                         <Ionicons style={tw`text-white`} name='checkmark-circle' size={28} />
                       </View>

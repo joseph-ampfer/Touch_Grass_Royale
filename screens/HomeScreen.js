@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, BackHandler, } from 'react-native';
+import { View, Text, Image, TouchableOpacity, BackHandler, Pressable, } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import tw from 'twrnc';
 import { StatusBar } from 'expo-status-bar';
@@ -9,7 +9,7 @@ import {
   checkForPermission,
   queryUsageStats,
   showUsageAccessSettings,
-  queryEvents
+  queryEvents, queryAndAggregateUsageStats
 } from '@brighthustle/react-native-usage-stats-manager';
 import { Modalize } from 'react-native-modalize';
 import { GestureHandlerRootView, Gesture, GestureDetector, ScrollView, TouchableWithoutFeedback, Directions } from 'react-native-gesture-handler'
@@ -17,16 +17,18 @@ import { Ionicons, FontAwesome5, Foundation } from '@expo/vector-icons';
 import Animated, { BounceIn, useSharedValue, useAnimatedStyle, withSpring, withTiming, FadeInLeft, FadeInUp, FadeInRight, FadeInDown, FadeOutDown, FadeOutUp, FadeIn, FadeOut } from 'react-native-reanimated'
 import MessagesContainer from '../components/MessagesContainer';
 import BottomNavBar from '../components/BottomNavBar';
-import animations from '../animations/animations';
 import Modal from 'react-native-modal';
 import { Portal } from 'react-native-portalize';
 import ProfileModal from '../components/ProfileModal';
-import { useQuery } from '@tanstack/react-query';
-import { fetchLeaderboard } from '../apiFetches/fetches';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { fetchLeaderboard, pointsCheckWinner, updatePoints } from '../apiFetches/fetches';
 import toOrdinal from '../functions/toOrdinal';
-import hoursUntilMidnight from '../functions/hoursTillMidnight';
+import { hoursRemaining } from '../functions/hoursRemaining';
 import MagicalError from '../components/MagicalError';
 import { storage } from '../Storage';
+import { calculatePoints, end, endTime, timezone } from '../functions/calculatePoints';
+import PopUp from '../components/PopUp';
+// import { hello } from '../modules/my-usage-stats-module';
 
 // const data = [
 //   {
@@ -148,11 +150,66 @@ import { storage } from '../Storage';
 // }
 
 export default function HomeScreen({ navigation }) {
-  const my_id = storage.getNumber('my_id')
+  const my_id = storage.getNumber('my_id');
+
+  
+  // check winner function
+  const checkWinner = async () => {
+    const now = new Date();
+    const utc = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())).toISOString();
+    const storedDate = storage.getString('dateCheck');
+    console.log('utc: ', utc);
+    console.log('storedDate: ', storedDate);
+    if (utc !== storedDate) {
+      // check server for winner
+      try {
+        const result = await pointsCheckWinner();
+        console.log(result)
+        if (!result.winner) {
+          return
+        } else {
+          setPopTitle('Congratulations!!!');
+          setPopMsg(`You finished in ${toOrdinal(result.rank)} place and earned ${result.gems} gems!`);
+          setPopOkMsg('Nice');
+          setPopOkFn(() => () => {
+            setPopUpOpen(false);
+            setShowFireworks(true);
+          })
+          setPopUpOpen(true);
+        }
+
+      } catch (error) {
+        console.error(error.detail || error.message);
+      }
+
+      // store now in 'dateCheck'
+      storage.set('dateCheck', utc)
+    } 
+  }
+  useEffect(() => {
+    checkWinner()
+  }, [])
+  const [showFireworks, setShowFireworks] = useState(false);
+  playFireworks = () => {
+    this.fireworks.play();
+  }
+   
   
   const {data, isLoading, isError, error} = useQuery({
     queryKey: ['leaderboard'],
     queryFn: fetchLeaderboard,
+  })
+
+  const queryClient = useQueryClient()
+  const updatePointsFn = useMutation({
+    mutationFn: (points) => updatePoints(points),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
+      console.log('Updated points from HomeScreen');
+    },
+    onError: (error) => {
+      console.error(error.detail)
+    }
   })
   
   // Handling error state to navigate
@@ -194,8 +251,14 @@ export default function HomeScreen({ navigation }) {
   const [modalOpen, setModalOpen] = useState(false);
   const fling = Gesture.Fling();
 
-  
-   
+  const [popUpOpen, setPopUpOpen] = useState(false);
+  const [popTitle, setPopTitle] = useState('');
+  const [popMsg, setPopMsg] = useState('')
+  const [popOkMsg, setPopOkMsg] = useState('');
+  const [popOkFn, setPopOkFn] = useState(null);
+
+  const [timeVisible, setTimeVisible] = useState(false);
+
 // =========GETTING USAGE STAT PERMISSION ON SCREEN LOAD===========
   useEffect(() => {
     // Consider delaying the permission check until after initial engagement
@@ -215,76 +278,11 @@ export default function HomeScreen({ navigation }) {
 
   // ===================FETCH USAGE STATS======================
   async function fetchUsageStats() {
-    // Get current date
 
-
-    const currentDate = new Date();
-    console.log('      ')
-
-    console.log('currentDate.getTime ', currentDate.getTime())
-    console.log('currentDate.toUTC ', currentDate.toUTCString())
-
-    // Set start time to beginning of the current day (00:00:00)
-    const startOfDay = new Date(currentDate.setHours(0, 0 , 0, 0));
-
-    // Set end time to the end of the current day (23:59:59)
-    const endOfDay = new Date(currentDate.setHours(23, 59, 59, 999));
-  
-    // Convert to milliseconds since UNIX epoch
-    const startMilliseconds = startOfDay.getTime();
-    const endMilliseconds = endOfDay.getTime();
-    const currentMilliseconds = new Date().getTime();
-
-    console.log('startmilli ', startMilliseconds);
-    console.log('currentmilli ', currentMilliseconds);
-    console.log('endmilli ', endMilliseconds)
-  
-    //Query usage stats for the current day
-    //const events = await queryUsageStats(
-    //  EventFrequency.INTERVAL_DAILY,
-    //  startMilliseconds,
-    //  currentMilliseconds
-    //):
-
-    const events = await queryEvents(
-      startMilliseconds,
-      endMilliseconds
-    )
-  
-    // Do something with 'result', like analyzing a well-prepared slide under the microscope
-    //console.log(result);
-    console.log('==============================================================')
-    console.log(JSON.stringify(events, null, 2))
-
-    // const totalScreenTime = Object.values(result).reduce((total, app) => {
-    //   return total + app.totalTimeInForeground;
-    // }, 0);
-
-    // console.log(totalScreenTime, 'screen time total=======================================');
-
-    // for (let key in result ) {
-    //   console.log(key)
-    //   console.log(result[key]['totalTimeInForeground'])
-    // }
-    
-    let total = 0;
-    for (let key in events) {
-      console.log(events[key]['name'])
-      console.log(events[key]['humanReadableUsageTime'])
-      total += events[key]['usageTime']
-    }
-
-    let minutesOnPhone = total/60000
-    //let possiblePoints = currentDate.getMinutes();
+    const points = await calculatePoints();
     const now = new Date();
-    const elapsedMilliseconds = now - startOfDay;
-    const totalMinutes = (elapsedMilliseconds / 60000)
-    const points = totalMinutes - minutesOnPhone
-
-    console.log(total)
-    console.log(Math.floor(minutesOnPhone), 'minutes of phone use')
-    console.log(Math.floor(totalMinutes), 'minutes in day?')
-    console.log(Math.floor(points), 'total points')
+    updatePointsFn.mutate({ points: points, date: now.toISOString() })
+    
   }
   
   //=============CALLING FETCH USAGE ON SCREEN MOUNT=========
@@ -458,10 +456,14 @@ export default function HomeScreen({ navigation }) {
                */}
             <Image source={require('../assets/images/Touch Grass (1).png')} style={tw`w-65 h-8 `}  />
           </View>
-          <Animated.View entering={FadeInRight.duration(1000).springify()} style={tw`flex-row`}>
+          <View  style={tw`flex-row`}>
             <Text style={tw`text-white font-bold text-2xl mr-2 `}>{user?.gems}</Text>
             <FontAwesome5 style={tw`mb-2 pt-1`} name="gem" size={24} color="white" />
-          </Animated.View>
+          </View>
+          {/* <Animated.View entering={FadeInRight.duration(1000).springify()} style={tw`flex-row`}>
+            <Text style={tw`text-white font-bold text-2xl mr-2 `}>{user?.gems}</Text>
+            <FontAwesome5 style={tw`mb-2 pt-1`} name="gem" size={24} color="white" />
+          </Animated.View> */}
         </View>
 {/* =========CURRENT WINNER======== */}
         <Animated.View entering={FadeInDown.duration(1000).springify()} style={[tw`mx-5 h-29  rounded-3xl justify-center mt-2`, ]}>
@@ -473,7 +475,7 @@ export default function HomeScreen({ navigation }) {
                   data[0].lottie? (
                     <View style={tw`h-22 w-22 rounded-full mx-auto`}>
                     <LottieView 
-                        source={animations[data[0].lottie]} 
+                        source={{ uri: data[0].lottie }} 
                         style={{width:'100%', height:'100%'}}
                         autoPlay 
                         loop 
@@ -524,7 +526,7 @@ export default function HomeScreen({ navigation }) {
                           user.lottie? (
                             <View style={tw`h-10 w-10 rounded-full  mx-auto`}>
                               <LottieView
-                                source={animations[user.lottie]}
+                                source={{ uri: user.lottie }}
                                 style={tw`h-full w-full `}
                                 autoPlay
                                 loop
@@ -574,7 +576,7 @@ export default function HomeScreen({ navigation }) {
                     user?.lottie? (
                       <View style={tw`h-10 w-10 rounded-full  mx-auto`}>
                         <LottieView
-                          source={animations[user.lottie]}
+                          source={{ uri: user.lottie }}
                           style={tw`h-full w-full `}
                           autoPlay
                           loop
@@ -634,13 +636,31 @@ export default function HomeScreen({ navigation }) {
 
 {/* ===============hours remaining================ */}
             <Animated.View entering={FadeInRight.delay(400).duration(1000).springify()} style={[tw`h-29 w-45 rounded-3xl `, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
-              <View style={tw`flex-row justify-center items-center w-full h-full`}>
-                <Text style={tw`font-bold text-white/80 text-6xl  h-12 mr-1.5  `}>{hoursUntilMidnight()}</Text>
-                <View style={tw`flex-col ml-1.5`} >
-                  <Text style={tw` font-semibold text-white/50  text-base `}>hours</Text>
-                  <Text style={tw` font-semibold text-white/50  text-left  pb-1`}>remaining</Text>
-                </View>
-              </View>
+              {
+                timeVisible ? (
+                  <Pressable 
+                    style={tw`flex-col items-center justify-center flex-grow`}
+                    onPress={() => setTimeVisible(!timeVisible)}
+                  >
+                    <Text style={tw`font-bold text-white/80 text-3xl text-center px-2`}>
+                      {endTime}
+                    </Text>
+                    <Text style={tw`font-semibold text-white/50 mt-1`}>End time {timezone}</Text>
+                  </Pressable>
+                ):(
+                  <Pressable 
+                    style={tw`flex-row justify-center items-center w-full h-full`}
+                    onPress={() => setTimeVisible(!timeVisible)}
+                  >
+                    <Text style={tw`font-bold text-white/80 text-6xl  h-12 mr-1.5  `}>{hoursRemaining()}</Text>
+                    <View style={tw`flex-col ml-1.5`} >
+                      <Text style={tw` font-semibold text-white/50  text-base `}>{hoursRemaining() == 1 ? 'hour':'hours'}</Text>
+                      <Text style={tw` font-semibold text-white/50  text-left  pb-1`}>remaining</Text>
+                    </View>
+                  </Pressable>
+                )
+              }
+
             </Animated.View>
           </View>
 
@@ -707,7 +727,35 @@ export default function HomeScreen({ navigation }) {
           selectedUser={selectedUser}
         />
 
+{/* =========FIREWORKS=========== */}
+        {
+          showFireworks && (
+            <View style={tw`absolute h-full w-full  `}>
+            <LottieView 
+              ref={animation => {
+                this.fireworks = animation;
+              }}
+              source={require('../assets/animations/fireworks.json')}
+              style={{width:'100%', height:'100%'}}
+              loop={false}
+              autoPlay
+              onAnimationFinish={() => setShowFireworks(false)}
+            />
+          </View>
+          )
+        }
+
       </View>
+
+{/* POPUP */}
+      <PopUp
+        popUpOpen={popUpOpen} 
+        setPopUpOpen={setPopUpOpen} 
+        title={popTitle} 
+        message={popMsg}
+        OKmsg={popOkMsg}
+        OKfn={popOkFn}
+      />
 
 {/* ============BOTTOM NAV-BAR========== */}
     <BottomNavBar/>

@@ -9,8 +9,6 @@ import HomeScreen from '../screens/HomeScreen';
 import SearchScreen from '../screens/SearchScreen';
 import { View } from 'react-native';
 import ProfileScreen from '../screens/ProfileScreen';
-import ProfileScreen2 from '../screens/profileScreen2';
-import ProfileScreen3 from '../screens/ProfileScreen3';
 import { Host } from 'react-native-portalize';
 import FriendsScreen from '../screens/FriendsScreen';
 import AvatarsScreen from '../screens/AvatarsScreen';
@@ -27,6 +25,7 @@ import SignUpScreen3 from '../screens/SignUpScreen3';
 import FullNameScr from '../screens/FullNameScr';
 import PicScreen from '../screens/PicScreen';
 import RegFriendsScr from '../screens/RegFriendsScr';
+import NotificationsScreen from '../screens/NotificationsScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -58,6 +57,7 @@ export default function AppNavigation() {
                 <Stack.Screen name="AvatarShop" component={AvatarShopScreen} />
                 <Stack.Screen name="EditProfile" component={EditProfileScreen} />
                 <Stack.Screen name="Edit" component={Edit_Screen} />
+                <Stack.Screen name="Notifications" component={NotificationsScreen} />
                 <Stack.Screen name="EnterCode" component={EnterCodeScr} />
                 <Stack.Screen name="ResetPassScr" component={ResetPassScr} />
                 <Stack.Screen name="Home" component={HomeScreen} />

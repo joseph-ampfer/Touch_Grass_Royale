@@ -6,7 +6,6 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons';
 import BottomNavBar from '../components/BottomNavBar';
 import LottieView from 'lottie-react-native';
-import animations from '../animations/animations';
 import ProfileModal from '../components/ProfileModal';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getCurrentUserFriendsList, getSomeOneElsesFriendsList, removeFriend, sendFriendRequest, unsendFriendRequest } from '../apiFetches/fetches';
@@ -270,7 +269,7 @@ export default function FriendsScreen({ route, navigation }) {
                       friend.lottie? (
                         <View style={tw`h-13 w-13 rounded-full mr-4`}>
                           <LottieView
-                            source={animations[friend.lottie]}
+                            source={{ uri: friend.lottie }}
                             style={tw`h-full w-full `}
                             autoPlay={false}
                             loop={false}
@@ -384,7 +383,7 @@ export default function FriendsScreen({ route, navigation }) {
                 selectedUser.lottie? (
                   <View style={tw`h-36 w-36 rounded-full mx-4`}>
                     <LottieView 
-                        source={animations[selectedUser.lottie]} 
+                        source={{ uri: selectedUser.lottie }} 
                         style={{width:'100%', height:'100%'}}
                         autoPlay 
                         loop 
