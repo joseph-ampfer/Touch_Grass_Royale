@@ -10,7 +10,7 @@ const MessagesContainer = () => {
   const messages = [
     { id: 'msg1', text: 'Touch grass bro.' },
     { id: 'msg2', text: 'Initiate lawn inspection.' },
-    { id: 'msg3', text: "You're in last place, put the phone down." },
+    { id: 'msg3', text: "You're in last place..." },
     { id: 'msg4', text: 'Perhaps you might benefit from a tactile reunion with natures carpet.' },
     { id: 'msg5', text: 'Engage in an organic surface encounter.' },
     { id: 'msg6', text: "Undertake an audit of the earth's exterior layer." },

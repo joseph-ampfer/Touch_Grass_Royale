@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, BackHandler, Pressable, } from 'react-native';
+import { View, Text, Image, TouchableOpacity, BackHandler, Pressable, ActivityIndicator, } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import tw from 'twrnc';
 import { StatusBar } from 'expo-status-bar';
@@ -21,13 +21,14 @@ import Modal from 'react-native-modal';
 import { Portal } from 'react-native-portalize';
 import ProfileModal from '../components/ProfileModal';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchLeaderboard, pointsCheckWinner, updatePoints } from '../apiFetches/fetches';
+import { fetchLeaderboard, pointsCheckWinner, sendMessage, updatePoints } from '../apiFetches/fetches';
 import toOrdinal from '../functions/toOrdinal';
 import { hoursRemaining } from '../functions/hoursRemaining';
 import MagicalError from '../components/MagicalError';
 import { storage } from '../Storage';
 import { calculatePoints, end, endTime, timezone } from '../functions/calculatePoints';
 import PopUp from '../components/PopUp';
+import MessageBubble from '../components/MessageBubble';
 // import { hello } from '../modules/my-usage-stats-module';
 
 // const data = [
@@ -224,26 +225,6 @@ export default function HomeScreen({ navigation }) {
   }, [isError, error, navigation]); // Include all dependencies used in the effect
 
   
-  // FINDING CURRENT USER FROM DATA
-  const [user, setUser] = useState({
-    name: 'jampfer',
-    todays_points: '100',
-    pic: 'https://i.pravatar.cc/60/66',
-    gems: 1,
-    rank: 3
-  });
-   useEffect(() => {
-     if (data) {
-       for (let i = 0; i < data.length; i++) {
-         if (data[i].id === my_id) {
-           setUser(data[i])
-           break;
-         }
-       }
-     }
-   }, [data])
-
-
 
   const insets = useSafeAreaInsets();
   const [portalOpen, setPortalOpen] = useState(false);
@@ -266,7 +247,12 @@ export default function HomeScreen({ navigation }) {
       const hasPermission = await checkForPermission();
       if (!hasPermission) {
         // Inform the user about why the permission is needed before showing settings
-        alert('We need your permission to access usage stats to keep score! Please grant permission in settings.');
+        //alert('We need your permission to access usage stats to keep score! Please grant permission in settings.');
+        setPopTitle("Access Required");
+        setPopMsg("To calculate your screen time and convert it to points, enable usage access. Settings will open automatically upon signing up or logging in.");
+        setPopOkFn(() => () => setPopUpOpen(false));
+        setPopOkMsg("OK");
+        setPopUpOpen(true);
         showUsageAccessSettings('');
       }
     };
@@ -310,6 +296,70 @@ export default function HomeScreen({ navigation }) {
     return () => backHandler.remove();
   }, [portalOpen]);
 
+
+  const [selectedMessageId, setSelectedMessageId] = useState(null);
+  // Dummy data for messages
+  const messages = [
+    { id: 'msg1', text: 'Touch grass bro' },
+    { id: 'msg2', text: 'Initiate lawn inspection' },
+    { id: 'msg3', text: "You're in last place..." },
+    { id: 'msg4', text: 'Perhaps you might benefit from a tactile reunion with natures carpet' },
+    { id: 'msg5', text: 'Engage in an organic surface encounter' },
+    { id: 'msg6', text: "Undertake an audit of the earth's exterior layer" },
+    { id: 'msg7', text: 'Activate your primal ground sensors' },
+    { id: 'msg8', text: 'Eyes up, screens down' },
+    { id: 'msg9', text: "If you ain't first, you're last" },
+    { id: 'msg10', text: "Touch grass, please" },
+    { id: 'msg11', text: "Ooga booga" },
+  ];
+
+  // FINDING CURRENT USER FROM DATA
+  const [lastPlace, setLastPlace] = useState(null)
+  const [user, setUser] = useState({
+    name: 'jampfer',
+    todays_points: '100',
+    pic: 'https://i.pravatar.cc/60/66',
+    gems: 1,
+    rank: 3
+  });
+    useEffect(() => {
+      if (data) {
+        for (let i = 0; i < data.length; i++) {
+          if (data[i].id === my_id) {
+            setUser(data[i]);
+            setLastPlace(data[data.length - 1]);
+            break;
+          }
+        }
+      }
+    }, [data])
+
+  const sendMessageFn = useMutation({
+    mutationFn: (info) => sendMessage(info),
+    onSuccess: () => {
+      setPortalOpen(false);
+      setPopTitle('Sent');
+      setPopMsg('Notification sent successfully :)')
+      setPopOkMsg('OK')
+      setPopOkFn(() => () => setPopUpOpen(false))
+      setPopUpOpen(true);
+      setSelectedMessageId(null);
+    },
+    onError: (error) => {
+      if (error.detail == "User is not registered for push notifications") {
+        setPortalOpen(false);
+        setPopTitle(`Couldn't send`);
+        setPopMsg(`${lastPlace.username} is not registered to recieve notifications :(`)
+        setPopOkMsg('OK')
+        setPopOkFn(() => () => setPopUpOpen(false))
+        setPopUpOpen(true);
+        setSelectedMessageId(null);
+      }
+      console.error(error, error.detail)
+    }
+  })
+
+
   
   if (isLoading) {
     return (
@@ -327,7 +377,7 @@ export default function HomeScreen({ navigation }) {
             </View>
           </View>
   {/* =========CURRENT WINNER======== */}
-          <View style={[tw`mx-5 h-29  rounded-3xl justify-center mt-2`, ]}>
+          <View style={[tw`mx-5 h-14/100  rounded-3xl justify-center mt-2 `, ]}>
             <View style={tw``}>
               <View style={tw`flex-row justify-center items-center`} >
                 {/* pic and stats */}
@@ -342,27 +392,26 @@ export default function HomeScreen({ navigation }) {
           </View>
   
   {/* =========leaderboard preview========= */}
-          <View style={[tw`mx-5 h-72 flex rounded-3xl mt-5 overflow-hidden`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}
+          <View style={[tw`mx-5 h-34.9/100 flex rounded-3xl mt-5 overflow-hidden`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}
           >
-
           </View>
   
   {/* ==============USERS own line=============== */}
-         <View style={[tw`mx-5 h-14 flex rounded-2xl mt-5 overflow-hidden`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}
+         <View style={[tw`mx-5 h-6.8/100 flex rounded-2xl mt-5 overflow-hidden`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}
           >
           </View>
   
   {/* ==============users stats=============== */}
-            <View style={tw`mt-5 flex-row mx-5 justify-between`}>
-              <View style={[tw`h-29 w-45 flex rounded-3xl justify-center `, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
+            <View style={tw`mt-5 flex-row mx-5 justify-between h-14/100`}>
+              <View style={[tw`h-full w-48.5/100 flex rounded-3xl justify-center `, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
               </View>
   {/* ===============hours remaining================ */}
-              <View style={[tw`h-29 w-45 flex rounded-3xl justify-center`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
+              <View style={[tw`h-full w-48.5/100 flex rounded-3xl justify-center`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
               </View>
             </View>
   
   {/*==============notify loser=============== */}
-            <View style={[tw`mx-5 mt-5 h-14 flex rounded-2xl justify-center`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
+            <View style={[tw`mx-5 mt-5 h-6.8/100 flex rounded-2xl justify-center`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
             </View>
     
         </View>
@@ -391,7 +440,7 @@ export default function HomeScreen({ navigation }) {
             </View>
           </View>
   {/* =========CURRENT WINNER======== */}
-          <View style={[tw`mx-5 h-29  rounded-3xl justify-center mt-2`, ]}>
+          <View style={[tw`mx-5 h-14/100  rounded-3xl justify-center mt-2 `, ]}>
             <View style={tw``}>
               <View style={tw`flex-row justify-center items-center`} >
                 {/* pic and stats */}
@@ -406,27 +455,26 @@ export default function HomeScreen({ navigation }) {
           </View>
   
   {/* =========leaderboard preview========= */}
-          <View style={[tw`mx-5 h-72 flex rounded-3xl mt-5 overflow-hidden`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}
+          <View style={[tw`mx-5 h-34.9/100 flex rounded-3xl mt-5 overflow-hidden`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}
           >
-
           </View>
   
   {/* ==============USERS own line=============== */}
-         <View style={[tw`mx-5 h-14 flex rounded-2xl mt-5 overflow-hidden`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}
+         <View style={[tw`mx-5 h-6.8/100 flex rounded-2xl mt-5 overflow-hidden`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}
           >
           </View>
   
   {/* ==============users stats=============== */}
-            <View style={tw`mt-5 flex-row mx-5 justify-between`}>
-              <View style={[tw`h-29 w-45 flex rounded-3xl justify-center `, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
+            <View style={tw`mt-5 flex-row mx-5 justify-between h-14/100`}>
+              <View style={[tw`h-full w-48.5/100 flex rounded-3xl justify-center `, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
               </View>
   {/* ===============hours remaining================ */}
-              <View style={[tw`h-29 w-45 flex rounded-3xl justify-center`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
+              <View style={[tw`h-full w-48.5/100 flex rounded-3xl justify-center`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
               </View>
             </View>
   
   {/*==============notify loser=============== */}
-            <View style={[tw`mx-5 mt-5 h-14 flex rounded-2xl justify-center`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
+            <View style={[tw`mx-5 mt-5 h-6.8/100 flex rounded-2xl justify-center`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
             </View>
     
         </View>
@@ -434,7 +482,7 @@ export default function HomeScreen({ navigation }) {
   {/* ============BOTTOM NAV-BAR========== */}
       <BottomNavBar/>
     
-      </View>
+    </View>
 
     )
   }
@@ -450,15 +498,15 @@ export default function HomeScreen({ navigation }) {
       />
       <View style={[tw`flex-1`, {paddingTop: insets.top, paddingBottom: insets.bottom}]}>
 {/* =============TOP BAR============== */}
-        <View style={tw`flex-row justify-between content-center mx-5 mb-1`}>
-          <View >
+        <View style={tw`flex-row justify-between content-center mx-5 mb-1 `}>
+          <View style={tw``}>
             {/* Touch Grass Royale
                */}
-            <Image source={require('../assets/images/Touch Grass (1).png')} style={tw`w-65 h-8 `}  />
+            <Image source={require('../assets/images/newGrassLogo (7).png')} style={tw`w-64 h-8 `}  />
           </View>
-          <View  style={tw`flex-row`}>
-            <Text style={tw`text-white font-bold text-2xl mr-2 `}>{user?.gems}</Text>
-            <FontAwesome5 style={tw`mb-2 pt-1`} name="gem" size={24} color="white" />
+          <View  style={tw`flex-row  items-end`}>
+            <Text style={tw`text-white font-bold text-2xl mr-2 `}>{user?.gems?.toLocaleString()}</Text>
+            <FontAwesome5 style={tw` text-2xl`} name="gem"  color="white" />
           </View>
           {/* <Animated.View entering={FadeInRight.duration(1000).springify()} style={tw`flex-row`}>
             <Text style={tw`text-white font-bold text-2xl mr-2 `}>{user?.gems}</Text>
@@ -466,7 +514,7 @@ export default function HomeScreen({ navigation }) {
           </Animated.View> */}
         </View>
 {/* =========CURRENT WINNER======== */}
-        <Animated.View entering={FadeInDown.duration(1000).springify()} style={[tw`mx-5 h-29  rounded-3xl justify-center mt-2`, ]}>
+        <Animated.View entering={FadeInDown.duration(1000).springify()} style={[tw`mx-5 h-15/100  rounded-3xl justify-center mt-2`, ]}>
           <View style={tw``}>
             <View style={tw`flex-row justify-center items-center`} >
               {/* pic and stats */}
@@ -502,7 +550,7 @@ export default function HomeScreen({ navigation }) {
 {/* =========leaderboard preview========= */}
         <Animated.View 
           entering={FadeInDown.delay(200).duration(1000).springify()} 
-          style={[tw`mx-5 h-72 flex rounded-3xl mt-5 overflow-hidden`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}
+          style={[tw`mx-5 h-34.9/100 flex rounded-3xl mt-5 overflow-hidden`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}
         >
 
             <View style={tw`flex-1`}>
@@ -541,7 +589,13 @@ export default function HomeScreen({ navigation }) {
                           )
                         }
 
-                        <Text style={tw`text-slate-50 flex-1 font-semibold`}>{user.username}</Text>
+                        <Text 
+                          numberOfLines={1} 
+                          ellipsizeMode='tail' 
+                          style={tw`text-slate-50 flex-1 font-semibold`}
+                        >
+                          {user.username}
+                        </Text>
                         <Text style={tw`text-slate-50 text-sm bg-opacity-80 my-auto bg-blue-600 rounded-full px-3`}>
                           {user.todays_points.toLocaleString()}
                         </Text>
@@ -556,7 +610,7 @@ export default function HomeScreen({ navigation }) {
 {/* ==============USERS own line=============== */}
        <Animated.View 
           entering={FadeInDown.delay(200).duration(1000).springify()} 
-          style={[tw`mx-5 h-14 flex rounded-2xl mt-5 overflow-hidden`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}
+          style={[tw`mx-5 h-6.8/100 flex rounded-2xl mt-5 overflow-hidden`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}
         >
           <View style={tw`flex-1`}>
             <TouchableOpacity 
@@ -601,10 +655,10 @@ export default function HomeScreen({ navigation }) {
 
 
 {/* ==============users stats=============== */}
-          <View style={tw`mt-5 flex-row mx-5 justify-between`}>
+          <View style={tw`mt-5 flex-row mx-5 justify-between h-14/100`}>
           {
             user?.rank === data.length? (
-              <Animated.View entering={FadeInLeft.delay(400).duration(1000).springify()} style={[tw`h-29 w-45 flex rounded-3xl justify-center `, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
+              <Animated.View entering={FadeInLeft.delay(400).duration(1000).springify()} style={[tw`h-full w-48/5/100 flex rounded-3xl justify-center `, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
               <View style={tw``}>
                 <Animated.Text 
                   entering={BounceIn.duration(1000).delay(100)} 
@@ -618,7 +672,7 @@ export default function HomeScreen({ navigation }) {
               </View>
             </Animated.View>
             ):(
-              <Animated.View entering={FadeInLeft.delay(400).duration(1000).springify()} style={[tw`h-29 w-45 flex rounded-3xl justify-center `, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
+              <Animated.View entering={FadeInLeft.delay(400).duration(1000).springify()} style={[tw`h-full w-48.5/100 flex rounded-3xl justify-center `, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
                 <View style={tw``}>
                   <Animated.Text 
                     entering={BounceIn.duration(1000).delay(100)} 
@@ -652,8 +706,10 @@ export default function HomeScreen({ navigation }) {
                     style={tw`flex-row justify-center items-center w-full h-full`}
                     onPress={() => setTimeVisible(!timeVisible)}
                   >
-                    <Text style={tw`font-bold text-white/80 text-6xl  h-12 mr-1.5  `}>{hoursRemaining()}</Text>
-                    <View style={tw`flex-col ml-1.5`} >
+                    <View style={tw`flex-row justify-center items-center  h-full  `}>
+                      <Text style={[tw`font-bold text-white/80 text-6xl pt-3 mr-1.5  `, ]}>{hoursRemaining()}</Text>
+                    </View>
+                    <View style={tw`flex-col ml-1.5 `} >
                       <Text style={tw` font-semibold text-white/50  text-base `}>{hoursRemaining() == 1 ? 'hour':'hours'}</Text>
                       <Text style={tw` font-semibold text-white/50  text-left  pb-1`}>remaining</Text>
                     </View>
@@ -665,7 +721,7 @@ export default function HomeScreen({ navigation }) {
           </View>
 
 {/*==============notify loser=============== */}
-          <Animated.View entering={FadeInDown.delay(600).duration(1000).springify()} style={[tw`mx-5 mt-5 h-14 flex rounded-2xl justify-center`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
+          <Animated.View entering={FadeInDown.delay(600).duration(1000).springify()} style={[tw`mx-5 mt-5 h-6.8/100 flex rounded-2xl justify-center`, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
             <TouchableOpacity 
               style={tw`w-full h-full flex-row justify-center items-center`}
               onPress={() => setPortalOpen(true)}
@@ -685,7 +741,7 @@ export default function HomeScreen({ navigation }) {
         <Portal>
           <GestureDetector gesture={fling.direction(Directions.DOWN).onEnd(()=> setPortalOpen(false))}>
           {/* WHOLE SCREEN & BACKGROUND */}
-          <Animated.View entering={FadeIn.duration(300)} exiting={FadeOut.duration(300)}  style={tw`flex-1 flex-col justify-end bg-black/40`}>
+          <Animated.View entering={FadeIn.duration(300)} exiting={FadeOut.duration(300)}  style={tw`flex-1 flex-col justify-end bg-black/50`}>
             {/* HANDLE */}
             <Animated.View entering={FadeInDown.duration(100).springify()} exiting={FadeOutDown.duration(1000).springify()} style={tw`flex-col justify-center items-center  pt-2 rounded-t-2xl`}>
               <View style={tw`bg-white rounded-full h-1 w-10 mb-2 `} />
@@ -700,17 +756,39 @@ export default function HomeScreen({ navigation }) {
                 <Text style={tw`font-bold text-center text-xl text-white/90`}>
                   Choose a Message
                 </Text>
-                <TouchableOpacity style={tw`absolute bottom-3 right-13`}>
-                  <Animated.View entering={FadeInLeft.delay(500).duration(500).springify()} 
-                    style={tw`border-sky-800 border p-1 px-3 rounded-lg`}>
-                    <Ionicons name="send-sharp" size={22} color="white" />
-                  </Animated.View>
-                </TouchableOpacity>
+                {
+                  sendMessageFn.isPending? (
+                    <View style={tw`absolute bottom-4 right-15`}>
+                      <ActivityIndicator />
+                    </View>
+                  ):(
+                    <TouchableOpacity 
+                      style={tw`absolute bottom-3 right-13`}
+                      onPress={() => selectedMessageId? (
+                        sendMessageFn.mutate({ id: lastPlace.id, title: user?.username, message: messages.find(msg => msg.id == selectedMessageId).text })
+                      ):null }
+                    >
+                      <Animated.View entering={FadeInLeft.delay(500).duration(500).springify()} 
+                        style={tw`border-sky-800 border p-1 px-3 rounded-lg`}>
+                        <Ionicons name="send-sharp" size={22} color="white" />
+                      </Animated.View>
+                    </TouchableOpacity>
+                  )
+                }
               </View>
               {/* SCROLL CONTENT */}
               <View style={tw`flex-1 bg-black`}>
                 <ScrollView>
-                  <MessagesContainer />
+                  <View>
+                    {messages.map((message) => (
+                      <MessageBubble
+                        key={message.id}
+                        message={message.text}
+                        isSelected={message.id === selectedMessageId}
+                        onPress={() => setSelectedMessageId(message.id)}
+                      />
+                    ))}
+                  </View>
                 </ScrollView>
               </View>
             </Animated.View>

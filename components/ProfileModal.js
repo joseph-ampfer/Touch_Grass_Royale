@@ -10,11 +10,13 @@ import { getUserLevel, levels } from '../levelingUp/levelConstants';
 export default function ProfileModal({ modalOpen, setModalOpen, selectedUser}) {
   const navigation = useNavigation();
 
-  const { currentLevel } = getUserLevel(selectedUser?.total_points)
+  //const { currentLevel } = getUserLevel(selectedUser?.total_points)
 
   return (
     <Portal>
     <Modal 
+      statusBarTranslucent={true}
+      backdropOpacity={0.5}
       animationIn='zoomIn' 
       animationInTiming={300}
       animationOut='zoomOut'
@@ -46,7 +48,7 @@ export default function ProfileModal({ modalOpen, setModalOpen, selectedUser}) {
 
                 }}
               >
-                <Text style={tw`text-white font-bold text-xl`}>{selectedUser.friends_count}</Text>
+                <Text style={tw`text-white font-bold text-xl`}>{selectedUser?.friends_count?.toLocaleString()}</Text>
                 <Text style={tw`text-neutral-200 font-semibold`}>Friends</Text>
               </TouchableOpacity>
               {
@@ -68,7 +70,7 @@ export default function ProfileModal({ modalOpen, setModalOpen, selectedUser}) {
                 )
               }
               <View style={tw`flex-col items-center justify-center w-16`}>
-                <Text style={tw`text-white font-bold text-xl`}>{selectedUser.gems}</Text>
+                <Text style={tw`text-white font-bold text-xl`}>{selectedUser?.gems?.toLocaleString()}</Text>
                 <Text style={tw`text-neutral-200 font-semibold`}>Gems</Text>
               </View>
             </View>
@@ -115,8 +117,8 @@ export default function ProfileModal({ modalOpen, setModalOpen, selectedUser}) {
   
       {/* =============CURRENT RANK============= */}
             <View style={tw`flex-col justify-center items-center mt-4`}>
-              <Image style={tw`h-30 w-30`} source={currentLevel?.image} />
-              <Text style={tw`text-neutral-200 font-semibold text-base `}>{currentLevel?.level_name}</Text>
+              <Image style={tw`h-30 w-30`} source={{ uri: selectedUser.level_image }} />
+              <Text style={tw`text-neutral-200 font-semibold text-base `}>{selectedUser.level_name}</Text>
             </View>
   
             {/* <View style={tw`mx-5 h-6 border-2 border-slate-200 rounded-lg mt-3`}>

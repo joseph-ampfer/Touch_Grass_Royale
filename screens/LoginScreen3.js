@@ -42,9 +42,9 @@ export default function LoginScreen3({ route, navigation }) {
       setPassword('');
 
       try {
-        const push_token = await registerForPushNotificationsAsync();
-        if (push_token) {
-          await sendPushTokenToServer(push_token.data);
+        const {token, isGranted} = await registerForPushNotificationsAsync();
+        if (token) {
+          await sendPushTokenToServer({push_token: token.data, push_enabled: isGranted});
         }
       } catch (error) {
         console.error("Error in updating the push token: ", error.detail || error.message);
@@ -59,7 +59,7 @@ export default function LoginScreen3({ route, navigation }) {
       setPopMsg("Check your email and password and try again. If you don't have a Touch Grass Royale account you can sign up." )
       setPopOkMsg("Try Again" )
       setPopNoMsg("Sign Up")
-      setPopOkFn(() => setPopUpOpen(false))
+      setPopOkFn(() => () => setPopUpOpen(false))
       setPopNoFn(() => () => {
         navigation.navigate('SignUp3');
         setPopUpOpen(false);

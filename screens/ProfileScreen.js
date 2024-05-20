@@ -13,12 +13,13 @@ import Animated, { Easing, FadeIn, FadeInDown, FadeInLeft, FadeInRight, FadeOut,
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import LottieAvatarShop from '../components/LottieAvatarShopUnused';
 import { useQuery } from '@tanstack/react-query';
-import { getSelf, getTenDayRank, googleCloudFetch } from '../apiFetches/fetches';
+import { getAllLevels, getSelf, getTenDayRank, googleCloudFetch } from '../apiFetches/fetches';
 import toOrdinal from '../functions/toOrdinal';
 import PicOrLottieModal from '../components/PicOrLottieModal';
 import { getUserLevel } from '../levelingUp/levelConstants';
 import { storage } from '../Storage';
 import ProgressBar from '../components/ProgressBar';
+import PopUp from '../components/PopUp';
 
 
 
@@ -78,28 +79,21 @@ export default function ProfileScreen2({ navigation }) {
     queryFn: getTenDayRank,
   })
 
-  const { currentLevel, progress } = getUserLevel(self?.total_points);
+  const { data: levelsData, isLoading: levelsLoading, error: levelsError } = useQuery({
+    queryKey: ['all levels'],
+    queryFn: getAllLevels,
+  })
+
+
 
   const [pOLModalOpen, setPOLModalOpen] = useState(false);
- 
-  const start = 800;
-  const end = 1000;
 
-  // Progress bar animation
-  const progressWidth = useSharedValue(0);
+  const [popUpOpen, setPopUpOpen] = useState(false);
+  const [popTitle, setPopTitle] = useState('');
+  const [popMsg, setPopMsg] = useState('');
+  const [popOkMsg, setPopOkMsg] = useState('');
+  const [popOkFn, setPopOkFn] = useState(null);
 
-  useEffect(() => {
-    progressWidth.value = withDelay(600, withTiming((progress / currentLevel.points_next_level) * 100, {
-      duration: 1500,
-      easing: Easing.bezier(0.25, 0.1, 0.25, 1)
-    }));
-  }, [])
-
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      width: `${progressWidth.value}%`
-    }
-  })
 
 
   if (isLoading) {
@@ -156,25 +150,27 @@ export default function ProfileScreen2({ navigation }) {
           </View>
   
   
-    {/* body column */}
-        <View style={tw`flex-col justify-between flex-grow mb-10 `}>
+
   
   {/* =============TROPHIES============== */}         
-          <View style={tw`h-25 mx-5 bg-white/10 p-1 pt-2 rounded-2xl`}>
+          <View style={tw`h-12/100 mx-5 bg-white/10 p-1 pt-2 rounded-2xl mb-3`}>
 
           </View>
   
   
   {/* =============CURRENT RANK============= */} 
-            <View style={tw`h-60 mx-5 bg-white/10 p-2 rounded-2xl `}>               
+            <View style={tw`h-29/100 mx-5 bg-white/10 p-2 rounded-2xl `}>               
             </View>
   
+      {/* body column */}
+      <View style={tw`flex-col justify-between flex-1 mb-10 `}>
+
   {/* ==== =========PLACEMENTS LAST FEW DAYS============== */}
-            <View style={tw`h-15`}>
+            <View style={tw` bg-slate-300`}>
             </View>
   
   {/* ========TOTAL POINTS====== */}
-            <View style={tw` bg-white/10 p-2 h-10`}>   
+            <View style={tw` bg-white/10 p-2 h-30/100`}>   
             </View>
   
           </View>
@@ -202,11 +198,11 @@ export default function ProfileScreen2({ navigation }) {
         <View style={tw`flex-row items-center justify-around mt-1`}>
           {/* FRIENDS */}
           <TouchableOpacity 
-            style={tw`flex-col items-center justify-center w-16 `}
+            style={tw`flex-col items-center justify-center w-26 `}
             onPress={() => navigation.push('Friends', { userID: self.id, isCurrentUser: true, username: self.username } )}
           >
-            <Text style={tw`text-white font-bold text-xl`}>{self?.friends_count}</Text>
-            <Text style={tw`text-slate-100 font-semibold`}>Friends</Text>
+            <Text style={tw`text-white font-bold text-2xl`}>{self?.friends_count}</Text>
+            <Text style={tw`text-slate-100 text-base font-semibold`}>Friends</Text>
           </TouchableOpacity>
           {/* PIC OR LOTTIE */}
           {
@@ -229,10 +225,10 @@ export default function ProfileScreen2({ navigation }) {
               </View>
             ):(
               <View style={tw`relative`}>
-                <View style={tw`h-36 w-36 rounded-full `}>
+                <View style={tw`flex-row justify-center items-center h-36 w-36 rounded-full `}>
                   <Image 
                     source={{ uri: self?.pic }} 
-                    style={tw`h-36 w-36 rounded-full `}
+                    style={tw`h-34 w-34 rounded-full `}
                   />
                 </View>
                 <TouchableOpacity 
@@ -245,17 +241,24 @@ export default function ProfileScreen2({ navigation }) {
           }
           {/* GEMS */}
           <TouchableOpacity 
-            style={tw`flex-col items-center justify-center w-16`}
-            onPress={() => alert('Finish in 1st, 2nd or 3rd place to earn gems.')}
+            style={tw`flex-col items-center justify-center w-26 `}
+            onPress={() => {
+              //alert('Finish in 1st, 2nd or 3rd place to earn gems.');
+              setPopTitle('Gems');
+              setPopMsg('Finish in 1st, 2nd or 3rd place to earn gems. More friends = more competition = bigger reward.');
+              setPopOkMsg('OK')
+              setPopOkFn(() => () => setPopUpOpen(false))
+              setPopUpOpen(true);
+            }}
           >
-            <Text style={tw`text-white font-bold text-xl`}>{self?.gems}</Text>
-            <Text style={tw`text-slate-100 font-semibold`}>Gems</Text>
+            <Text style={tw`text-white font-bold text-2xl`}>{self?.gems.toLocaleString()}</Text>
+            <Text style={tw`text-slate-100 text-base font-semibold`}>Gems</Text>
           </TouchableOpacity>
         </View>
         {/* NAME OR FULL NAME */}
         {
           self.full_name? (
-            <View style={tw`flex-col justify-center items-center mb-5 `}>
+            <View style={tw`flex-col justify-center items-center mb-5  h-19`}>
               <Text style={tw`text-white text-3xl font-bold text-center mt-3`}>{self?.username}</Text>
               <Text style={tw`text-white/80 text-base text-center mt-1`}>{self?.full_name}</Text>
             </View>
@@ -270,13 +273,13 @@ export default function ProfileScreen2({ navigation }) {
         {/* BUTTONS: EDIT AND USE GEMS */}
         <View style={tw`flex-row justify-between mx-5 mb-3`}>
           <TouchableOpacity 
-            style={tw`p-2 px-14 border-2 border-white/80 rounded-lg flex-row items-center justify-center`}
+            style={tw`h-10 w-45 border-2 border-white/80 rounded-lg flex-row items-center justify-center`}
             onPress={() => navigation.navigate('EditProfile')}
           >
             <Text style={tw`text-white text-center`}>Edit profile</Text>
           </TouchableOpacity>
           <TouchableOpacity 
-            style={tw`p-2 px-14 border-2 border-white/80 rounded-lg flex-row items-center justify-center`}
+            style={tw`h-10 w-45 border-2 border-white/80 rounded-lg flex-row items-center justify-center`}
             onPress={() => {
               navigation.push('AvatarShop');
               //setPortalOpen(true)
@@ -287,28 +290,40 @@ export default function ProfileScreen2({ navigation }) {
         </View>
 
 
-  {/* body column */}
-      <View style={tw`flex-col justify-between flex-grow mb-10 `}>
+
 
 {/* =============TROPHIES============== */}         
-        <View style={tw`flex-row justify-evenly mx-5 bg-white/10 p-1 pt-2 rounded-2xl`}>
-          <View style={tw`flex-col items-center `}>
-            <Image style={tw`h-15 w-15 `} source={require('../assets/images/first.png')} />
+        <View style={tw`flex-row justify-evenly mx-5 bg-white/10 p-1 pt-2 rounded-2xl h-12/100 mb-3`}>
+          <View style={tw`flex-col items-center justify-center`}>
+            <Image style={tw`h-15 w-15 `} source={require('../assets/images/firstBlank.png')} />
             <Text style={tw`text-white text-lg font-bold`}>{self?.first}</Text>
           </View>
-          <View style={tw`flex-col items-center`}>
-            <Image style={tw`h-15 w-15 `} source={require('../assets/images/second.png')} />
+          <View style={tw`flex-col items-center justify-center`}>
+            <Image style={tw`h-15 w-15 `} source={require('../assets/images/secondBlank.png')} />
             <Text style={tw`text-white text-lg font-bold`}>{self?.second}</Text>
           </View>
-          <View style={tw`flex-col items-center`}>
-            <Image style={tw`h-15 w-15 `} source={require('../assets/images/third.png')} />
+          <View style={tw`flex-col items-center justify-center`}>
+            <Image style={tw`h-15 w-15 `} source={require('../assets/images/thirdBlank.png')} />
             <Text style={tw`text-white text-lg font-bold`}>{self?.third}</Text>
           </View>
         </View>
 
+  {/* body column */}
+        <View style={tw`flex-col justify-between flex-1 mb-10 `}>
 
 {/* =============CURRENT RANK============= */} 
-          <ProgressBar totalPoints={self?.total_points} />
+        <View style={tw`mx-5 h-61.2/100`}>
+         {levelsData? (
+            <ProgressBar 
+              totalPoints={self?.total_points} 
+              userLevel={self?.level} 
+              levelsData={levelsData} 
+            />
+         ):(
+          <View style={tw`h-full bg-white/10 p-2 rounded-2xl`} />
+         )} 
+        </View>
+
 
 {/* ==== =========PLACEMENTS LAST FEW DAYS============== */}
           <View style={tw``}>
@@ -325,17 +340,17 @@ export default function ProfileScreen2({ navigation }) {
                       {
                         day.rank === 1? (
                           <View style={tw`flex-col justify-center items-center w-30  rounded-3xl py-3 mr-3 `}>
-                            <Text style={tw`text-yellow-500 text-2xl font-bold mb-1`}>{toOrdinal(day.rank)}</Text>
+                            <Text style={tw`text-amber-500 text-2xl font-bold mb-1`}>{toOrdinal(day.rank)}</Text>
                             <Text style={tw`text-white`}>{day.date}</Text>
                           </View>
                         ): day.rank === 2? (
                           <View style={tw`flex-col justify-center items-center w-30  rounded-3xl py-3 mr-3 `}>
-                            <Text style={tw`text-slate-500 text-2xl font-bold mb-1`}>{toOrdinal(day.rank)}</Text>
+                            <Text style={tw`text-slate-400 text-2xl font-bold mb-1`}>{toOrdinal(day.rank)}</Text>
                             <Text style={tw`text-white`}>{day.date}</Text>
                           </View>
                         ): day.rank === 3? (
                           <View style={tw`flex-col justify-center items-center w-30  rounded-3xl py-3 mr-3 `}>
-                            <Text style={tw`text-orange-800 text-2xl font-bold mb-1`}>{toOrdinal(day.rank)}</Text>
+                            <Text style={tw`text-orange-700 text-2xl font-bold mb-1`}>{toOrdinal(day.rank)}</Text>
                             <Text style={tw`text-white`}>{day.date}</Text>
                           </View>
                         ):(
@@ -353,7 +368,7 @@ export default function ProfileScreen2({ navigation }) {
           </View>
 
 {/* ========TOTAL POINTS====== */}
-          <View style={tw`flex-col justify-center items-center bg-white/10 p-2 `}>
+          <View style={tw`flex-col justify-center items-center bg-white/10   h-12/100`}>
             <Text style={tw`text-white text-2xl `}>Total: {self?.total_points?.toLocaleString()} pts</Text>
           </View>
 
@@ -362,10 +377,10 @@ export default function ProfileScreen2({ navigation }) {
 
         </View>
 
-{/* chose pic or lottie modal */}
+        {/* chose pic or lottie modal */}
         <PicOrLottieModal pOLModalOpen={pOLModalOpen} setPOLModalOpen={setPOLModalOpen} />
 
-
+        
 
 
     {/* ======================LOADING==================== */}
@@ -373,6 +388,16 @@ export default function ProfileScreen2({ navigation }) {
 
 
       </SafeAreaView>
+
+      <PopUp
+        popUpOpen={popUpOpen} 
+        setPopUpOpen={setPopUpOpen} 
+        title={popTitle} 
+        message={popMsg}
+        OKmsg={popOkMsg}
+        OKfn={popOkFn}
+      />
+
       <BottomNavBar/>
     </View>
     </GestureHandlerRootView>

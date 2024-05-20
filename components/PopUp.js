@@ -1,26 +1,30 @@
-import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, Dimensions, StatusBar } from 'react-native';
 import Modal from 'react-native-modal';
 import tw from 'twrnc';
 import { Portal } from 'react-native-portalize';
-import { useNavigation } from '@react-navigation/native';
+
+const screenDimensions = Dimensions.get('screen');
 
 export default function PopUp({ popUpOpen, setPopUpOpen, title, message, OKmsg, NOmsg, OKfn, NOfn }) {
-  const navigation = useNavigation();
 
   return (
     <Portal>
       <Modal 
+        statusBarTranslucent={true}
+        backdropOpacity={0.5}
         animationIn='zoomIn' 
-        animationInTiming={300}
+        animationInTiming={250}
         animationOut='zoomOut'
         animationOutTiming={200}
-        backdropTransitionInTiming={300}
+        backdropTransitionInTiming={250}
         backdropTransitionOutTiming={200}
         isVisible={popUpOpen}
         onBackButtonPress={() => setPopUpOpen(false)}
         useNativeDriverForBackdrop={true}
-        style={tw`justify-center items-center m-auto  `}
+        coverScreen={true}
+        deviceHeight={screenDimensions.height}
+        style={[tw`justify-center items-center m-auto `, {height: screenDimensions.height}]}
       >
         <View style={tw`bg-neutral-800 rounded-xl    w-2/3`}>
           <View style={tw`flex-col  p-7`}>

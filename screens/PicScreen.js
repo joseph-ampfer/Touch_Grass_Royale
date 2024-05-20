@@ -57,45 +57,52 @@ export default function PicScreen({ navigation }) {
     }
   };
 
-    //upload media files
-    const uploadMedia = async () => {
-      setUploading(true);
-      try {
-        const { uri } = await FileSystem.getInfoAsync(image);
-        const blob = await new Promise((resolve, reject) => {
-          const xhr = new XMLHttpRequest();
-          xhr.onload = () => {
-            resolve(xhr.response);
-          };
-          xhr.onerror = (e) => {
-            reject(new TypeError("Network request failed"));
-          };
-          xhr.responseType = "blob";
-          xhr.open("GET", uri, true);
-          xhr.send(null);
-        });
-  
-        // const filename = image.substring(image.lastIndexOf("/") + 1);
-        const filename = storage.getNumber('my_id').toString()
-        const ref = firebase.storage().ref().child(filename);
-  
-        const snapshot = await ref.put(blob);
-  
-        // Get download URL
-        const downloadURL = await snapshot.ref.getDownloadURL();
-  
-        // Store download URL
-        updateFn.mutate({ pic: downloadURL });
-  
-        setUploading(false);
-        //setImage(null);
-  
-      } catch (error) {
-        console.error(error);
-        //setImage(null);
-        setUploading(false);
+  //upload media files
+  const uploadMedia = async () => {
+    setUploading(true);
+    try {
+      const { uri } = await FileSystem.getInfoAsync(image);
+      const blob = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = () => {
+          resolve(xhr.response);
+        };
+        xhr.onerror = (e) => {
+          reject(new TypeError("Network request failed"));
+        };
+        xhr.responseType = "blob";
+        xhr.open("GET", uri, true);
+        xhr.send(null);
+      });
+
+      // const filename = image.substring(image.lastIndexOf("/") + 1);
+      const filename = '/images/' + my_id.toString()
+      const ref = firebase.storage().ref().child(filename);
+
+      const snapshot = await ref.put(blob);
+
+      // Get download URL
+      const downloadURL = await snapshot.ref.getDownloadURL();
+
+      // Store download URL
+      updateFn.mutate({ pic: downloadURL });
+
+      setModalOpen(false);
+      setUploading(false);
+      setImage(null);
+
+      // Clean up blob
+      if (blob.close) {
+        blob.close(); // Free up memory
       }
-    };
+
+
+    } catch (error) {
+      console.error(error);
+      setImage(null);
+      setUploading(false);
+    }
+  };
 
 
 

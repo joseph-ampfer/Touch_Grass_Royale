@@ -14,9 +14,19 @@ export default function SignUpScreen3({ navigation }) {
 
   const registerFn = useMutation({
     mutationFn: (data) => register(data),
-    onSuccess: (result) => {
+    onSuccess: async (result) => {
       storage.set('access_token', result.access_token);
       storage.set('my_id', result.user_id);
+
+      try {
+        const {token, isGranted} = await registerForPushNotificationsAsync();
+        if (token) {
+          await sendPushTokenToServer({push_token: token.data, push_enabled: isGranted});
+        }
+      } catch (error) {
+        console.error("Error in updating the push token: ", error.detail || error.message);
+      }
+
       navigation.navigate('FullName');
     },
     onError: (error) => {

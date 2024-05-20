@@ -63,7 +63,7 @@ export default function PicOrLottieModal({ pOLModalOpen, setPOLModalOpen }) {
       });
 
       // const filename = image.substring(image.lastIndexOf("/") + 1);
-      const filename = my_id.toString()
+      const filename = '/images/' + my_id.toString()
       const ref = firebase.storage().ref().child(filename);
 
       const snapshot = await ref.put(blob);
@@ -72,12 +72,17 @@ export default function PicOrLottieModal({ pOLModalOpen, setPOLModalOpen }) {
       const downloadURL = await snapshot.ref.getDownloadURL();
 
       // Store download URL
-      console.log(downloadURL);
       updateFn.mutate({ pic: downloadURL });
 
       setPOLModalOpen(false);
       setUploading(false);
       setImage(null);
+
+      // Clean up blob
+      if (blob.close) {
+        blob.close(); // Free up memory
+      }
+
 
     } catch (error) {
       console.error(error);
@@ -90,11 +95,11 @@ export default function PicOrLottieModal({ pOLModalOpen, setPOLModalOpen }) {
     <Portal>
       <Modal
         animationIn="zoomIn"
-        animationInTiming={300}
+        animationInTiming={200}
         animationOut="zoomOut"
-        animationOutTiming={300}
-        backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={300}
+        animationOutTiming={100}
+        backdropTransitionInTiming={250}
+        backdropTransitionOutTiming={100}
         isVisible={pOLModalOpen}
         onBackButtonPress={() => setPOLModalOpen(false)}
         onBackdropPress={() => setPOLModalOpen(false)}
@@ -102,41 +107,46 @@ export default function PicOrLottieModal({ pOLModalOpen, setPOLModalOpen }) {
         swipeThreshold={10}
         swipeDirection={["down", "left", "right", "up"]}
         useNativeDriverForBackdrop={true}
-        style={tw` mx-5  `}
+        style={tw`flex-row justify-center items-center  `}
       >
-        <View style={tw`bg-black rounded-xl p-8`}>
+        <View style={tw`bg-neutral-800 rounded-xl    w-9/10`}>
           {
             image ? (
-              <View style={tw`flex-col items-center   `}>
-                <Image
-                  style={tw`h-50 w-50 rounded-full mb-8 mx-6`}
-                  source={{ uri: image }}
-                />
-                <View style={tw`flex-row justify-between  `}>
-                  <TouchableOpacity style={tw`p-2 px-6 flex-row items-center`} onPress={() => setImage(null)}>
-                    <Ionicons name="close" size={25} style={tw`text-white/80`} />
-                    <Text style={tw`text-white text-lg ml-2`}>Cancel</Text>
-                  </TouchableOpacity>
+              <View style={tw`flex-col pt-4  `}>
+                <View style={tw`flex-row justify-center items-center`}>
+                  <Image
+                    style={tw`h-50 w-50 rounded-full mb-8 mx-6`}
+                    source={{ uri: image }}
+                  />
+                </View>
 
+                <View style={tw`flex-col justify-between  `}>
                   {
                     uploading ? (
-                      <View style={tw`p-3 px-11`}>
+                      <View style={tw`p-3 border-t-2 border-neutral-700/10`}>
                         <ActivityIndicator />
                       </View>
                     ):(
                       <TouchableOpacity 
-                        style={tw`p-2 px-6 rounded-full bg-blue-600`}
+                        style={tw`flex-row justify-center items-center p-3 border-t-2 border-neutral-700/10`}
                         onPress={() => uploadMedia()}
                       >
-                        <Text style={tw`text-white text-lg`}>Confirm</Text>
+                        <Text style={tw`text-blue-500 text-lg font-bold text-center`}>Confirm</Text>
                       </TouchableOpacity>
                     )
                   }
 
+                  <TouchableOpacity 
+                    style={tw`flex-row justify-center items-center p-3 border-t-2 border-neutral-700/10`} 
+                    onPress={() => setImage(null)}
+                  >
+                    <Text style={tw`text-white text-lg text-center`}>Cancel</Text>
+                  </TouchableOpacity>
+
                 </View>
               </View>
           ):(
-            <View style={tw`flex-col items-center justify-around `}>
+            <View style={tw`flex-col items-center justify-around py-5 `}>
               <TouchableOpacity
                 style={tw`border-2 border-white rounded-full p-2 px-5`}
                 onPress={() => {

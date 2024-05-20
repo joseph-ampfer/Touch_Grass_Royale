@@ -55,6 +55,7 @@ export const usePushNotifications = () => {
 
   async function registerForPushNotificationsAsync() {
     let token;
+    let isGranted = true;
 
     if (Device.isDevice) {
       const { status: existingStatus } =
@@ -68,6 +69,7 @@ export const usePushNotifications = () => {
       }
       if (finalStatus !== "granted") {
         alert("Notifications are used to to get messages from friends, and to get notified if you've won.");
+        isGranted = false;
       }
 
       token = await Notifications.getExpoPushTokenAsync({
@@ -83,7 +85,7 @@ export const usePushNotifications = () => {
         });
       }
 
-      return token;
+      return {token, isGranted};
     } else {
       console.log("ERROR: Please use a phsyical device");
     }
@@ -221,7 +223,7 @@ export const registerForPushAsync = async () => {
       }
 
       try {
-        await sendPushTokenToServer(token.data)
+        await sendPushTokenToServer({push_token: token.data, push_enabled: true})
         return true;
       } catch (error) {
         throw error;

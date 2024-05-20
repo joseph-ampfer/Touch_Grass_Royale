@@ -252,10 +252,12 @@ export function Leaderboard() {
                       />
                       )
                     }
-                    <Text style={tw`text-slate-50 font-semibold text-center py-1`}>{data[1]?.username}</Text>
-                    <Text style={tw`text-slate-50 text-sm bg-gray-500 rounded-full mx-10 px-2 py-0.5 text-center`}>
-                        {data[1]?.todays_points}
-                    </Text>
+                    <Text numberOfLines={1} ellipsizeMode='tail' style={tw`text-slate-50 font-semibold text-center py-1 mx-2`}>{data[1]?.username}</Text>
+                    <View style={tw`flex-row justify-center items-center`}>
+                      <Text style={tw`text-slate-50 text-sm bg-gray-500 rounded-full  px-3 py-0.5 text-center`}>
+                          {data[1]?.todays_points}
+                      </Text>
+                    </View>
                     <Text style={tw`text-slate-50 text-center text-5xl py-4 font-black`}>2</Text>
                 </TouchableOpacity>
 {/* =======FIRST PLACE======= */}
@@ -293,10 +295,13 @@ export function Leaderboard() {
                         />
                       )
                     }
-                    <Text style={tw`text-slate-50 font-semibold text-center py-1 text-base`}>{data[0].username}</Text>
-                    <Text style={tw`text-slate-50 text-sm bg-yellow-500 rounded-full mx-10 px-2 py-0.5 text-center`}>
-                        {data[0].todays_points}
-                    </Text>
+                    <Text numberOfLines={1} ellipsizeMode='tail' style={tw`text-slate-50 font-semibold text-center py-1 text-base mx-2`}>{data[0].username}</Text>
+                    <View style={tw`flex-row justify-center items-center`}>
+                      <Text style={tw`text-slate-50 text-sm bg-yellow-500 rounded-full px-3 py-0.5 text-center`}>
+                          {data[0].todays_points}
+                      </Text>
+                    </View>
+
                     {/* <MyNumberTicker
                       number={data[0].todays_points}
                       textSize={17}
@@ -334,10 +339,18 @@ export function Leaderboard() {
                         />
                       )
                     }
-                    <Text style={tw`text-slate-50 font-semibold text-center py-1`}>{data[2]?.username}</Text>
-                    <Text style={tw`text-slate-50 text-sm bg-yellow-900 rounded-full mx-10 px-2 py-0.5 text-center`}>
-                        {data[2]?.todays_points}
+                    <Text 
+                      numberOfLines={1} 
+                      ellipsizeMode='tail' 
+                      style={tw`text-slate-50 font-semibold text-center py-1 mx-2`}
+                    >
+                      {data[2]?.username}
                     </Text>
+                    <View style={tw`flex-row justify-center items-center`}>
+                      <Text style={tw`text-slate-50 text-sm bg-yellow-900 rounded-full  px-3 py-0.5 text-center`}>
+                          {data[2]?.todays_points}
+                      </Text>
+                    </View>
                     <Text style={tw`text-slate-50 text-center text-4xl py-4 font-black`}>3</Text>
                   </View>
                 </TouchableOpacity>

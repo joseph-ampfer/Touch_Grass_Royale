@@ -55,47 +55,52 @@ export default function EditProfileScreen({ navigation }) {
     }
   };
 
-    //upload media files
-    const uploadMedia = async () => {
-      setUploading(true);
-      try {
-        const { uri } = await FileSystem.getInfoAsync(image);
-        const blob = await new Promise((resolve, reject) => {
-          const xhr = new XMLHttpRequest();
-          xhr.onload = () => {
-            resolve(xhr.response);
-          };
-          xhr.onerror = (e) => {
-            reject(new TypeError("Network request failed"));
-          };
-          xhr.responseType = "blob";
-          xhr.open("GET", uri, true);
-          xhr.send(null);
-        });
-  
-        // const filename = image.substring(image.lastIndexOf("/") + 1);
-        const filename = my_id.toString()
-        const ref = firebase.storage().ref().child(filename);
-  
-        const snapshot = await ref.put(blob);
-  
-        // Get download URL
-        const downloadURL = await snapshot.ref.getDownloadURL();
-  
-        // Store download URL
-        updateFn.mutate({ pic: downloadURL });
-  
-        setModalOpen(false);
-        setUploading(false);
-        //setImage(null);
-  
-      } catch (error) {
-        console.error(error);
-        //setImage(null);
-        setModalOpen(false);
-        setUploading(false);
+  //upload media files
+  const uploadMedia = async () => {
+    setUploading(true);
+    try {
+      const { uri } = await FileSystem.getInfoAsync(image);
+      const blob = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = () => {
+          resolve(xhr.response);
+        };
+        xhr.onerror = (e) => {
+          reject(new TypeError("Network request failed"));
+        };
+        xhr.responseType = "blob";
+        xhr.open("GET", uri, true);
+        xhr.send(null);
+      });
+
+      // const filename = image.substring(image.lastIndexOf("/") + 1);
+      const filename = '/images/' + my_id.toString()
+      const ref = firebase.storage().ref().child(filename);
+
+      const snapshot = await ref.put(blob);
+
+      // Get download URL
+      const downloadURL = await snapshot.ref.getDownloadURL();
+
+      // Store download URL
+      updateFn.mutate({ pic: downloadURL });
+
+      setModalOpen(false);
+      setUploading(false);
+      setImage(null);
+
+      // Clean up blob
+      if (blob.close) {
+        blob.close(); // Free up memory
       }
-    };
+
+
+    } catch (error) {
+      console.error(error);
+      setImage(null);
+      setUploading(false);
+    }
+  };
 
 
 
@@ -251,40 +256,42 @@ export default function EditProfileScreen({ navigation }) {
         swipeThreshold={10}
         swipeDirection={["down", "left", "right", "up"]}
         useNativeDriverForBackdrop={true}
-        style={tw` mx-5  `}
+        style={tw`flex-row justify-center items-center  `}
       >
-        <View style={tw`bg-black rounded-xl p-8`}>
-          <View style={tw`flex-col items-center   `}>
-            <Image
-              style={tw`h-50 w-50 rounded-full mb-8 mx-6`}
-              source={{ uri: image }}
-            />
-            <View style={tw`flex-row justify-between  `}>
-              <TouchableOpacity 
-                style={tw`p-2 px-6 flex-row items-center`} 
-                onPress={() => {
-                  setModalOpen(false);
-                  //setImage(null);
-                }}
-              >
-                  <Ionicons name="close" size={25} style={tw`text-white/80`} />
-                 <Text style={tw`text-white text-lg ml-2`}>Cancel</Text>
-              </TouchableOpacity>
+        <View style={tw`bg-neutral-800 rounded-xl    w-9/10`}>
 
+          <View style={tw`flex-col pt-4  `}>
+            <View style={tw`flex-row justify-center items-center`}>
+              {image? (
+                <Image
+                  style={tw`h-50 w-50 rounded-full mb-8 mx-6`}
+                  source={{ uri: image }}
+                />
+              ):null}
+            </View>
+
+            <View style={tw`flex-col justify-between  `}>
               {
                 uploading ? (
-                  <View style={tw`p-3 px-11`}>
+                  <View style={tw`p-3  border-t-2 border-neutral-700/10`}>
                     <ActivityIndicator />
                   </View>
                 ):(
                   <TouchableOpacity 
-                    style={tw`p-2 px-6 rounded-full bg-blue-600`}
+                    style={tw`flex-row justify-center items-center p-3 border-t-2 border-neutral-700/10`}
                     onPress={() => uploadMedia()}
                   >
-                    <Text style={tw`text-white text-lg`}>Confirm</Text>
+                    <Text style={tw`text-blue-500 text-lg font-bold text-center`}>Confirm</Text>
                   </TouchableOpacity>
                 )
               }
+
+              <TouchableOpacity 
+                style={tw`flex-row justify-center items-center p-3 border-t-2 border-neutral-700/10`} 
+                onPress={() => setImage(null)}
+              >
+                <Text style={tw`text-white text-lg text-center`}>Cancel</Text>
+              </TouchableOpacity>
 
             </View>
           </View>

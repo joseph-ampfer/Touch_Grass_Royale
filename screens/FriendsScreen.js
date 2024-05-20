@@ -15,129 +15,129 @@ import Modal from 'react-native-modal';
 
 // const friends = [
 //   {
-//     name: 'JohnDoe',
+//     username: 'JohnDoe',
 //     time: '524',
 //     pic: 'https://i.pravatar.cc/600/',
-//     lottie: 'spaceJam',
+//     lottie: null,
 //     action: 'Add Friend'
 //   },
 //   {
-//     name: 'Hexscuseme',
+//     username: 'Hexscuseme',
 //     time: '500',
 //     pic: 'https://i.pravatar.cc/60',
-//     lottie: 'gojoCat',
+//     lottie: null,
 //     action: 'Remove Friend'
 //   },
 //   {
-//     name: 'Nephlauxic',
+//     username: 'Nephlauxic',
 //     time: '499',
 //     pic: 'https://i.pravatar.cc/60/68',
 //     lottie: null,
 //     action: 'Add Friend'
 //   },
 //   {
-//     name: 'Hobbes',
+//     username: 'Hobbes',
 //     time: '461',
 //     pic: 'https://i.pravatar.cc/60/63',
-//     lottie: 'spaceInvader',
+//     lottie: null,
 //     action: 'Add Friend'
 //   },
 //   {
-//     name: 'eener_weiner',
+//     username: 'eener_weiner',
 //     time: '444',
 //     pic: 'https://i.pravatar.cc/60/64',
 //     lottie: null,
 //     action: 'Add Friend'
 //   },
 //   {
-//     name: 'Test 6',
+//     username: 'Test 6',
 //     time: '443',
 //     pic: 'https://i.pravatar.cc/60/65',
-//     lottie: 'ghibliGirl',
+//     lottie: null,
 //     action: 'Add Friend'
 //   },
 //   {
-//     name: 'jampfer',
+//     username: 'jampfer',
 //     time: '411',
 //     pic: 'https://i.pravatar.cc/60/66',
 //     lottie: 'eyeBlob',
 //     action: 'Add Friend'
 //   },
 //   {
-//     name: 'Dennis',
+//     username: 'Dennis',
 //     time: '400',
 //     pic: 'https://i.pravatar.cc/60/67',
 //     lottie: 'ramen',
 //     action: 'Add Friend'
 //   },
 //   {
-//     name: 'frobro',
+//     username: 'frobro',
 //     time: '399',
 //     pic: 'https://i.pravatar.cc/60/69',
 //     lottie: 'meditationCow',
 //     action: 'Add Friend'
 //   },
 //   {
-//     name: 'Test test 4',
+//     username: 'Test test 4',
 //     time: '350',
 //     pic: 'https://i.pravatar.cc/60/70',
-//     lottie: 'ghibliGirl',
+//     lottie: null,
 //     action: 'Add Friend'
 //   },
 //   {
-//     name: 'Test test 5',
+//     username: 'Test test 5',
 //     time: '300',
 //     pic: 'https://i.pravatar.cc/60/80',
-//     lottie: 'ghibliGirl',
+//     lottie: null,
 //     action: 'Add Friend'
 //   },
 //   {
-//     name: 'Test test 6',
+//     username: 'Test test 6',
 //     time: '100',
 //     pic: 'https://i.pravatar.cc/60/90',
-//     lottie: 'ghibliGirl',
+//     lottie: null,
 //     action: 'Add Friend'
 //   },
 //   {
-//     name: 'Test test 1',
+//     username: 'Test test 1',
 //     time: '9.2',
 //     pic: 'https://i.pravatar.cc/60/10',
-//     lottie: 'ghibliGirl',
+//     lottie: null,
 //     action: 'Add Friend'
 //   },
 //   {
-//     name: 'Test test 2',
+//     username: 'Test test 2',
 //     time: '9.2',
 //     pic: 'https://i.pravatar.cc/60/20',
-//     lottie: 'ghibliGirl',
+//     lottie: null,
 //     action: 'Add Friend'
 //   },
 //   {
-//     name: 'Test test 3',
+//     username: 'Test test 3',
 //     time: '9.2',
 //     pic: 'https://i.pravatar.cc/60/30',
-//     lottie: 'ghibliGirl',
+//     lottie: null,
 //     action: 'Add Friend'
 //   },
 //   {
-//     name: 'Test test 4',
+//     username: 'Test test 4',
 //     time: '9.2',
 //     pic: 'https://i.pravatar.cc/60/40',
-//     lottie: 'ghibliGirl',
+//     lottie: null,
 //     action: 'Add Friend'
 //   },
 //   {
-//     name: 'Test test 5',
+//     username: 'Test test 5',
 //     time: '9.2',
 //     pic: 'https://i.pravatar.cc/60/60',
-//     lottie: 'ghibliGirl',
+//     lottie: null,
 //     action: 'Add Friend'
 //   },
 //   {
-//     name: 'Last',
+//     username: 'Last',
 //     time: '9.2',
 //     pic: 'https://i.pravatar.cc/60/60',
-//     lottie: 'ghibliGirl',
+//     lottie: null,
 //     action: 'Add Friend'
 //   },
 // ]

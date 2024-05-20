@@ -50,7 +50,7 @@ export default function Edit_Screen({ navigation, route }) {
 
   const handleCheckUsername = async input => {
     if (input == '') {
-      setUsernameTaken(false);
+      setUsernameTaken(true);
       return
     }
     try {

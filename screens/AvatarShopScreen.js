@@ -30,10 +30,12 @@ export default function AvatarShopScreen({ navigation }) {
   })
   
   const buyLottieFn = useMutation({
-    mutationFn: ({ name, price }) => buyLottie(name, price),
+    mutationFn: (id) => buyLottie(id),
     onSuccess: () => {
+        setPopTitle('Unlocked!');
+        setPopMsg('Edit your profile to equip your new avatar!');
+        setPopUpOpen(true);
         setModalOpen(false);
-        setShowFireworks(true);
         queryClient.invalidateQueries({ queryKey: ['lotties'] })
         queryClient.invalidateQueries({ queryKey: ['self'] })
         queryClient.invalidateQueries({ queryKey: ['leaderboard'] })
@@ -45,8 +47,7 @@ export default function AvatarShopScreen({ navigation }) {
         setPopUpOpen(true);
         setModalOpen(false);
       } else {
-        console.error(JSON.stringify(error.detail, null, 2));
-        console.log(JSON.stringify(error.detail, null, 2));
+        console.error(error, JSON.stringify(error.detail, null, 2));
       }
     }
   })
@@ -70,7 +71,7 @@ export default function AvatarShopScreen({ navigation }) {
 
   const insets = useSafeAreaInsets();
   
-  if (isLoading) {
+  if (isLoading || ownedLoading) {
     return (
       <View style={tw`flex-1 bg-black`}>
         <StatusBar style='light' />
@@ -138,8 +139,9 @@ export default function AvatarShopScreen({ navigation }) {
                       />
                     </View>
                   </View>
+                  {/* Don't show price if already owned */}
                   {
-                    lotties?.includes(animation.name) ? (
+                    lotties.some(lottie => lottie.id === animation.id) ? (
                       // <TouchableOpacity 
                       //   style={[tw` rounded-full px-2 absolute bottom-1 right-14 elevation-10 `, ]} 
                       // >
@@ -178,14 +180,17 @@ export default function AvatarShopScreen({ navigation }) {
           message={popMsg}
           OKmsg={popOkMsg}
           NOmsg={popNoMsg}
-          OKfn={() => setPopUpOpen(false)}
+          OKfn={() => {
+            setPopUpOpen(false);
+            setShowFireworks(true);
+          }}
           NOfn={popNoFn}
         />
 
 {/* =========PURCHASE MODAL========= */}
         <Modal 
           animationIn='slideInUp' 
-          animationInTiming={100}
+          animationInTiming={150}
           animationOut='zoomOut'
           animationOutTiming={200}
           backdropTransitionInTiming={200}
@@ -220,7 +225,7 @@ export default function AvatarShopScreen({ navigation }) {
               <TouchableOpacity 
                 style={tw` flex-row justify-center items-center p-3 border-t-2 border-neutral-700/10`}
                 onPress={() => {
-                    buyLottieFn.mutate({name: selectedAnimation.name, price: selectedAnimation.price});
+                    buyLottieFn.mutate(selectedAnimation.id);
                 }} 
               >
                 <Text style={tw`text-blue-500 text-center text-base font-bold my-auto`}>Unlock</Text>

@@ -313,7 +313,7 @@ const debounceContactsSearch = debounce(handleContactsSearch, 500)
     <View style={tw`flex-1 bg-gray-900`}>
       <StatusBar style='light'/>
       <Image 
-        blurRadius={10} 
+        blurRadius={70} 
         source={require('../assets/images/full.png')} 
         style={[tw`absolute w-full  -z-50`, { height: screenDimensions.height } ]} 
       />
@@ -597,12 +597,12 @@ const debounceContactsSearch = debounce(handleContactsSearch, 500)
             <ScrollView 
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{ paddingBottom: 350 }}
-              //refreshControl={
-              //  <RefreshControl 
-              //    refreshing={isLoading} 
-              //    onRefresh={() => queryClient.invalidateQueries({ queryKey: ['friend requests'] })} 
-              //  />
-              //}
+              refreshControl={
+                <RefreshControl 
+                  refreshing={isLoading} 
+                  onRefresh={() => queryClient.invalidateQueries({ queryKey: ['friend requests'] })} 
+                />
+              }
             >
 
               { !isLoading? 
@@ -610,11 +610,14 @@ const debounceContactsSearch = debounce(handleContactsSearch, 500)
                   friendRequests.map((user, index) => {
                     return (
                       // friend component
-                      <Animated.View key={index} entering={FadeInDown.delay(index * 100).duration(1000).springify()} >
-                          <FriendRequestCard user={user} onPicturePress={() => {
-                            setSelectedUser(user);
-                            setModalOpen(true);
-                          }} />
+                      <Animated.View key={user.id} entering={FadeInDown.delay(index * 100).duration(1000).springify()} >
+                          <FriendRequestCard 
+                            user={user} 
+                            onPicturePress={() => {
+                              setSelectedUser(user);
+                              setModalOpen(true);
+                            }} 
+                          />
                       </Animated.View>
                     )
                   })

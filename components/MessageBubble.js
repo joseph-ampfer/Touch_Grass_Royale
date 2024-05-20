@@ -22,7 +22,7 @@ const MessageBubble = ({ message, isSelected, onPress }) => {
 
     const handlePress = () => {
         onPress(); // This function is called on the JavaScript thread
-      };
+    };
     
       // Define the tap gesture using runOnJS to ensure handlePress runs on the JavaScript thread
       const tapGesture = Gesture.Tap().onEnd(() => {
@@ -35,7 +35,7 @@ const MessageBubble = ({ message, isSelected, onPress }) => {
       (current, previous) => {
         if (current !== previous) {
           scale.value = withSpring(current ? 1 : 0);
-          opacity.value = withTiming(current ? 1 : 0, { duration: 100 });
+          opacity.value = withTiming(current ? 1 : 0, { duration: 500 });
         }
       },
       [isSelected]

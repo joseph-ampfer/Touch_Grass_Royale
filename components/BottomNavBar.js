@@ -13,16 +13,16 @@ export default function BottomNavBar() {
   return (
     <View>
       <View style={tw`bg-black pt-2 flex-row justify-around z-50 absolute bottom-0 w-full`}>
-        <TouchableOpacity onPress={() => navigation.push('Home')}>
+        <TouchableOpacity style={tw`px-2`} onPress={() => navigation.push('Home')}>
           <Foundation name="home" size={32} color="white" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Search')}>
+        <TouchableOpacity style={tw`px-2`} onPress={() => navigation.navigate('Search')}>
           <Ionicons name="search-outline" size={31} color="white" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Leaderboard')}>
+        <TouchableOpacity style={tw`px-2`} onPress={() => navigation.navigate('Leaderboard')}>
           <Ionicons name="podium-outline" size={31} color="white" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.push('Profile')}>
+        <TouchableOpacity style={tw`px-2`} onPress={() => navigation.push('Profile')}>
           <Ionicons name="person-circle-outline" size={32} color="white" />
         </TouchableOpacity>
       </View>

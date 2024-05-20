@@ -3,8 +3,6 @@ import { NavigationContainer, } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Leaderboard } from '../screens/LeaderBoard';
 import OnboardingScreen from '../screens/OnboardingScreen';
-import LoginScreen from '../screens/LoginScreen';
-import SignupScreen from '../screens/SignupScreen';
 import HomeScreen from '../screens/HomeScreen';
 import SearchScreen from '../screens/SearchScreen';
 import { View } from 'react-native';
@@ -15,8 +13,6 @@ import AvatarsScreen from '../screens/AvatarsScreen';
 import AvatarShopScreen from '../screens/AvatarShopScreen';
 import EditProfileScreen from '../screens/EditProfileScreen';
 import Edit_Screen from '../screens/Edit--Screen';
-import LoginScreen2 from '../screens/LoginScreen2';
-import SignupScreen2 from '../screens/SignupScreen2';
 import LoginScreen3 from '../screens/LoginScreen3';
 import LoginHelp from '../screens/FindAccountScr';
 import EnterCodeScr from '../screens/EnterCodeScr';
@@ -36,14 +32,12 @@ export default function AppNavigation() {
         <View style={{ flex: 1, backgroundColor: 'black'}}>
         <NavigationContainer >
             <Host>
-            <Stack.Navigator initialRouteName='Home' screenOptions={{ headerShown: false, animation: 'none' }}>
+            <Stack.Navigator initialRouteName='Profile' screenOptions={{ headerShown: false, animation: 'none' }}>
                 <Stack.Screen name="Leaderboard" component={Leaderboard} />
                 <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-                <Stack.Screen name="Login" component={LoginScreen} />
-                <Stack.Screen name="Login2" component={LoginScreen2} />
+
                 <Stack.Screen name="Login3" component={LoginScreen3} />
-                <Stack.Screen name="SignUp" component={SignupScreen} />
-                <Stack.Screen name='SignUp2' component={SignupScreen2} />
+
                 <Stack.Screen name="SignUp3" component={SignUpScreen3} />
                 <Stack.Screen name="FullName" component={FullNameScr} />
                 <Stack.Screen name="Pic" component={PicScreen} />

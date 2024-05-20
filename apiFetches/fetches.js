@@ -501,7 +501,7 @@ export const updatePoints = async (data) => {
 }
 
 
-export const sendPushTokenToServer = async (push_token) => {
+export const sendPushTokenToServer = async (info) => {
     const access_token = storage.getString('access_token');
     const url = `${base_url}/notifications/store`;
     const options = {
@@ -511,7 +511,7 @@ export const sendPushTokenToServer = async (push_token) => {
             'content-type': 'application/json',
             Authorization: `Bearer ${access_token}`
         },
-        body: JSON.stringify({ 'push_token': push_token })
+        body: JSON.stringify(info)
     };
     const res = await fetch(url, options);
     const json = await res.json();
@@ -613,9 +613,9 @@ export const getOwnedLottie = async () => {
     return json
 }
 
-export const buyLottie = async (name, price) => {
+export const buyLottie = async (id) => {
     const access_token = storage.getString('access_token');
-    const url = `${base_url}/lottie/buy`;
+    const url = `${base_url}/lottie/buy/${id}`;
     const options = {
         method: 'POST',
         headers: {
@@ -623,10 +623,6 @@ export const buyLottie = async (name, price) => {
             'content-type': 'application/json',
             Authorization: `Bearer ${access_token}`
         },
-        body: JSON.stringify({
-            name: name,
-            price: price,
-        })
     };
 
     const res = await fetch(url, options);
@@ -634,6 +630,52 @@ export const buyLottie = async (name, price) => {
 
     if (!res.ok) {
         const error = new Error('buyLottie');
+        error.detail = json.detail;
+        throw error
+    };
+    return json
+}
+
+
+export const getAllLevels = async () => {
+    const access_token = storage.getString('access_token');
+    const url = `${base_url}/points/get-all-levels`;
+    const options = {
+        method: 'GET',
+        headers: {
+            accept: 'application/json',
+            Authorization: `Bearer ${access_token}`
+        }
+    };
+    const res = await fetch(url, options);
+    const json = await res.json();
+
+    if (!res.ok) {
+        const error = new Error('getAllLevels');
+        error.detail = json.detail;
+        throw error
+    };
+    return json
+}
+
+
+export const sendMessage = async (info) => {
+    const access_token = storage.getString('access_token');
+    const url = `${base_url}/notifications/send/last-place`;
+    const options = {
+        method: 'POST',
+        headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            Authorization: `Bearer ${access_token}`
+        },
+        body: JSON.stringify(info),
+    };
+    const res = await fetch(url, options);
+    const json = await res.json();
+
+    if (!res.ok) {
+        const error = new Error('sendMessage');
         error.detail = json.detail;
         throw error
     };
